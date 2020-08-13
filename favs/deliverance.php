@@ -1,6 +1,10 @@
+<script>var prependPath="../";</script>
 <link href="../assets/css/favs.css" rel="stylesheet"></link>
-<div id="favs">
+<script src="../assets/js/favs.js"></script>
+<?php include("../assets/templates/favs.php"); ?>
+<div id="favs" style="position:relative;">
   <p style="font-weight:600">Watch shuffled videos from Youtube channels:</p>
+  <div style="position:absolute; top:0; right:0; width:15px; height:15px;" onclick="More.count();"></div>
   <ul>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UU4HG-iZ6MwZsuL6k2FWXUdw");'>Sins deliverance - MrPastor77</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6bX9jxGv3_1dg5opFKBjD6V");'>Sins (deliverance too energetic)</a></li>
@@ -17,9 +21,9 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6aeGX5E4gisCapdbxrx1fIW");'>Sleep verses</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6Y9ld1st3TTi4KVg6bESniZ");'>Testimonies</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLUrXUK9J4pMjZmMZRPOs_n52pSpndBzhe");'>Warfare deliverance</a></li>
-      
   </ul>
 </div>
 <script>
 window.parent.resizeIframeFavs();
+More = new More();
 </script>

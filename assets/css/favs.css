@@ -1,7 +1,20 @@
-
+#favs, #modal-more {
+    width: 512px;
+    padding: 5px;
+}
+#modal-more {
+    border:1px solid gray;
+    margin-bottom: 5px;
+}
+#modal-more a {
+    margin-right: 30px;
+}
+#modal-more .modal-footer {
+    margin-top: 5px;
+    text-align: right;
+}
 #favs {
     display: block;
-    width: 512px;
     /* margin-top: 1rem; */
     /* padding:10px; */
     background-color: lightyellow;
@@ -22,4 +35,7 @@ a:visited {
 }
 body {
     margin-top:30px;
+}
+.fade {
+    display: none;
 }

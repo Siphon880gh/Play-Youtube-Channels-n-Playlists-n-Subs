@@ -1,6 +1,11 @@
+
+<script>var prependPath="./";</script>
 <link href="assets/css/favs.css" rel="stylesheet"></link>
-<div id="favs">
+<script src="assets/js/favs.js">prependPath="./"</script>
+<?php include("assets/templates/favs.php"); ?>
+<div id="favs" style="position:relative;">
   <p style="font-weight:600">Watch shuffled videos from Youtube channels:</p>
+  <div style="position:absolute; top:0; right:0; width:15px; height:15px;" onclick="More.count();"></div>
   <ul>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UU9avFXTdbSo5ATvzTRnAVFg");'>[Asian Community] Fung Bros</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUyUvbIeYILB4_HL5D0PWBUA");'>[Cars] Worthless Whips</a></li>
@@ -42,4 +47,5 @@
 </div>
 <script>
 window.parent.resizeIframeFavs();
+More = new More();
 </script>

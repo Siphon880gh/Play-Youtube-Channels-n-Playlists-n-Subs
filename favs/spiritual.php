@@ -1,6 +1,10 @@
+<script>var prependPath="../";</script>
 <link href="../assets/css/favs.css" rel="stylesheet"></link>
-<div id="favs">
+<script src="../assets/js/favs.js"></script>
+<?php include("../assets/templates/favs.php"); ?>
+<div id="favs" style="position:relative;">
   <p style="font-weight:600">Watch shuffled videos from Youtube channels:</p>
+  <div style="position:absolute; top:0; right:0; width:15px; height:15px;" onclick="More.count();"></div>
   <ul>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUnR2VoUqv9OF2oW4OmGZMzg");'>ASMR: Etc</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6aXr7Ynil9HHLAxgQuTMqBP");'>ASMR: Strght</a></li>
@@ -19,4 +23,5 @@
 </div>
 <script>
 window.parent.resizeIframeFavs();
+More = new More();
 </script>

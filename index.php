@@ -3,7 +3,7 @@
 // Dua Lipa old music: OLAK5uy_n1RTVv-lJ6-4DjJmFUfF_MoRevOeYTM4Q
 // Bebe Rexha old music: OLAK5uy_mc7x6vdCJWUpWXeF6NEY1ljjfwXoG18do
 // RandomYt: PLJMMfLBtUHMlUCynG24upluI_pE9WFlII
-$defaultPlaylistId = "OLAK5uy_mc7x6vdCJWUpWXeF6NEY1ljjfwXoG18do";
+$defaultPlaylistId = "OLAK5uy_lYY8Ips3wSdyDYyemlb_1xBvFCgLLd-YQ";
 $playlistId = isset($_GET["playlistId"]) && strlen($_GET["playlistId"]) ? $_GET["playlistId"] : $defaultPlaylistId;
 
 if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) ) {
