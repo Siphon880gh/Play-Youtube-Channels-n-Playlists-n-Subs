@@ -1,0 +1,25 @@
+
+#favs {
+    display: block;
+    width: 512px;
+    /* margin-top: 1rem; */
+    /* padding:10px; */
+    background-color: lightyellow;
+}
+#favs ul {
+    padding-left: 10px;
+}
+#favs li {
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+#favs li:before {
+    content: "- ";
+}
+a:visited {
+    color: blue;
+}
+body {
+    margin-top:30px;
+}

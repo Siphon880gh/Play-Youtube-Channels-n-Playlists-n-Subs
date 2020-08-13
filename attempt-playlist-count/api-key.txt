@@ -1,0 +1,10 @@
+// Refer to: Mac Notes -> Dev - Youtube API PHP
+
+// (DUP)
+// https://console.developers.google.com/apis/credentials
+// https://developers.google.com/youtube/v3/guides/auth/server-side-web-apps#enable-apis
+// Client ID: 721997441613-693j0q06p5h6fv41jp57ubv3lkghb42n.apps.googleusercontent.com
+// Client Secret: Um6sPiZNcaM6bxv9xWAQ_q9G
+// redirect_uri: http://localhost:8080
+// response_type: code
+// https://github.com/googleapis/google-api-php-client
