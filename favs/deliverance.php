@@ -1,10 +1,10 @@
 <script>var prependPath="../";</script>
-<link href="../assets/css/favs.css" rel="stylesheet"></link>
-<script src="../assets/js/favs.js"></script>
-<?php include("../assets/templates/favs.php"); ?>
-<div id="favs" style="position:relative;">
-  <p style="font-weight:600">Watch shuffled videos from Youtube channels:</p>
-  <div style="position:absolute; top:0; right:0; width:15px; height:15px;" onclick="More.count();"></div>
+<?php $prependPath="../"; ?>
+<link href="<?php echo $prependPath; ?>assets/css/favs.css" rel="stylesheet"></link>
+<script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
+<?php include($prependPath."assets/templates/favs.php"); ?>
+<div id="favs">
+  <div class="header"><a href="javascript:void(0);" onclick="More.count();">Watch videos from Youtube channels:</a></div>
   <ul>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UU4HG-iZ6MwZsuL6k2FWXUdw");'>Sins deliverance - MrPastor77</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6bX9jxGv3_1dg5opFKBjD6V");'>Sins (deliverance too energetic)</a></li>

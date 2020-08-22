@@ -4,7 +4,10 @@ class More { // static
     }
     count() {
       window.count++; 
-      if(window.count===2) this.reached();
+      if(window.count>=2) this.reached();
+      setTimeout(()=>{
+        window.count=-1;
+      }, 1000);
     }
     reached() {
       window.count=-1;
