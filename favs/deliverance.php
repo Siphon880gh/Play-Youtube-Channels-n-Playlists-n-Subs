@@ -3,8 +3,12 @@
 <link href="<?php echo $prependPath; ?>assets/css/favs.css" rel="stylesheet"></link>
 <script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
 <?php include($prependPath."assets/templates/favs.php"); ?>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
 <div id="favs">
-  <div class="header"><a href="javascript:void(0);" onclick="More.count();">Watch videos from Youtube channels:</a></div>
+  <div class="header">
+    <a href="javascript:void(0);" onclick="More.count();">Watch videos from Youtube channels:</a>
+    <i class="fa fa-cloud-download-alt clickable float-right" onclick="ManualPlaylist.prompt();"></i>
+  </div>
   <ul>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UU4HG-iZ6MwZsuL6k2FWXUdw");'>Sins deliverance - MrPastor77</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6bX9jxGv3_1dg5opFKBjD6V");'>Sins (deliverance too energetic)</a></li>
@@ -21,6 +25,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6aeGX5E4gisCapdbxrx1fIW");'>Sleep verses</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6Y9ld1st3TTi4KVg6bESniZ");'>Testimonies</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLUrXUK9J4pMjZmMZRPOs_n52pSpndBzhe");'>Warfare deliverance</a></li>
+  </ul>
   </ul>
 </div>
 <script>

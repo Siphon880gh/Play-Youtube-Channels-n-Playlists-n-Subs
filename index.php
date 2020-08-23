@@ -67,7 +67,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     <script>
     // Overriding fav playlists
     $(()=>{
-        // Instance
+        // URL settings
         var params = new URLSearchParams(window.location.search);
         var hasFavs = params.get("favs")!==null;
         if(hasFavs) {
@@ -82,7 +82,28 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
         tag.src = path;
         tag.id = "favs";
         document.getElementById("favs-wrapper").append( tag );
-    });
+
+
+        // On resize
+        // $(window).on("resize", (refitVideoPrn)=> {
+        // });
+        // setTimeout(refitVideoPrn, 1000);
+
+
+        function refitVideoPrn() {
+            // criteria met
+            var isVideoHeightTooLargeForWindow = window.innerHeight < $("#player").height();
+            var isVideoWidthTooLargeForWindow = window.innerWidth < $("#player").width();
+
+            if(isVideoHeightTooLargeForWindow || isVideoWidthTooLargeForWindow) {
+                // $("#fit-video").click();
+                $('#player').addClass('maximized');
+                console.log("Triggered refit");
+            }
+        } // refitVideoPrn
+        setInterval(refitVideoPrn, 1000);
+
+    }); // on doc ready
     </script>
 
 </head>
@@ -93,7 +114,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     <div id="buttons">
         <button class="btn btn-default btn-sm" onclick="urlChange.start('RANDOM');"><i class="fa fa-random"></i> Next random</button>
         <button id="most-recent" class="btn btn-default-off btn-sm" onclick="urlChange.start(1); $(this).addClass('active');"><i class="fa fa-list-ol"></i> Most recent</button>
-        <button class="btn btn-default-off btn-sm" onclick="$('#player').toggleClass('maximized');"><i class="fa fa-maximize"></i> Fit Video</button>
+        <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();"><i class="fa fa-maximize"></i> Fit Video</button>
     </div>
     <div id="favs-wrapper"></div>
     <div id="discover-more">

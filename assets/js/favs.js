@@ -7,7 +7,7 @@ class More { // static
       if(window.count>=2) this.reached();
       setTimeout(()=>{
         window.count=-1;
-      }, 1000);
+      }, 3000);
     }
     reached() {
       window.count=-1;
@@ -27,3 +27,13 @@ class More { // static
       document.querySelector("#modal-more").classList.remove("fade");
     }
   }
+
+  class ManualPlaylist {
+    constructoor() { }
+    prompt() {
+      var p = prompt("Enter a playlist ID:");
+      if(p && p.length)
+        window.parent.urlChange.playlist(p);
+    } // prompt
+  }
+  ManualPlaylist = new ManualPlaylist();

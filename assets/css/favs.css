@@ -34,9 +34,9 @@ body{
     padding-left: 10px;
 }
 #favs li {
-    display: inline-block;
+    /* display: inline-block;
     margin-right: 10px;
-    margin-bottom: 5px;
+    margin-bottom: 5px; */
 }
 #favs li:before {
     content: "- ";
@@ -49,4 +49,14 @@ body {
 }
 .fade {
     display: none;
+}
+.float-right {
+    float: right;
+}
+.clickable {
+    color: blue;
+    cursor: pointer;
+}
+.clickable:hover {
+    color: red;
 }

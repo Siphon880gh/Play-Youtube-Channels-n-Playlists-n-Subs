@@ -3,8 +3,12 @@
 <link href="<?php echo $prependPath; ?>assets/css/favs.css" rel="stylesheet"></link>
 <script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
 <?php include($prependPath."assets/templates/favs.php"); ?>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
 <div id="favs">
-  <div class="header"><a href="javascript:void(0);" onclick="More.count();">Watch videos from Youtube channels:</a></div>
+  <div class="header">
+    <a href="javascript:void(0);" onclick="More.count();">Watch videos from Youtube channels:</a>
+    <i class="fa fa-cloud-download-alt clickable float-right" onclick="ManualPlaylist.prompt();"></i>
+  </div>
   <ul>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUnR2VoUqv9OF2oW4OmGZMzg");'>ASMR: Etc</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6aXr7Ynil9HHLAxgQuTMqBP");'>ASMR: Strght</a></li>
@@ -17,8 +21,11 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6ZywR0RV2Qb_Ioycr0Kt3Ri");'>NLP</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6aIplM6VEtNHYPzwJjpHxFZ");'>NLP do music</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6YX5IsEVSBfIcn77PwoNGAj");'>NLP release trauma</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6ZFpPlpIdo5Y9F59Qxru_3O");'>Misc warfare: Teaching</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6ZyTP5_EdIok8ZuE3yCxbnq");'>Misc warfare: Techniques</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6bq3LXCQWIiZR_4D9uAokja");'>Release: Trauma Approach (Catharsis)</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6asto33Xtovd4vvnZku-UrC");'>Sleep: Yawning is contagious</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6arBn4X72pJGYbPc6CIZDVS");'>Sxy Str MV</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6ZFpPlpIdo5Y9F59Qxru_3O");'>Warfare Misc: Teaching</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6ZyTP5_EdIok8ZuE3yCxbnq");'>Warfare Misc: Techniques</a></li>
   </ul>
 </div>
 <script>
