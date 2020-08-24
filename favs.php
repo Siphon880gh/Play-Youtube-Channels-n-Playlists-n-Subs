@@ -63,6 +63,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PL_lABM4PHKBKFfw25CMPWmsQYKtT2wDzx");'>[Entertainment\Videogames] Playthrough: Zelda Wind Waker</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6Z3jwM_jYHoi40AMhPUeU7_");'>[Music] ~Intense</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6ZiXxYJant9PXtY9AB4aaJ4");'>[Music] ~Music Theory</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6aMazn2DAMV-mscaVPONISA");'>[Music] ~Smooth concentration</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("OLAK5uy_kcWikwwjbRJpEMOxujPqJHwhTyUKz4GGY");'>[Music] Bebe Rexha</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("OLAK5uy_lYY8Ips3wSdyDYyemlb_1xBvFCgLLd-YQ");'>[Music] Dua Lipa</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUi8e0iOVk1fEOogdfu4YgfA");'>[Movies] Movieclips Trailers</a></li>
