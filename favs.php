@@ -12,6 +12,8 @@
   <ul>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UU9avFXTdbSo5ATvzTRnAVFg");'>[Asian Community] Fung Bros</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUe0TLA0EsQbE-MjuHXevj2A");'>[Bodybuilding] Athlean</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UU7aE5B-ZFEAoumyj6FaJ7lg");'>[Bodybuilding] Bradley Martyn</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUKf0UqBiCQI4Ol0To9V0pKQ");'>[Bodybuilding] Buff Dudes</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UU68TLK0mAEzUyHx5x5k-S1Q");'>[Bodybuilding] Jeff Nippard</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UU1XHNZDn3btv7454Pkz7THg");'>[Bodybuilding] Scooby1961</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUCCbzhtMMAxjSBmfRvd-7yw");'>[Bodybuilding] Shytown Fitness</a></li>
