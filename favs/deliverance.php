@@ -15,6 +15,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6bCGOv3UPzJ3EgdWmkqlkwj");'>Sins deliverance</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6Yjk1EpEF-C_W2QsIuwTkMh");'>Sins deliverance (Latin)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6Yug_ChwJg1SlnM0jjAKiqV");'>Sins deliverance (too loud for insomnia?)</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6bVPnlS-w4qC5CUVpbDRB3S");'>Sins deliverance productive life</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6YB4RNJ26tzLyZwaIy1PyGK");'>Sins prayer fav</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6aF7858-IVFsM9MpYiC3sHC");'>Sins prayer insomnia</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6a__6-jtxoEmqStfDETAj21");'>Sins deliverance w teachings too</a></li>
