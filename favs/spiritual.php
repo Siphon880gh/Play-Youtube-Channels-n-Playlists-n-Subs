@@ -15,6 +15,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6arBn4X72pJGYbPc6CIZDVS");'>Sxy Str MV</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6asto33Xtovd4vvnZku-UrC");'>Sleep: Yawning is contagious</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6a4Nd9lixatDBgpQ2igyzwi");'>Effectiveness</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6ZxIHsGHL21rGYk4J5W8-0Q");'>Misc: Nofap</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6ZywR0RV2Qb_Ioycr0Kt3Ri");'>NLP</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6aIplM6VEtNHYPzwJjpHxFZ");'>NLP do music</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6YX5IsEVSBfIcn77PwoNGAj");'>NLP release trauma</a></li>
