@@ -30,6 +30,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6Y8WLVbM7zI0KlES0srqXpu");'>Sins teachings - Consistent</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6bU8NALCZEMooUeRQZ6fbeo");'>Sins teaching insomnia</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6Y9ld1st3TTi4KVg6bESniZ");'>Sins testimonies</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUUFfRr75RtMmT3ArGNZeZgg");'>[Sins testimonies] Precious Testimonies</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6aeGX5E4gisCapdbxrx1fIW");'>Sins verses sleep</a></li>
   </ul>
   </ul>

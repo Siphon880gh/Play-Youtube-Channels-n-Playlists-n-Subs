@@ -26,6 +26,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUWGmhDFi3fB5DA1nuVRsPIQ");'>[Comedy] Reactistan</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUhQvODKsbmt-A8bgLauCMqA");'>[Comedy] Steezy Kane</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUvkdpLN1agXoiRWEWTtXqjw");'>[Comedy] TopNotch Idiots</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUGe_v1bnmWI0QBoK1ArnLmg");'>[Conspiracy.Theories\Christian] Spencer Smith (Propaganda)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6aMazn2DAMV-mscaVPONISA");'>[Concentration] ~Coding music</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda");'>[Concentration] ~Busy Background</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUQMyhrt92_8XM0KgZH6VnRg");'>[Curiosity\business] Company Man</a></li>
@@ -82,7 +83,9 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUmTe0LsfEbpkDpgrxKAWbRA");'>[Fitness\Physical.Therapy] Bob & Brad</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6YF7gunvezRd6wB5loe_giG");'>[GF] Relationships</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PL7267CDBCFA3172CE");'>[GF] Relationships - Body Language</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLQe_V3YvF4f22hwm8afYk8ING5BTLt9Or");'>[Entertainment\Anime] UnrealEntGaming Super Dragonball</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUgIqhB8oD5SZ0yUSp71VCOQ");'>[Entertainment\Anime] Geekdom101</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLQe_V3YvF4f22hwm8afYk8ING5BTLt9Or");'>[Entertainment\Anime] UnrealEntGaming</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UU3WGuV8xgGZAk2B2itJqgDg");'>[Entertainment\Films] Let Me Explain</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLs1-UdHIwbo497viX2cCYHUNVBsORkhbl");'>[Entertainment\Videogames] Playthrough: Call of Duty WW2</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLR2vpfke_UnB6o0t0bpiZo3wuUg0ql1pK");'>[Entertainment\Videogames] Playthrough: Half Life 1</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLj_Goi54wf0d2xk_aLt-cFer_XTqI4qaN");'>[Entertainment\Videogames] Playthrough: Half Life 2</a></li>
@@ -95,6 +98,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PL_sYhAj0WXRM_YCtn-d-RAh__2lNr-5ny");'>[Entertainment\Videogames] Playthrough: Zelda Skyward Sword </a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLFdQ3YMJDN9itelE3ZIIpsP0lPCuUWxtC");'>[Entertainment\Videogames] Playthrough: Zelda Twilight Princess</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PL_lABM4PHKBKFfw25CMPWmsQYKtT2wDzx");'>[Entertainment\Videogames] Playthrough: Zelda Wind Waker</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLQe_V3YvF4f22hwm8afYk8ING5BTLt9Or");'>[Entertainment\Videogames] Topics: Zeltik</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6Z3jwM_jYHoi40AMhPUeU7_");'>[Music] ~Intense</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6ZiXxYJant9PXtY9AB4aaJ4");'>[Music] ~Music Theory</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUDsYDtM5BNXz-6OzZlad4ew");'>[Music]  Video Mashup - Lana Del Rey 1</a></li>
@@ -102,6 +106,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("OLAK5uy_kcWikwwjbRJpEMOxujPqJHwhTyUKz4GGY");'>[Music] Bebe Rexha</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("OLAK5uy_lYY8Ips3wSdyDYyemlb_1xBvFCgLLd-YQ");'>[Music] Dua Lipa</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUi8e0iOVk1fEOogdfu4YgfA");'>[Movies] Movieclips Trailers</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUT0dmfFCLWuVKPWZ6wcdKyg");'>[Opinion/Doc] James Jani</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUr0XW6TU9XVWlWPpEwEyf3g");'>[Opinion] Jamari</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUoLUji8TYrgDy74_iiazvYA");'>[Opinion] Jarvis Johnson</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUyhOl6uRlxryALlT5yifldw");'>[Opinion] J.J. McCullough</a></li>
@@ -109,6 +114,19 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUq6VFHwMzcMXbuKyG7SQYIg");'>[Opinion] penguinz0</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUlFSU9_bUb4Rc6OYfTt5SPw");'>[Opinion] Philip DeFranco</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUtMVHI3AJD4Qk4hcbZnI9ZQ");'>[Opinion] SomeOrdinaryGamers</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUn8OYopT9e8tng-CGEWzfmw ");'>[Paranormal/Mysteries] Atrocity Guide</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUpFFItkfZz1qz5PpHpqzYBw");'>[Paranormal/Mysteries] Nexpo</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUiEK-SwMjiYsiWzXvOKqKdg ");'>[Paranormal] AmysCrypt</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUsggmbrFzu-ibXcSbMl4e6Q");'>[Paranormal] Franko TV</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUbAoEIuTWHuYCqv-Py6ZzQg ");'>[Paranormal] Glowing Ghost Paranormal (Michael Scot)</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUtPrkXdtCM5DACLufB9jbsA");'>[Paranormal] Mr Ballen</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUnM02drQP-dF7WMgtJHR4Xw");'>[Paranormal] Mr Nightmare</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UU7xm1xzLyrcJgWUX2cqKGQw");'>[Paranormal] ParaBreakdown</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUGgdhMFHiKym-z4G7IB4BYw ");'>[Paranormal] Sir spooks</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUYaPVYvW8-re6XQA00EGxkg ");'>[Paranormal] The Haunted Side</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUsSRxYAK0PiA7d0XUR6sPFA");'>[Paranormal] The Paranormal Files</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUfj9TK1mhbIWpcmP5rcIfYQ");'>[Paranormal] The Paranormal Scholar</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUja26BEv6YUHC2QLShBdt8w");'>[Paranormal] Huff Paranormal</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUzQUP1qoWDoEbmsQxvdjxgQ");'>[Podcast] Joe Rogan</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUnxGkOGNMqQEUMvroOWps6Q");'>[Podcast] Joe Rogan (JRE Clips)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUBNG0osIBAprVcZZ3ic84vw");'>[Scams] Jim Browning</a></li>
@@ -122,6 +140,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUJb5MIGYcoXHKqMtom0kfhw");'>[Travel\local] Bert Isobe</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UU-EwLNFl_BETcI1naM_6FcQ");'>[Travel\local] CA Travel Tips</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUWdcosWNz26bf9Jri8DTnow");'>[Travel\local] Christophe Choo</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUw8_bi1G4duPevdfktipGOA");'>[Travel\local] Yellow Productions</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUKr68ZJ4vv6VloNdnS2hjhA");'>[Travel\global] Harald Baldr</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUpQu57KgT7gOoLCAu3FFQsA");'>[Travel\global] Voice of North Korea</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUyEd6QBSgat5kkC6svyjudA");'>[Travel\food] Mark Wiens</a></li>
