@@ -1,5 +1,7 @@
 <script>var prependPath="../";</script>
 <?php $prependPath="../"; ?>
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <link href="<?php echo $prependPath; ?>assets/css/favs.css" rel="stylesheet"></link>
 <script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
 <?php include($prependPath."assets/templates/favs.php"); ?>

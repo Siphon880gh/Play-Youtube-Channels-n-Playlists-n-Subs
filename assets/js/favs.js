@@ -31,9 +31,8 @@ class More { // static
   class ManualPlaylist {
     constructoor() { }
     prompt() {
-      var p = prompt("Enter a playlist ID:");
-      if(p && p.length)
-        window.parent.urlChange.playlist(p);
+      // debugger;
+      $(window.parent.document).find("#modal-override-playlist-id").modal("show");
     } // prompt
   }
   ManualPlaylist = new ManualPlaylist();

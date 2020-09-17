@@ -20,6 +20,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     
     <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
     <link rel="stylesheet" href="assets/css/index.css">
     
@@ -120,6 +121,34 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     <div id="discover-more">
         Discover new channels with: <a href="http://randomyt.com" target="_blank">RandomYt</a>.
     </div>
+
+    <script>
+    function overridePlaylistId() {
+        var newPlaylistId = $('#overridePlaylistId').val();
+        if(newPlaylistId.length) window.parent.urlChange.playlist(newPlaylistId);
+    }
+    </script>
+
+    <!-- Modal -->
+    <div id="modal-override-playlist-id" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+        
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">×</button>
+            <h4 class="modal-title">Test out playlist ID</h4>
+            </div>
+            <div class="modal-body" style="text-align:left;">
+                <input id="overridePlaylistId" type="text" style="margin-right:10px;"></input>
+                <button type="button" class="btn btn-primary" onclick="overridePlaylistId()">Run</button>
+            <div class="modal-footer" style="margin-top:10px;">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+        </div>
+    </div> <!-- /Modal -->
 
     <script>
     /** 
