@@ -9,8 +9,12 @@
 <div id="favs">
   <div class="header">
     <a href="javascript:void(0);" onclick="More.count();">Watch videos from Youtube channels:</a>
-    <i class="fa fa-cloud-download-alt clickable float-right" onclick="ManualPlaylist.prompt();"></i>
-  </div>
+    <div class="float-right" style="padding-right: 5px;">
+      <i class="fa fa-random clickable" onclick="RandomPlaylist.select();" style="margin-left:3px;"></i>
+      <div style="width:1px; height:10px;"></div>
+      <i class="fa fa-cloud-upload-alt clickable" onclick="ManualPlaylist.prompt();"></i>
+    </div> <!-- /float-right -->
+  </div> <!-- /header -->
   <ul>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UU4HG-iZ6MwZsuL6k2FWXUdw");'>Sins deliverance - MrPastor77 (Unowned)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6Yjk1EpEF-C_W2QsIuwTkMh");'>Sins deliverance (Latin)</a></li>

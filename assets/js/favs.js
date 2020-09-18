@@ -31,8 +31,17 @@ class More { // static
   class ManualPlaylist {
     constructoor() { }
     prompt() {
-      // debugger;
       $(window.parent.document).find("#modal-override-playlist-id").modal("show");
     } // prompt
   }
   ManualPlaylist = new ManualPlaylist();
+
+  class RandomPlaylist {
+    constructor() { }
+    select() {
+      var count = $("li").length;
+      var randomPlaylist = parseInt(Math.random() * (count + 1));
+      $("li").eq(randomPlaylist).find("a").click();    
+    } // select
+  } // RandomPlaylist
+  RandomPlaylist = new RandomPlaylist();
