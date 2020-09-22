@@ -130,8 +130,8 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     </script>
 
     <!-- Modal -->
-    <div id="modal-override-playlist-id" class="modal fade" role="dialog">
-        <div class="modal-dialog">
+    <div id="modal-override-playlist-id" class="modal modal-sm fade" style="left: 50%; transform: translateX(-50%); top:50%; translateY(-40%);>
+        <div class="modal-dialog-off">
         
         <!-- Modal content-->
         <div class="modal-content">
@@ -142,9 +142,9 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
             <div class="modal-body" style="text-align:left;">
                 <input id="overridePlaylistId" type="text" style="margin-right:10px;"></input>
                 <button type="button" class="btn btn-primary" onclick="overridePlaylistId()">Run</button>
-            <div class="modal-footer" style="margin-top:10px;">
+            <!-- <div class="modal-footer" style="margin-top:10px;">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
+            </div> -->
         </div>
 
         </div>
