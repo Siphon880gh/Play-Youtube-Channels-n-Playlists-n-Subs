@@ -87,6 +87,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUmTe0LsfEbpkDpgrxKAWbRA");'>[Fitness\Physical.Therapy] Bob & Brad</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6YF7gunvezRd6wB5loe_giG");'>[GF] Relationships</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PL7267CDBCFA3172CE");'>[GF] Relationships - Body Language</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUtQEjfEFzba37ozoXK40r3w");'>[GF] Relationships - Lifestyle (How to Beast)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUgIqhB8oD5SZ0yUSp71VCOQ");'>[Entertainment\Anime] Geekdom101</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLQe_V3YvF4f22hwm8afYk8ING5BTLt9Or");'>[Entertainment\Anime] UnrealEntGaming</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UU3WGuV8xgGZAk2B2itJqgDg");'>[Entertainment\Films] Let Me Explain</a></li>
@@ -96,6 +97,10 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLMBYlcH3smRzz8VqMEUO2i9Vu3ynWAkQ0");'>[Entertainment\Videogames] Playthrough: God of War</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLAnfG6CHIYjwTwqSJgWMFktc6Xo1VxJ8B");'>[Entertainment\Videogames] Playthrough: Halo 2</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLAnfG6CHIYjx8Da2Aw1q0hbhuKE3pbQYz");'>[Entertainment\Videogames] Playthrough: Halo Combact Evolved</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLRQGRBgN_EnoYweXHskEkO6PwgQmUF5HF");'>[Entertainment\Videogames] Playthrough: Super Mario 64 (GameGrumps)</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLRQGRBgN_EnrnYydSvpPryrXOII-bJNMp");'>[Entertainment\Videogames] Playthrough: Super Mario Galaxy (GameGrumps)</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PL57hJfweW_2s1aLE9WtLCzKAAWWK0VJeH");'>[Entertainment\Videogames] Playthrough: Super Mario RPG</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLRQGRBgN_Enq2ZCxRmlhO0QGHqEFe7VnZ");'>[Entertainment\Videogames] Playthrough: Super Mario Sunshine (GameGrumps)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PL-7t9DoIELCQPdyHZAy5xdfDXM6HDpEkv");'>[Entertainment\Videogames] Playthrough: Super Mario Odyssey</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6YbtfGkRpvwToPqZe9ZzQF_");'>[Entertainment\Videogames] Playthrough: Zelda ~Romhacks</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLFdQ3YMJDN9jbWIFvmjgvolBLieiUkP2o");'>[Entertainment\Videogames] Playthrough: Zelda Breath of the Wild</a></li>
@@ -111,9 +116,11 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("OLAK5uy_lYY8Ips3wSdyDYyemlb_1xBvFCgLLd-YQ");'>[Music] Dua Lipa</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUi8e0iOVk1fEOogdfu4YgfA");'>[Movies] Movieclips Trailers</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUT0dmfFCLWuVKPWZ6wcdKyg");'>[Opinion/Doc] James Jani</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUhc-m3saf8K2oJHDSsnsj_A");'>[Opinion] Elvis The Alien</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUr0XW6TU9XVWlWPpEwEyf3g");'>[Opinion] Jamari</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUoLUji8TYrgDy74_iiazvYA");'>[Opinion] Jarvis Johnson</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUyhOl6uRlxryALlT5yifldw");'>[Opinion] J.J. McCullough</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUhhyfYkhuVrzmvDr-WqpDSw");'>[Opinion] Not Even Emily</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUittVh8imKanO_5KohzDbpg");'>[Opinion] Paul Joseph Watson (Propaganda)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUq6VFHwMzcMXbuKyG7SQYIg");'>[Opinion] penguinz0</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUlFSU9_bUb4Rc6OYfTt5SPw");'>[Opinion] Philip DeFranco</a></li>

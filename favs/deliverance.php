@@ -31,8 +31,9 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6aF7858-IVFsM9MpYiC3sHC");'>Sins prayers \ insomnia</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6Y5tIujyeA3i6QT5iq4Zv-U");'>Sins prayers \ warfare</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6YoNIlCtd3CzOWy_iZpoOb8");'>Sins teachings</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUxsG-yjeM5dH_YOHpKqXDmg");'>Sins teachings (Doreen Virtue)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6Y8WLVbM7zI0KlES0srqXpu");'>Sins teachings - Consistent</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6bU8NALCZEMooUeRQZ6fbeo");'>Sins teaching insomnia</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6bU8NALCZEMooUeRQZ6fbeo");'>Sins teaching - Insomnia</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6Y9ld1st3TTi4KVg6bESniZ");'>Sins testimonies</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("UUUFfRr75RtMmT3ArGNZeZgg");'>[Sins testimonies] Precious Testimonies</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist("PLzg85AHZsA6aeGX5E4gisCapdbxrx1fIW");'>Sins verses sleep</a></li>
