@@ -9,10 +9,10 @@
 <div id="favs">
   <div class="header">
     <a href="javascript:void(0);" onclick="More.count();">Watch videos from Youtube channels:</a>
-    <div class="float-right" style="padding-right: 5px;">
-      <i class="fa fa-random clickable" onclick="RandomPlaylist.select();" style="margin-left:3px;"></i>
+    <div class="float-right float-right-buttons" style="padding-right: 5px;">
+      <i id="random" class="fa fa-random clickable" onclick="RandomPlaylist.select();" style="margin-left:3px;"></i>
       <div style="width:1px; height:10px;"></div>
-      <i class="fa fa-cloud-upload-alt clickable" onclick="ManualPlaylist.prompt();"></i>
+      <i id="manual" class="fa fa-cloud-upload-alt clickable" onclick="ManualPlaylist.prompt();"></i>
     </div> <!-- /float-right -->
   </div> <!-- /header -->
   <ul>

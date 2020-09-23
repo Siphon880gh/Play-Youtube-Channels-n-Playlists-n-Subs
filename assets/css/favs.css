@@ -7,7 +7,6 @@ body{
     user-select: none;
 }
 #favs, #modal-more {
-    width: 512px;
     padding: 5px;
 }
 #modal-more {
@@ -44,19 +43,19 @@ body{
 a:visited {
     color: blue;
 }
-body {
-    margin-top:30px;
-}
 .fade {
     display: none;
 }
-.float-right {
-    float: right;
-}
 .clickable {
-    color: blue;
+    color: blue !important;
     cursor: pointer;
 }
 .clickable:hover {
     color: red;
+}
+.float-right {
+    float: right;
+}
+.float-right-buttons {
+    display: none;
 }

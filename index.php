@@ -21,6 +21,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="assets/js/favs.js"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
     <link rel="stylesheet" href="assets/css/index.css">
     
@@ -109,15 +110,27 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
 
 </head>
   <body>
+    <!-- <div style="padding-right: 5px; position:fixed; font-size: 4rem; top: 41px; right: 15px;">
+        <a id="random" class="fa fa-random clickable" onclick='$("#favs-wrapper iframe").contents().find("#random").click();' style="margin-left:3px;"></a>
+        <div style="width:1px; height:20px;"></div>
+        <a id="manual" class="fa fa-cloud-upload-alt clickable" onclick='$("#favs-wrapper iframe").contents().find("#manual").click();'></a>
+    </div> -->
+
     <div id="player"></div>
     <div class="spacer-v"></div>
     <div id="app-desc">By Weng. Play youtube videos from favorited channels and playlists in order or randomly. You can fit the video to the window so you can watch on one part of the screen. As an advance internet user, you can place a playlist ID in the URL param as <code>?playlistId=...</code> or start the playlist at a song position with the URL param like <code>&playlistStart=1</code>. As a developer, you can add more favorite channels or playlists at favs.php.</div>
     <div id="buttons">
         <button class="btn btn-default btn-sm" onclick="urlChange.start('RANDOM');"><i class="fa fa-random"></i> Next random</button>
         <button id="most-recent" class="btn btn-default-off btn-sm" onclick="urlChange.start(1); $(this).addClass('active');"><i class="fa fa-list-ol"></i> Most recent</button>
-        <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();"><i class="fa fa-maximize"></i> Fit Video</button>
+        <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();"><i class="fa fa-maximize"></i> Fit Video</button></br>
+        <div style="width:1px; height:10px;"></div>
+        <button onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable" style="margin-left:3px;"></i><span>&nbsp;Random playlist</span></button>
+        <button onclick='$("#favs-wrapper iframe").contents().find("#manual").click();'><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Override playlist ID</span></button>
     </div>
-    <div id="favs-wrapper"></div>
+
+    </div>
+    <div id="favs-wrapper" style="width:512px;">
+    </div>
     <div id="discover-more">
         Discover new channels with: <a href="http://randomyt.com" target="_blank">RandomYt</a>.
     </div>
@@ -137,11 +150,12 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
         <div class="modal-content">
             <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">×</button>
-            <h4 class="modal-title">Test out playlist ID</h4>
+            <h4 class="modal-title">Override playlist ID</h4>
             </div>
             <div class="modal-body" style="text-align:left;">
-                <input id="overridePlaylistId" type="text" style="margin-right:10px;"></input>
+                <input id="overridePlaylistId" type="text" style="margin-right:10px; margin-bottom:10px;"></input>
                 <button type="button" class="btn btn-primary" onclick="overridePlaylistId()">Run</button>
+                <span style="clear:both;"></span>
             <!-- <div class="modal-footer" style="margin-top:10px;">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div> -->
