@@ -20,6 +20,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUyUvbIeYILB4_HL5D0PWBUA'>[Cars] Worthless Whips</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUK7IIV6Q2junGSdYK3BmZMg'>[Celebs] TMZ</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU8OJagbECdNfwOpAxHPxSgg'>[Comedy] Cassady Campbell</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUcoDpbA4c9HQY0AjKHSlKLg'>[Comedy] Cer Spence</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUPHeAtHSXnymNh8b_Kkj2rw'>[Comedy] Cherdleys</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU7zsxKqd5MicTf4VhS9Y74g'>[Comedy] Kurtis Conner</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUR0VLWitB2xM4q7tjkoJUPw'>[Comedy] Creations Ross</a></li>
@@ -76,10 +77,13 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLMBYlcH3smRzz8VqMEUO2i9Vu3ynWAkQ0'>[Entertainment\Videogames] Playthrough: God of War</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLAnfG6CHIYjwTwqSJgWMFktc6Xo1VxJ8B'>[Entertainment\Videogames] Playthrough: Halo 2</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLAnfG6CHIYjx8Da2Aw1q0hbhuKE3pbQYz'>[Entertainment\Videogames] Playthrough: Halo Combact Evolved</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLRQGRBgN_EnoYweXHskEkO6PwgQmUF5HF'>[Entertainment\Videogames] Playthrough: Super Mario 64 (GameGrumps)</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLRQGRBgN_EnrnYydSvpPryrXOII-bJNMp'>[Entertainment\Videogames] Playthrough: Super Mario Galaxy (GameGrumps)</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLkR3RWLcKJUQxM_1P5fBuIzo51njAG1pV'>[Entertainment\Videogames] Paper Mario: Color Splash</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLkR3RWLcKJUTtbcVGfBfZi7Z4UvY7BZSv'>[Entertainment\Videogames] Paper Mario: Sticker Star</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLkR3RWLcKJUQWf9JidznuOIvMWIBHmF2v'>[Entertainment\Videogames] Playthrough: Super Mario 64</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLkR3RWLcKJUTBMe6blf5YMaU2DhdtF4Iv'>[Entertainment\Videogames] Playthrough: Super Mario Galaxy</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PL_sYhAj0WXROScbAOakRhAsINVoa9sSmh'>[Entertainment\Videogames] Playthrough: Super Mario Galaxy 2</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PL57hJfweW_2s1aLE9WtLCzKAAWWK0VJeH'>[Entertainment\Videogames] Playthrough: Super Mario RPG</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLRQGRBgN_Enq2ZCxRmlhO0QGHqEFe7VnZ'>[Entertainment\Videogames] Playthrough: Super Mario Sunshine (GameGrumps)</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLkR3RWLcKJUSMTYZ3NAXVCk4S3PflWaVf'>[Entertainment\Videogames] Playthrough: Super Mario Sunshine</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PL-7t9DoIELCQPdyHZAy5xdfDXM6HDpEkv'>[Entertainment\Videogames] Playthrough: Super Mario Odyssey</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6YbtfGkRpvwToPqZe9ZzQF_'>[Entertainment\Videogames] Playthrough: Zelda ~Romhacks</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLFdQ3YMJDN9jbWIFvmjgvolBLieiUkP2o'>[Entertainment\Videogames] Playthrough: Zelda Breath of the Wild</a></li>
@@ -128,6 +132,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUq6VFHwMzcMXbuKyG7SQYIg'>[Opinion] penguinz0</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUlFSU9_bUb4Rc6OYfTt5SPw'>[Opinion] Philip DeFranco</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUtMVHI3AJD4Qk4hcbZnI9ZQ'>[Opinion] SomeOrdinaryGamers</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU3jdnIP2u5hCJpVZ-TuDrCg'>[Opinion\Memes] Whang!</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUn8OYopT9e8tng-CGEWzfmw '>[Paranormal/Mysteries] Atrocity Guide</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUpFFItkfZz1qz5PpHpqzYBw'>[Paranormal/Mysteries] Nexpo</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUiEK-SwMjiYsiWzXvOKqKdg '>[Paranormal] AmysCrypt</a></li>
@@ -143,6 +148,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUja26BEv6YUHC2QLShBdt8w'>[Paranormal] Huff Paranormal</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUzQUP1qoWDoEbmsQxvdjxgQ'>[Podcast] Joe Rogan</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUnxGkOGNMqQEUMvroOWps6Q'>[Podcast] Joe Rogan (JRE Clips)</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUeR0n8d3ShTn_yrMhpwyE1Q'>[Reviews\Food] TheReportOfTheWeek aka ReviewBrah</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUBNG0osIBAprVcZZ3ic84vw'>[Scams] Jim Browning</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6Z8EmcIryHG8yM7_qvkFCXE'>[Sleep] Boring</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6asto33Xtovd4vvnZku-UrC'>[Sleep] Yawning</a></li>
