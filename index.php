@@ -3,7 +3,7 @@
 // Dua Lipa old music: OLAK5uy_n1RTVv-lJ6-4DjJmFUfF_MoRevOeYTM4Q
 // Bebe Rexha old music: OLAK5uy_mc7x6vdCJWUpWXeF6NEY1ljjfwXoG18do
 // RandomYt: PLJMMfLBtUHMlUCynG24upluI_pE9WFlII
-$defaultPlaylistId = "OLAK5uy_lYY8Ips3wSdyDYyemlb_1xBvFCgLLd-YQ";
+$defaultPlaylistId = "UU-J-KZfRV8c13fOCkhXdLiQ";
 $playlistId = isset($_GET["playlistId"]) && strlen($_GET["playlistId"]) ? $_GET["playlistId"] : $defaultPlaylistId;
 
 if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) ) {
@@ -106,6 +106,26 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
         setInterval(refitVideoPrn, 1000);
 
     }); // on doc ready
+
+    function openNextPlaylist() {
+        var searchParams = (new URLSearchParams(window.location.search));
+        var nextPlaylistId = searchParams.get("playlistId");
+
+        if(nextPlaylistId!==null) {
+            var $a = $("#favs-wrapper iframe").contents().find(`[data-playlist-id='${nextPlaylistId}']`);
+            $b = $a.closest("li")
+                .next("li")
+                .find("a:nth-child(1)");
+
+            $b.click();
+            // debugger;
+        } else {
+            var $a = $("#favs-wrapper iframe").contents().find(`[data-playlist-id]`).first();
+            searchParams.set("playlistId", $a.data("playlist-id"));
+            var urlTrailing = searchParams.toString();
+            window.location.search = urlTrailing;
+        }
+    }
     </script>
 
 </head>
@@ -125,6 +145,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
         <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();"><i class="fa fa-maximize"></i> Fit Video</button></br>
         <div style="width:1px; height:10px;"></div>
         <button onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable" style="margin-left:3px;"></i><span>&nbsp;Random playlist</span></button>
+        <button onclick='openNextPlaylist()'><i id="random" class="fa fa-random clickable" style="margin-left:3px;"></i><span>&nbsp;Next playlist</span></button>
         <button onclick='$("#favs-wrapper iframe").contents().find("#manual").click();'><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Override playlist ID</span></button>
     </div>
 
