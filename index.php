@@ -8,7 +8,7 @@ $playlistId = isset($_GET["playlistId"]) && strlen($_GET["playlistId"]) ? $_GET[
 
 if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) ) {
     $num = intval($_GET["playlistStart"]);
-    if($num<=2) $playlistStartIndex=1; // Workaround API glitch: index 2 is consistently playing the third spot.negative number plays #1
+    if($num<=2) $playlistStartIndex=-1;
     else $playlistStartIndex = $_GET["playlistStart"];
 }
 ?>
