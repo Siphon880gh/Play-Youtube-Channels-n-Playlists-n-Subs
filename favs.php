@@ -31,6 +31,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUWGmhDFi3fB5DA1nuVRsPIQ'>[Comedy] Reactistan</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUhQvODKsbmt-A8bgLauCMqA'>[Comedy] Steezy Kane</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUvkdpLN1agXoiRWEWTtXqjw'>[Comedy] TopNotch Idiots</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUp5x5kxCgg_A220jNIsLyfA'>[Conspiracy.Theories\Christian] A Call for an Uprising (Propaganda)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUo8fiE2-s0SZu6Onb8lNLMQ'>[Conspiracy.Theories\Christian] Scariest Movie Ever (Propaganda)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUGe_v1bnmWI0QBoK1ArnLmg'>[Conspiracy.Theories\Christian] Spencer Smith (Propaganda)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6aMazn2DAMV-mscaVPONISA'>[Concentration] ~Coding music</a></li>
@@ -57,7 +58,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUYUunpzH7_WtYwvss2Ja9GQ'>[Curiosity\reddit] Storytime with Reddit</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUegtkvhLG9XYzWfRR99ateQ'>[Curiosity\reddit] Updoot</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUC552Sd-3nyi_tk2BudLUzA'>[Curiosity\science] AsapScience</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUV3Nm3T-XAgVhKH9jT0ViRg '>[Curiosity\topics] AJ+</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUV3Nm3T-XAgVhKH9jT0ViRg'>[Curiosity\topics] AJ+</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUyy7dZhgfeMMctSoo3wDXlQ'>[Curiosity\videogames] Thomas Game Docs</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUeTTmfuH2CbbBHWLiyrNsuQ'>[Education\medical] AllNursingNotes</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6b9rFWGl5vOwkG5m6imCkwX'>[Education\medical] CCRN Disks</a></li>
@@ -72,6 +73,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUgIqhB8oD5SZ0yUSp71VCOQ'>[Entertainment\Anime] Geekdom101</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLQe_V3YvF4f22hwm8afYk8ING5BTLt9Or'>[Entertainment\Anime] UnrealEntGaming</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU3WGuV8xgGZAk2B2itJqgDg'>[Entertainment\Films] Let Me Explain</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUfwE_ODI1YTbdjkzuSi1Nag'>[Entertainment\Topics] The Quartering</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLs1-UdHIwbo497viX2cCYHUNVBsORkhbl'>[Entertainment\Videogames] Playthrough: Call of Duty WW2</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLR2vpfke_UnB6o0t0bpiZo3wuUg0ql1pK'>[Entertainment\Videogames] Playthrough: Half Life 1</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLj_Goi54wf0d2xk_aLt-cFer_XTqI4qaN'>[Entertainment\Videogames] Playthrough: Half Life 2</a></li>
@@ -86,6 +88,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PL57hJfweW_2s1aLE9WtLCzKAAWWK0VJeH'>[Entertainment\Videogames] Playthrough: Super Mario RPG</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLkR3RWLcKJUSMTYZ3NAXVCk4S3PflWaVf'>[Entertainment\Videogames] Playthrough: Super Mario Sunshine</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PL-7t9DoIELCQPdyHZAy5xdfDXM6HDpEkv'>[Entertainment\Videogames] Playthrough: Super Mario Odyssey</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6aglhKWjYkDFci7FwrBpYJP'>[Entertainment\Videogames] Playthrough: Torchlight 2</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6YbtfGkRpvwToPqZe9ZzQF_'>[Entertainment\Videogames] Playthrough: Zelda ~Romhacks</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLFdQ3YMJDN9jbWIFvmjgvolBLieiUkP2o'>[Entertainment\Videogames] Playthrough: Zelda Breath of the Wild</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLB4973D517836D290'>[Entertainment\Videogames] Playthrough: Zelda Ocarina of Time</a></li>
@@ -115,11 +118,14 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6YF7gunvezRd6wB5loe_giG'>[GF] Relationships</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PL7267CDBCFA3172CE'>[GF] Relationships - Body Language</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUtQEjfEFzba37ozoXK40r3w'>[GF] Relationships - Lifestyle (How to Beast)</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU3gWv-0A3qEeFBJESlsJa0g'>[Motivation] HES Motivation</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUrTlvJkxo5LmCvwz8k3aXLA'>[Motivation\Workout] Beast Motivation</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUNMJLu39B4DPjSM_USGYTUw'>[Motivation\Workout] Alpha Motivation</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6Z3jwM_jYHoi40AMhPUeU7_'>[Music] ~Intense</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6ZiXxYJant9PXtY9AB4aaJ4'>[Music] ~Music Theory</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUDsYDtM5BNXz-6OzZlad4ew'>[Music] Video Mashup - Lana Del Rey 1</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUpqUuir75c-fuyvpMvyxbqQ'>[Music] Video Mashup - Lana Del Rey 2</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU5-gWZXAQqSGVfPHkA7NRiQ'>[Music] Bebe Rexha</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='TLGGWLdBE4woWqEwNTEwMjAyMA'>[Music] Bebe Rexha</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLUBfAAO0X0TfEgkI6c-nS8vcJ5UDiFnKI'>[Music] Halsey</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU-J-KZfRV8c13fOCkhXdLiQ'>[Music] Dua Lipa</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUi8e0iOVk1fEOogdfu4YgfA'>[Movies] Movieclips Trailers</a></li>
