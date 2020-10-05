@@ -85,13 +85,6 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
         tag.id = "favs";
         document.getElementById("favs-wrapper").append( tag );
 
-
-        // On resize
-        // $(window).on("resize", (refitVideoPrn)=> {
-        // });
-        // setTimeout(refitVideoPrn, 1000);
-
-
         function refitVideoPrn() {
             // criteria met
             var isVideoHeightTooLargeForWindow = window.innerHeight < $("#player").height();
@@ -200,36 +193,41 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
 
     // 3. This function creates an <iframe> (and YouTube player)
     //    after the API code downloads.
+    var youtubeAPI = `
     function onYouTubeIframeAPIReady() {
-            var player = new YT.Player("player", {
-                height: '390',
-                width: '640',
-                playerVars: {
-                    playsinline: 1,
-                    // allowsInlineMediaPlayback: true,
-                    listType:'playlist',
-                    list:'<?php echo $playlistId; ?>',
-                    <?php echo isset($playlistStartIndex)?"index:$playlistStartIndex,\n":""; ?>
-                    autoplay: 1,
-                },
-                events: {
-                    'onReady': function (event) {
-                        //event.target.cuePlaylist({list: "PLFgquLnL59anYA8FwzqNFMp3KMcbKwMaT"});
-                        //event.target.playVideo();
+        // var shuffling = <?php echo isset($playlistStartIndex)?"true":"false"; ?>;
+        var player = new YT.Player("player", {
+            height: '390',
+            width: '640',
+            playerVars: {
+                playsinline: 1,
+                // allowsInlineMediaPlayback: true,
+                listType:'playlist',
+                list:'<?php echo $playlistId; ?>',
+                <?php echo isset($playlistStartIndex)?"index:$playlistStartIndex,\n":""; ?>
+                autoplay: 1,
+            },
+            events: {
+                'onReady': function (event) {
+                    if(isShuffleMode()) {
+                        event.target.pauseVideo();
+                        setTimeout( function() { 
+                            event.target.setShuffle({'shufflePlaylist' : true}); 
+                            event.target.nextVideo();
+                            event.target.playVideo();
+                        }, 300);
+                    } // end isShuffleMode
+                } // end onReady
+            }
+        }); // end Init Youtube player
 
-                        if(isShuffleMode()) {
-                            event.target.mute();
-                            setTimeout( function() { 
-                                event.target.setShuffle(true); 
-                                event.target.setLoop(true);
-                                player.nextVideo();
-                                event.target.unMute();
-                            }, 100);
-                        }
-                    }
-                }
-            });
-    } // onYouTubeIframeAPIReady
+    } // end onYouTubeIframeAPIReady`;
+
+    console.log("Debug Youtube API: ", youtubeAPI);
+    console.log("Debug Youtube API: If random video is not working, check the API code. Maybe the API has changed/updated.");
+    console.log("Debug Youtube API: Reference is at https://developers.google.com/youtube/iframe_api_reference")
+
+    eval(youtubeAPI);
     </script>
   </body>
 </html>
