@@ -213,6 +213,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
                         event.target.pauseVideo();
                         setTimeout( function() { 
                             event.target.setShuffle({'shufflePlaylist' : true}); 
+                            event.target.setLoop(true); // if reaches end of playlist, can keep going
                             event.target.nextVideo();
                             event.target.playVideo();
                         }, 300);
