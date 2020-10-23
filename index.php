@@ -91,7 +91,6 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
             var isVideoWidthTooLargeForWindow = window.innerWidth < $("#player").width();
 
             if(isVideoHeightTooLargeForWindow || isVideoWidthTooLargeForWindow) {
-                // $("#fit-video").click();
                 $('#player').addClass('maximized');
                 console.log("Triggered refit");
             }
@@ -123,11 +122,6 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
 
 </head>
   <body>
-    <!-- <div style="padding-right: 5px; position:fixed; font-size: 4rem; top: 41px; right: 15px;">
-        <a id="random" class="fa fa-random clickable" onclick='$("#favs-wrapper iframe").contents().find("#random").click();' style="margin-left:3px;"></a>
-        <div style="width:1px; height:20px;"></div>
-        <a id="manual" class="fa fa-cloud-upload-alt clickable" onclick='$("#favs-wrapper iframe").contents().find("#manual").click();'></a>
-    </div> -->
 
     <div id="player"></div>
     <div class="spacer-v"></div>
@@ -170,9 +164,6 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
                 <input id="overridePlaylistId" type="text" style="margin-right:10px; margin-bottom:10px;"></input>
                 <button type="button" class="btn btn-primary" onclick="overridePlaylistId()">Run</button>
                 <span style="clear:both;"></span>
-            <!-- <div class="modal-footer" style="margin-top:10px;">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div> -->
         </div>
 
         </div>
