@@ -127,12 +127,13 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     <div class="spacer-v"></div>
     <div id="app-desc">By Weng. Play youtube videos from favorited channels and playlists in order or randomly. You can fit the video to the window so you can watch on one part of the screen. As an advance internet user, you can place a playlist ID in the URL param as <code>?playlistId=...</code> or start the playlist at a song position with the URL param like <code>&playlistStart=1</code>. As a developer, you can add more favorite channels or playlists at favs.php.</div>
     <div id="buttons">
-        <button class="btn btn-default btn-sm" onclick="urlChange.start('RANDOM');"><i class="fa fa-random"></i> Next random</button>
-        <button id="most-recent" class="btn btn-default-off btn-sm" onclick="urlChange.start(1); $(this).addClass('active');"><i class="fa fa-list-ol"></i> Most recent</button>
+        <button id="most-recent" class="btn btn-default btn-sm" onclick="urlChange.start(1); $(this).addClass('active');"><i class="fa fa-list-ol"></i> Most recent</button>
+        <button class="btn btn-default-off btn-sm" onclick="urlChange.start('RANDOM');"><i class="fa fa-random"></i> Next random</button>
         <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();"><i class="fa fa-maximize"></i> Fit Video</button></br>
         <div style="width:1px; height:10px;"></div>
-        <button onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable" style="margin-left:3px;"></i><span>&nbsp;Random playlist</span></button>
-        <button onclick='openNextPlaylist()'><i id="random" class="fa fa-random clickable" style="margin-left:3px;"></i><span>&nbsp;Next playlist</span></button>
+
+        <button class="btn btn-default" onclick='openNextPlaylist()'><i id="random" class="fa fa-random clickable" style="margin-left:3px;"></i><span>&nbsp;Next playlist</span></button>
+        <button class="btn btn-default" onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable" style="margin-left:3px;"></i><span>&nbsp;Random playlist</span></button>
         <button onclick='$("#favs-wrapper iframe").contents().find("#manual").click(); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);'><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Override playlist ID</span></button>
     </div>
 
