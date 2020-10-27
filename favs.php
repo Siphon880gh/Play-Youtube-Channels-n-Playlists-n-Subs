@@ -144,16 +144,16 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUtMVHI3AJD4Qk4hcbZnI9ZQ'>[Opinion] SomeOrdinaryGamers</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUJfJWct8jN1RpCuVWk3zHTA'>[Opinion\Memes] Daryl Talks Games</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU3jdnIP2u5hCJpVZ-TuDrCg'>[Opinion\Memes] Whang!</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUn8OYopT9e8tng-CGEWzfmw '>[Paranormal/Mysteries] Atrocity Guide</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUn8OYopT9e8tng-CGEWzfmw'>[Paranormal/Mysteries] Atrocity Guide</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUpFFItkfZz1qz5PpHpqzYBw'>[Paranormal/Mysteries] Nexpo</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUiEK-SwMjiYsiWzXvOKqKdg '>[Paranormal] AmysCrypt</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUiEK-SwMjiYsiWzXvOKqKdg'>[Paranormal] AmysCrypt</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUsggmbrFzu-ibXcSbMl4e6Q'>[Paranormal] Franko TV</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUbAoEIuTWHuYCqv-Py6ZzQg '>[Paranormal] Glowing Ghost Paranormal (Michael Scot)</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUbAoEIuTWHuYCqv-Py6ZzQg'>[Paranormal] Glowing Ghost Paranormal (Michael Scot)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUtPrkXdtCM5DACLufB9jbsA'>[Paranormal] Mr Ballen</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUnM02drQP-dF7WMgtJHR4Xw'>[Paranormal] Mr Nightmare</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU7xm1xzLyrcJgWUX2cqKGQw'>[Paranormal] ParaBreakdown</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUGgdhMFHiKym-z4G7IB4BYw '>[Paranormal] Sir spooks</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUYaPVYvW8-re6XQA00EGxkg '>[Paranormal] The Haunted Side</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUGgdhMFHiKym-z4G7IB4BYw'>[Paranormal] Sir spooks</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUYaPVYvW8-re6XQA00EGxkg'>[Paranormal] The Haunted Side</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUsSRxYAK0PiA7d0XUR6sPFA'>[Paranormal] The Paranormal Files</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUfj9TK1mhbIWpcmP5rcIfYQ'>[Paranormal] The Paranormal Scholar</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUja26BEv6YUHC2QLShBdt8w'>[Paranormal] Huff Paranormal</a></li>
