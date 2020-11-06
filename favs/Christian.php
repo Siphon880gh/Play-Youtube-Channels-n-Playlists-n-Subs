@@ -41,6 +41,8 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6Y9ld1st3TTi4KVg6bESniZ'>Sins testimonies</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUUFfRr75RtMmT3ArGNZeZgg'>[Sins testimonies] Precious Testimonies</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6aeGX5E4gisCapdbxrx1fIW'>Sins verses sleep</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUv9-3aFss806GZFxNoTVduQ'>[General teaching\Consistent] Marcus Rogers</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUMfVJ7yCHEvS9xnmu2-Fl_w'>[General teaching\Consistent] Revelations of Jesus Christ</a></li>
   </ul>
   </ul>
 </div>

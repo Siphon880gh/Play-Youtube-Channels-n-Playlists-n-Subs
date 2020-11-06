@@ -129,12 +129,12 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     <div id="buttons">
         <button id="most-recent" class="btn btn-default btn-sm" onclick="urlChange.start(1); $(this).addClass('active');"><i class="fa fa-list-ol"></i> Most recent</button>
         <button class="btn btn-default-off btn-sm" onclick="urlChange.start('RANDOM');"><i class="fa fa-random"></i> Next random</button>
-        <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();"><i class="fa fa-maximize"></i> Fit Video</button></br>
+        <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();" style="margin-top:5px;"><i class="fa fa-maximize"></i> Fit Video</button></br>
         <div style="width:1px; height:10px;"></div>
 
         <button class="btn btn-default" onclick='openNextPlaylist()'><i id="random" class="fa fa-random clickable" style="margin-left:3px;"></i><span>&nbsp;Next playlist</span></button>
-        <button class="btn btn-default" onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable" style="margin-left:3px;"></i><span>&nbsp;Random playlist</span></button>
-        <button onclick='$("#favs-wrapper iframe").contents().find("#manual").click(); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);'><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Override playlist ID</span></button>
+        <button class="btn btn-default" onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable" style="margin-left:3px; margin-top:5px;"></i><span>&nbsp;Random playlist</span></button>
+        <button onclick='$("#favs-wrapper iframe").contents().find("#manual").click(); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);' style="margin-top:5px;"><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Override playlist ID</span></button>
     </div>
 
     </div>
