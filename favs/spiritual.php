@@ -8,7 +8,18 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
 <div id="favs">
   <div class="header">
-    <a href="javascript:void(0);" onclick="More.count();">Watch videos from Youtube channels:</a>
+    <?php
+    /**
+     * @events
+     *
+     * Secret gesture on "Watch videos from Youtube channels"
+     * that opens more channel collections, including those
+     * that may be more personal. The combo here is
+     * click x2, then click-hold for 2 seconds
+     * 
+    */
+    ?>
+    <a href="javascript:void(0);" onclick="More.count();" onmousedown="More.start();" onmouseup="More.stop();">Watch videos from Youtube channels:</a>
     <div class="float-right float-right-buttons" style="padding-right: 5px;">
       <i id="random" class="fa fa-random clickable" onclick="RandomPlaylist.select();" style="margin-left:3px;"></i>
       <div style="width:1px; height:10px;"></div>
@@ -18,6 +29,7 @@
   <ul>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUnR2VoUqv9OF2oW4OmGZMzg'>ASMR: Etc</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6aXr7Ynil9HHLAxgQuTMqBP'>ASMR: Strght</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUlqNSqnWeOOUVkzcJFj4rBw'>ASMR: Tingting</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6arBn4X72pJGYbPc6CIZDVS'>Sxy Str MV</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6asto33Xtovd4vvnZku-UrC'>Sleep: Yawning is contagious</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6a4Nd9lixatDBgpQ2igyzwi'>Effectiveness</a></li>

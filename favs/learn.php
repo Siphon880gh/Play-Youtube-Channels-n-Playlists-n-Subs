@@ -8,7 +8,18 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
 <div id="favs">
   <div class="header">
-    <a href="javascript:void(0);" onclick="More.count();">Watch videos from Youtube channels:</a>
+    <?php
+    /**
+     * @events
+     *
+     * Secret gesture on "Watch videos from Youtube channels"
+     * that opens more channel collections, including those
+     * that may be more personal. The combo here is
+     * click x2, then click-hold for 2 seconds
+     * 
+    */
+    ?>
+    <a href="javascript:void(0);" onclick="More.count();" onmousedown="More.start();" onmouseup="More.stop();">Watch videos from Youtube channels:</a>
     <div class="float-right float-right-buttons" style="padding-right: 5px;">
       <i id="random" class="fa fa-random clickable" onclick="RandomPlaylist.select();" style="margin-left:3px;"></i>
       <div style="width:1px; height:10px;"></div>
@@ -44,10 +55,11 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUduKuJToxWPizJ7I2E6n1kA'>[Fitness] BroScienceLife</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUKf0UqBiCQI4Ol0To9V0pKQ'>[Fitness] Buff Dudes</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU_7lEuEKvFt63jtvZYwlHMQ'>[Fitness] Eugene Teo</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUXrqErU_TjqiHAHJkzITAvg'>[Fitness] Shredded Sports Science</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUg_tz2iw7_-gf2xIL-DdM2g'>[Fitness] Kali Muscle</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UULqH-U2TXzj1h7lyYQZLNQQ'>[Fitness] Greg Doucette</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU68TLK0mAEzUyHx5x5k-S1Q'>[Fitness] Jeff Nippard</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU1XHNZDn3btv7454Pkz7THg'>[Fitness] Scooby1961</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUXrqErU_TjqiHAHJkzITAvg'>[Fitness] Shredded Sports Science</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUCCbzhtMMAxjSBmfRvd-7yw'>[Fitness] Shytown Fitness</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU0ASolYU_Yh3yShLFQC0stg'>[Fitness] Strength Camp</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUwFplYvhHks5TV3bWxUrU9A'>[Fitness\Physical.Therapy] Back Intelligence</a></li>

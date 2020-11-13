@@ -8,7 +8,18 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
 <div id="favs">
   <div class="header">
-    <a href="javascript:void(0);" onclick="More.count();">Watch videos from Youtube channels:</a>
+    <?php
+    /**
+     * @events
+     *
+     * Secret gesture on "Watch videos from Youtube channels"
+     * that opens more channel collections, including those
+     * that may be more personal. The combo here is
+     * click x2, then click-hold for 2 seconds
+     * 
+    */
+    ?>
+    <a href="javascript:void(0);" onclick="More.count();" onmousedown="More.start();" onmouseup="More.stop();">Watch videos from Youtube channels:</a>
     <div class="float-right float-right-buttons" style="padding-right: 5px;">
       <i id="random" class="fa fa-random clickable" onclick="RandomPlaylist.select();" style="margin-left:3px;"></i>
       <div style="width:1px; height:10px;"></div>
@@ -16,7 +27,8 @@
     </div> <!-- /float-right -->
   </div> <!-- /header -->
   <ul>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU4HG-iZ6MwZsuL6k2FWXUdw'>Sins deliverance - MrPastor77 (Unowned)</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU7dZK1kpErY_9RHgLxzIoXg'>Sins deliverance - From Kick Devils Out</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU4HG-iZ6MwZsuL6k2FWXUdw'>Sins deliverance - From MrPastor77</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6Yjk1EpEF-C_W2QsIuwTkMh'>Sins deliverance (Latin)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6bX9jxGv3_1dg5opFKBjD6V'>Sins deliverance and prayers (energetic)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6a__6-jtxoEmqStfDETAj21'>Sins deliverance and teachings</a></li>
