@@ -118,7 +118,27 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
             var urlTrailing = searchParams.toString();
             window.location.search = urlTrailing;
         }
-    }
+    } // openNextPlaylist
+
+    function openPreviousPlaylist() {
+        var searchParams = (new URLSearchParams(window.location.search));
+        var nextPlaylistId = searchParams.get("playlistId");
+
+        if(nextPlaylistId!==null) {
+            var $a = $("#favs-wrapper iframe").contents().find(`[data-playlist-id='${nextPlaylistId}']`);
+            $b = $a.closest("li")
+                .prev("li")
+                .find("a:nth-child(1)");
+
+            $b.click();
+            // debugger;
+        } else {
+            var $a = $("#favs-wrapper iframe").contents().find(`[data-playlist-id]`).first();
+            searchParams.set("playlistId", $a.data("playlist-id"));
+            var urlTrailing = searchParams.toString();
+            window.location.search = urlTrailing;
+        }
+    } // openPreviousPlaylist
     </script>
 
 </head>
@@ -126,16 +146,32 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
 
     <div id="player"></div>
     <div class="spacer-v"></div>
-    <div id="app-desc">By Weng. Play youtube videos from favorited channels and playlists in order or randomly. You can fit the video to the window so you can watch on one part of the screen. As an advance internet user, you can place a playlist ID in the URL param as <code>?playlistId=...</code> or start the playlist at a song position with the URL param like <code>&playlistStart=1</code>. As a developer, you can add more favorite channels or playlists at favs.php.</div>
+    <div id="app-desc">By Weng. <a href="#" onclick="event.preventDefault(); $(this).next().show(); $(this).hide();">Read More</a><span style="display:none;">Play youtube videos from favorited channels and playlists in order or randomly. You can fit the video to the window so you can watch on one part of the screen. As an advance internet user, you can place a playlist ID in the URL param as <code>?playlistId=...</code> or start the playlist at a song position with the URL param like <code>&playlistStart=1</code>. As a developer, you can add more favorite channels or playlists at favs.php.</span></div>
     <div id="buttons">
-        <button id="most-recent" class="btn btn-default btn-sm" onclick="urlChange.start(1); $(this).addClass('active');"><i class="fa fa-list-ol"></i> Most recent</button>
-        <button class="btn btn-default-off btn-sm" onclick="urlChange.start('RANDOM');"><i class="fa fa-random"></i> Next random</button>
-        <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();" style="margin-top:5px;"><i class="fa fa-maximize"></i> Fit Video</button></br>
-        <div style="width:1px; height:10px;"></div>
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                Video
+            </div>
+            <div class="panel-body">
+                <button id="most-recent" class="btn btn-default btn-sm" onclick="urlChange.start(1); $(this).addClass('active');"><i class="fa fa-list-ol"></i> Most recent</button>
+                <button class="btn btn-default-off btn-sm" onclick="urlChange.start('RANDOM');"><i class="fa fa-random"></i> Next random</button>
+                <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();" style="margin-top:5px;"><i class="fa fa-maximize"></i> Fit Video</button></br>
+                <div style="width:1px; height:10px;"></div>
+            </div>
+        </div>
 
-        <button class="btn btn-default" onclick='openNextPlaylist()'><i id="random" class="fa fa-random clickable" style="margin-left:3px;"></i><span>&nbsp;Next playlist</span></button>
-        <button class="btn btn-default" onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable" style="margin-left:3px; margin-top:5px;"></i><span>&nbsp;Random playlist</span></button>
-        <button onclick='$("#favs-wrapper iframe").contents().find("#manual").click(); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);' style="margin-top:5px;"><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Override playlist ID</span></button>
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                Playlist
+            </div>
+            <div class="panel-body">
+                <button class="btn btn-default" onclick='openPreviousPlaylist()'><i id="random" class="fa fa-caret-left clickable" style="margin-left:3px;"></i><span>&nbsp;Prev</span></button>
+                <button class="btn btn-default" onclick='openNextPlaylist()'><i id="random" class="fa fa-caret-right clickable" style="margin-left:3px;"></i><span>&nbsp;Next</span></button>
+                <button class="btn btn-default" onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable" style="margin-left:3px; margin-top:5px;"></i><span>&nbsp;Random</span></button>
+                <button class="btn btn-secondary" onclick='$("#favs-wrapper iframe").contents().find("#manual").click(); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);' style="margin-top:5px;"><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Playlist ID</span></button>
+            </div>
+        </div>
+
     </div>
 
     </div>
