@@ -36,6 +36,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6ZxIHsGHL21rGYk4J5W8-0Q'>Misc: Nofap</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6ZywR0RV2Qb_Ioycr0Kt3Ri'>NLP</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6aIplM6VEtNHYPzwJjpHxFZ'>NLP do music</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6bqXyObhmpKsHwvjx7fI6Ot'>NLP Gym</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6YX5IsEVSBfIcn77PwoNGAj'>NLP release trauma</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6bq3LXCQWIiZR_4D9uAokja'>Release: Trauma Approach (Catharsis)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6Yyx-FqpmL05KhDpN2ZjULY'>Healing: Christian</a></li>
