@@ -66,8 +66,6 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUegtkvhLG9XYzWfRR99ateQ'>[Curiosity\reddit] Updoot</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUV3Nm3T-XAgVhKH9jT0ViRg'>[Curiosity\topics] AJ+</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUqYPhGiB9tkShZorfgcL2lA'>[Curiosity\topics] What I've Learned</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUg8VTeeN4BglqmI1_CBlABg'>[Scenic/Animals] Ocean Conservation Namibia</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLLjLR4wvdjMbpvWfO3Sz6fEEequl1hQZS'>[Scenic/Driving] J Utah</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUKaOcwliIgmzP87XMT0Arpw'>[Entertainment\Anime\DBZ] ExperGamez</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUgIqhB8oD5SZ0yUSp71VCOQ'>[Entertainment\Anime\DBZ] Geekdom101</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUObfIFcPxDOsyNXTG3ISyBg'>[Entertainment\Anime\DBZ] MaSTAR Media</a></li>
@@ -136,10 +134,12 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUcZ959PMwCmSG1mP1gMmDBw'>[Opinions\Videogames] Mish Koz</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUOuddH5GyBXp-_tv_ASdp_A'>[Opinions\Videogames] Nick Robinson</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUA5RGaQc-a8tIX_AqTTmWdw'>[Opinions\Videogames] RGT 85</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUImU34iZhak7TN0IgNtUTdw'>[Opinions\Videogames] Robo Rob Gaming</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU5UYMeKfZbFYnLHzoTJB1xA'>[Opinions\Videogames] Schaffrillas Productions</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU0VVYtw21rg2cokUystu2Dw'>[Opinions\Videogames] SmallAnt</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUoIXnB865l9Ex9zs4OIXTdQ'>[Opinions\Videogames] Spawn Wave</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUyy7dZhgfeMMctSoo3wDXlQ'>[Opinions\Videogames] Thomas Game Docs</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU4It_xPxQyCpyTJshlAQSgA'>[Opinions\Videogames\Zelda] 100 Percent Zelda</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUOkE7SxzwKUII9CxfggMSIw'>[Opinions\Videogames\Zelda] Commonwealth Realm</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUQAi3Q1KiKlOERMT6Uvnsvw'>[Opinions\Videogames\Zelda] Croton</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUU3C2fxkkG2qPiVfxZH_7tw'>[Opinions\Videogames\Zelda] GameOver Jesse</a></li>
@@ -169,6 +169,9 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU_0osV_nf2b0sIbm4Wiw4RQ'>[Scammers] IRLrosie</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUBNG0osIBAprVcZZ3ic84vw'>[Scammers] Jim Browning</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUca2961Ton2js_f9IDXK9Wg'>[Scammers] Trilogy Media</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UU4738z_3cmq7Kppo7q8-6ZA'>[Scenic\Adventures] Brandon Gross</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='UUg8VTeeN4BglqmI1_CBlABg'>[Scenic\Animals] Ocean Conservation Namibia</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLLjLR4wvdjMbpvWfO3Sz6fEEequl1hQZS'>[Scenic\Driving] J Utah</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6Z8EmcIryHG8yM7_qvkFCXE'>[Sleep] Boring</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6asto33Xtovd4vvnZku-UrC'>[Sleep] Yawning</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist($(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6aPadUZd7IuCaCtXEDPqQLd'>[Sleep] White Noise</a></li>
