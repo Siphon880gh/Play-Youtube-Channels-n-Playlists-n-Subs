@@ -29,12 +29,31 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     
     <script>
     window.urlChange = {
-        playlist: (arg1)=> {
+        playlist: (event, arg1)=> {
+
+            // Get last 10
+            let lastOpened = localStorage.getItem("YT__last-opened");
+            let arrLastOpened = [];
+            if(lastOpened) {
+                arrLastOpened = JSON.parse(lastOpened);
+            }
+
+            // Modify last 10
+            let playlistName = event.target.innerText;
+            arrLastOpened.filter(itrPlaylistName => itrPlaylistName !== playlistName);
+            arrLastOpened.push(playlistName);
+            arrLastOpened = arrLastOpened.slice(-10);
+
+            // Update persistingly last 10
+            localStorage.setItem("YT__last-opened", JSON.stringify(arrLastOpened));
+
+            // Change URL
             var params = new URLSearchParams(window.location.search);
             params.set("playlistId", arg1);
             var favIframeLink = $("#favs-wrapper iframe")[0].contentWindow.location.href;
             params.set("favs", favIframeLink);
             window.location.search = params.toString();
+
         },
         start: (arg1)=> {
 
@@ -62,6 +81,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     }
 
     $(()=>{
+        // Set visual shuffle mnode button
         if(!isShuffleMode()) {
             $("button#most-recent").addClass("active");
         }
@@ -193,21 +213,22 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     }
     </script>
 
-    <!-- Modal -->
+    <!-- Modal: Override Playlist ID -->
     <div id="modal-override-playlist-id" class="modal modal-sm fade" style="left: 50%; transform: translateX(-50%); top:50%; translateY(-40%);">
         <div class="modal-dialog-off">
         
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">×</button>
-            <h4 class="modal-title">Override playlist ID</h4>
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h4 class="modal-title">Override playlist ID</h4>
+                </div>
+                <div class="modal-body" style="text-align:left;">
+                    <input id="overridePlaylistId" type="text" style="margin-right:10px; margin-bottom:10px;"></input>
+                    <button type="button" class="btn btn-primary" onclick="overridePlaylistId()">Run</button>
+                    <span style="clear:both;"></span>
+                </div>
             </div>
-            <div class="modal-body" style="text-align:left;">
-                <input id="overridePlaylistId" type="text" style="margin-right:10px; margin-bottom:10px;"></input>
-                <button type="button" class="btn btn-primary" onclick="overridePlaylistId()">Run</button>
-                <span style="clear:both;"></span>
-        </div>
 
         </div>
     </div> <!-- /Modal -->

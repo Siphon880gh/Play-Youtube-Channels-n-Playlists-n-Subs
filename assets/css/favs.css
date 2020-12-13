@@ -1,4 +1,4 @@
-body{
+body {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -6,56 +6,83 @@ body{
     -ms-user-select: none;
     user-select: none;
 }
-#favs, #modal-more {
+
+#favs,
+#modal-more {
     padding: 5px;
 }
+
 #modal-more {
-    border:1px solid gray;
+    border: 1px solid gray;
     margin-bottom: 5px;
 }
+
 #modal-more a {
     margin-right: 30px;
 }
+
 #modal-more .modal-footer {
     margin-top: 5px;
 }
+
 #favs {
     display: block;
     /* margin-top: 1rem; */
     /* padding:10px; */
     background-color: lightyellow;
 }
+
 #favs .header {
-    font-weight:500;
-    font-size:1.2rem;
+    font-weight: 500;
+    font-size: 1.2rem;
 }
+
 #favs ul {
     padding-left: 10px;
 }
+
 #favs li {
-    /* display: inline-block;
+    /* 
+    display: inline-block;
     margin-right: 10px;
-    margin-bottom: 5px; */
+    margin-bottom: 5px; 
+*/
 }
+
 #favs li:before {
     content: "- ";
 }
+
 a:visited {
     color: blue;
 }
+
 .fade {
     display: none;
 }
+
 .clickable {
-    color: blue !important;
+    color: blue;
     cursor: pointer;
 }
+
 .clickable:hover {
     color: red;
 }
+
 .float-right {
     float: right;
 }
+
 .float-right-buttons {
     display: none;
+}
+
+.crossed-out {
+    text-decoration: line-through;
+}
+
+a.crossed-out,
+a.crossed-out:visited {
+    color: gray !important;
 }

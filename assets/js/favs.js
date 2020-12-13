@@ -58,3 +58,19 @@ class RandomPlaylist {
         } // select
 } // RandomPlaylist
 RandomPlaylist = new RandomPlaylist();
+
+$(() => {
+    // The last 10 opened playlists
+
+    // Get last 10
+    let lastOpened = localStorage.getItem("YT__last-opened");
+    let arrLastOpened = [];
+    if (lastOpened) {
+        arrLastOpened = JSON.parse(lastOpened);
+    }
+
+    // Cross out the last 10
+    arrLastOpened.forEach(itrPlaylistName => {
+        $(`li a:contains('${itrPlaylistName}')`).addClass("crossed-out");
+    });
+})
