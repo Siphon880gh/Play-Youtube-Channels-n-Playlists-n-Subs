@@ -25,6 +25,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     <script src="assets/js/favs.js"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
     <link rel="stylesheet" href="assets/css/index.css">
+    <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
     
     <script>
     window.urlChange = {
@@ -222,10 +223,49 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
 
     // 3. This function creates an <iframe> (and YouTube player)
     //    after the API code downloads.
-    var youtubeAPI = `
+    // window.player;
+    function getVideoId() {
+        return player1.getVideoData()['video_id'];
+    }
+
+    function getVideoLoopingURL() {
+        let params = new URLSearchParams(window.location.href);
+    }
+
+    var ytVideoLooper = `
+    function onYouTubeIframeAPIReady() {
+    window.player1 = new YT.Player("player", {
+        height: '390',
+        width: '640',
+        videoId: 'Q_dqfcvTZik',
+        events: {
+            'onReady': function (event) {
+                console.log("Using Youtube Iframe API with Youtube Video Looper algorithm ytVideoLooper");
+                event.target.pauseVideo();
+                        setTimeout( function() { 
+                            event.target.setShuffle({'shufflePlaylist' : true}); 
+                            event.target.setLoop(true); // if reaches end of playlist, can keep going
+                            event.target.nextVideo();
+                            event.target.playVideo();
+                        }, 300);
+            }, // end onReady
+            'onStateChange': function(event) {
+                    if (event.data == YT.PlayerState.UNSTARTED) {
+                        player1.playVideo();
+                    }   
+                    if (event.data == YT.PlayerState.ENDED) {
+                        player1.playVideo();
+                    }   
+            } // on statechange
+        } // events
+    }); // end Init Youtube player
+
+} // end onYouTubeIframeAPIReady`;
+
+    var ytPlaylist = `
     function onYouTubeIframeAPIReady() {
         // var shuffling = <?php echo isset($playlistStartIndex)?"true":"false"; ?>;
-        var player = new YT.Player("player", {
+        window.player1 = new YT.Player("player", {
             height: '390',
             width: '640',
             playerVars: {
@@ -238,6 +278,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
             },
             events: {
                 'onReady': function (event) {
+                    console.log("Using Youtube Iframe API with Youtube Playlist algorithm ytPlaylist");
                     if(isShuffleMode()) {
                         event.target.pauseVideo();
                         setTimeout( function() { 
@@ -247,17 +288,34 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
                             event.target.playVideo();
                         }, 300);
                     } // end isShuffleMode
-                } // end onReady
+                }, // end onReady
+                'onStateChange': function(event) {
+                            if(YT.PlayerState.CUED) {
+                                // console.log('Video ID: ', player1.getVideoData()['video_id']);
+                                //player1.loadVideoById;
+                                console.log( "Video ID: " + getVideoId() );
+                            }
+                        } // onStateChange
             }
         }); // end Init Youtube player
 
     } // end onYouTubeIframeAPIReady`;
 
-    console.log("Debug Youtube API: ", youtubeAPI);
-    console.log("Debug Youtube API: If random video is not working, check the API code. Maybe the API has changed/updated.");
-    console.log("Debug Youtube API: Reference is at https://developers.google.com/youtube/iframe_api_reference")
 
-    eval(youtubeAPI);
+
+    // console.log("Debug Youtube Playlist API: ", ytPlaylist);
+    // console.log("Debug Youtube Video Looping API: ", ytVideoLooper);
+    // console.log("Debug Youtube API: If random video is not working, check the API code. Maybe the API has changed/updated.");
+    // console.log("Debug Youtube API: Reference is at https://developers.google.com/youtube/iframe_api_reference")
+
+    let params = new URLSearchParams(document.location.search);
+    let loopVideoId = params.get("loop-video-id");
+
+    if(loopVideoId===null)
+        eval(ytPlaylist);
+    else
+        eval(ytVideoLooper);
+
     </script>
   </body>
 </html>
