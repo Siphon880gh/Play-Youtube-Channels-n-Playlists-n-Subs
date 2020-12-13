@@ -151,11 +151,15 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     <div id="buttons">
         <div class="panel panel-warning">
             <div class="panel-heading">
-                Video
+                <i class="fa fa-video"></i> <span>Video</span>
             </div>
             <div class="panel-body">
                 <button id="most-recent" class="btn btn-default btn-sm" onclick="urlChange.start(1); $(this).addClass('active');"><i class="fa fa-list-ol"></i> Most recent</button>
                 <button class="btn btn-default-off btn-sm" onclick="urlChange.start('RANDOM');"><i class="fa fa-random"></i> Next random</button>
+                <span class="info-loop-group">
+                    <button class="btn btn-default-off btn-sm loop-into-btn" onclick='window.location.href = "?loop-video-id=" + getVideoId();'><i class="fa fa-recycle"></i> Loop Video</button>
+                    <button class="btn btn-default-off btn-sm loop-out-btn" onclick="window.history.back()" style="color:rgba(255,100,100,.6);"><i class="fa fa-sign-in-alt"></i> Exit Loop</button>
+                </span>
                 <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();" style="margin-top:5px;"><i class="fa fa-maximize"></i> Fit Video</button></br>
                 <div style="width:1px; height:10px;"></div>
             </div>
@@ -163,7 +167,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
 
         <div class="panel panel-warning">
             <div class="panel-heading">
-                Playlist
+                <i class="fa fa-list"></i> <span>Playlist</span>
             </div>
             <div class="panel-body">
                 <button class="btn btn-default" onclick='openPreviousPlaylist()'><i id="random" class="fa fa-caret-left clickable" style="margin-left:3px;"></i><span>&nbsp;Prev</span></button>
@@ -237,7 +241,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     window.player1 = new YT.Player("player", {
         height: '390',
         width: '640',
-        videoId: 'Q_dqfcvTZik',
+        videoId: loopVideoId, // Equivalent: player1.loadVideoById("3VqeJGcW680")
         events: {
             'onReady': function (event) {
                 console.log("Using Youtube Iframe API with Youtube Video Looper algorithm ytVideoLooper");
@@ -311,11 +315,13 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     let params = new URLSearchParams(document.location.search);
     let loopVideoId = params.get("loop-video-id");
 
-    if(loopVideoId===null)
+    if(loopVideoId===null) {
+        $(".loop-out-btn").remove();
         eval(ytPlaylist);
-    else
+    } else {
+        $(".loop-into-btn").remove();
         eval(ytVideoLooper);
-
+    }
     </script>
   </body>
 </html>
