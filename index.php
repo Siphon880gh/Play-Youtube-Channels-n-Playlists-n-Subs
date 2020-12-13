@@ -194,7 +194,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     </script>
 
     <!-- Modal -->
-    <div id="modal-override-playlist-id" class="modal modal-sm fade" style="left: 50%; transform: translateX(-50%); top:50%; translateY(-40%);>
+    <div id="modal-override-playlist-id" class="modal modal-sm fade" style="left: 50%; transform: translateX(-50%); top:50%; translateY(-40%);">
         <div class="modal-dialog-off">
         
         <!-- Modal content-->
@@ -254,12 +254,13 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
                         }, 300);
             }, // end onReady
             'onStateChange': function(event) {
-                    if (event.data == YT.PlayerState.UNSTARTED) {
-                        player1.playVideo();
-                    }   
-                    if (event.data == YT.PlayerState.ENDED) {
-                        player1.playVideo();
-                    }   
+                // Tips on PlayerState: https://stackoverflow.com/questions/5957916/how-to-handle-youtube-video-events-started-finished-etc-in-uiwebview-ios
+                if (event.data == YT.PlayerState.UNSTARTED) {
+                    player1.playVideo();
+                }   
+                if (event.data == YT.PlayerState.ENDED) {
+                    player1.playVideo();
+                }   
             } // on statechange
         } // events
     }); // end Init Youtube player
