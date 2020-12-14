@@ -126,6 +126,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UU3WGuV8xgGZAk2B2itJqgDg'>[Opinions\Films] Let Me Explain</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUkFbAywlXz4W0BCle2eFyUw'>[Opinions\Entertainment] 3CFilms</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUfwE_ODI1YTbdjkzuSi1Nag'>[Opinions\Entertainment] TheQuartering</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUdC0An4ZPNr_YiFiYoVbwaw'>[Opinions\Clips] Daily Dose Of Internet</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUuJyaxv7V-HK4_qQzNK_BXQ'>[Opinions\Videogames] BeatEmUps</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUfAPTv1LgeEWevG8X_6PUOQ'>[Opinions\Videogames] GameXplain</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUvBHFNnPXt_re1WSdsennJg'>[Opinions\Videogames] Hungrybox</a></li>
@@ -138,6 +139,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UU5UYMeKfZbFYnLHzoTJB1xA'>[Opinions\Videogames] Schaffrillas Productions</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UU0VVYtw21rg2cokUystu2Dw'>[Opinions\Videogames] SmallAnt</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUoIXnB865l9Ex9zs4OIXTdQ'>[Opinions\Videogames] Spawn Wave</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UU8wucBti_VxVFhUAzOLyMHw'>[Opinions\Videogames] SwitchForce</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUyy7dZhgfeMMctSoo3wDXlQ'>[Opinions\Videogames] Thomas Game Docs</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UU4It_xPxQyCpyTJshlAQSgA'>[Opinions\Videogames\Zelda] 100 Percent Zelda</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUOkE7SxzwKUII9CxfggMSIw'>[Opinions\Videogames\Zelda] Commonwealth Realm</a></li>
