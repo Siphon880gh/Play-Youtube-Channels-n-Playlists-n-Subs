@@ -15,6 +15,7 @@ $a = removeElement("..", $a);
 $a = removeElement("index.php", $a);
 
 echo "
+<div class='fav-collections'>
 <b>More favs collections:</b><br/><br/>
 <a href=\"" . $prependPath . "favs.php\">favs.php</a>
     ";
@@ -23,4 +24,5 @@ foreach($a as $link) {
 <a href=\"" . $prependPath . "favs/$link\">$link</a>
     ";
 }
+echo "</div>";
 ?>

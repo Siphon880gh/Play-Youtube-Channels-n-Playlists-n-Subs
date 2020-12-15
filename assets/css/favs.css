@@ -17,10 +17,6 @@ body {
     margin-bottom: 5px;
 }
 
-#modal-more a {
-    margin-right: 30px;
-}
-
 #modal-more .modal-footer {
     margin-top: 5px;
 }
@@ -85,4 +81,10 @@ a:visited {
 a.crossed-out,
 a.crossed-out:visited {
     color: gray !important;
+}
+
+.fav-collections a {
+    display: inline-block;
+    margin-right: 20px;
+    margin-bottom: 20px;
 }
