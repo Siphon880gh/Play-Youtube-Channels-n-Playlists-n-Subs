@@ -37,14 +37,6 @@ body {
     padding-left: 10px;
 }
 
-#favs li {
-    /* 
-    display: inline-block;
-    margin-right: 10px;
-    margin-bottom: 5px; 
-*/
-}
-
 #favs li:before {
     content: "- ";
 }

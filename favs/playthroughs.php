@@ -1,5 +1,5 @@
-<script>window.parent.prependPath="./";</script>
-<?php $prependPath="./"; ?>
+<script>var prependPath="../";</script>
+<?php $prependPath="../"; ?>
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <link href="<?php echo $prependPath; ?>assets/css/favs.css" rel="stylesheet"></link>
@@ -27,7 +27,7 @@
     </div> <!-- /float-right -->
   </div> <!-- /header -->
   <ul>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLs1-UdHIwbo497viX2cCYHUNVBsORkhbl'>[Entertainment\Videogames] Playthrough: Call of Duty WW2</a></li>
+  <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLs1-UdHIwbo497viX2cCYHUNVBsORkhbl'>[Entertainment\Videogames] Playthrough: Call of Duty WW2</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL_sYhAj0WXROBlFPHkRJ2-AgOq8ndsPJK'>[Entertainment\Videogames] Playthrough: Chrono Trigger</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLD14CA711E34ACAFD'>[Entertainment\Videogames] Playthrough: EarthBound</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLR2vpfke_UnB6o0t0bpiZo3wuUg0ql1pK'>[Entertainment\Videogames] Playthrough: Half Life 1</a></li>

@@ -27,6 +27,8 @@
     </div> <!-- /float-right -->
   </div> <!-- /header -->
   <ul>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUSH9YxXcGCaKNh1JpUy9sMg'>[Cooking] GrubMarket</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UU8gFadPgK2r1ndqLI04Xvvw'>[Cooking\Korean] Maangchi</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUQMyhrt92_8XM0KgZH6VnRg'>[Curiosity\business] Company Man</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UU_yjveGdyx6mqqHkHaD-_bg'>[Curiosity\medical] Larry Mellick (ER procedures)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL2Fa-9lE-_PwvJECVPzyhTJCFq5nqOJHi'>[Curiosity\medical] ICU Documentary</a></li>

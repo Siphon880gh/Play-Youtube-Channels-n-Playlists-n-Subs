@@ -41,6 +41,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUxOGHW-aqciBe5Wjq8ltzOg'>[Comedy] Ownage Pranks</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUWGmhDFi3fB5DA1nuVRsPIQ'>[Comedy] Reactistan</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUhQvODKsbmt-A8bgLauCMqA'>[Comedy] Steezy Kane</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUSrnmu3W6YXWU_85DKT5arg'>[Comedy] ThatWasEpic</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUvkdpLN1agXoiRWEWTtXqjw'>[Comedy] TopNotch Idiots</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUp5x5kxCgg_A220jNIsLyfA'>[Conspiracy.Theories\Christian] A Call for an Uprising (Propaganda)</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUo8fiE2-s0SZu6Onb8lNLMQ'>[Conspiracy.Theories\Christian] Scariest Movie Ever (Propaganda)</a></li>
@@ -145,10 +146,13 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUxDZs_ltFFvn0FDHT6kmoXA'>[Travel\China] Bald and bankrupt</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUhvithwOECK5g_19TjldMKw'>[Travel\China] Laowhy86</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUGXQvAsqUJrthTvTorUAGAw'>[Travel\California] Vince Nguyen</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUJb5MIGYcoXHKqMtom0kfhw'>[Travel\local] Bert Isobe</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UU-EwLNFl_BETcI1naM_6FcQ'>[Travel\local] CA Travel Tips</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUWdcosWNz26bf9Jri8DTnow'>[Travel\local] Christophe Choo</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUw8_bi1G4duPevdfktipGOA'>[Travel\local] Yellow Productions</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUJb5MIGYcoXHKqMtom0kfhw'>[Travel\Socal] Bert Isobe</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UU-EwLNFl_BETcI1naM_6FcQ'>[Travel\Socal] CA Travel Tips</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUWdcosWNz26bf9Jri8DTnow'>[Travel\Socal] Christophe Choo</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUATNyKWUqlFenle37L4qk3Q'>[Travel\Socal] SoCalExploring</a></li>
+
+    
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUw8_bi1G4duPevdfktipGOA'>[Travel\Socal] Yellow Productions</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUKr68ZJ4vv6VloNdnS2hjhA'>[Travel\global] Harald Baldr</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUpQu57KgT7gOoLCAu3FFQsA'>[Travel\global] Voice of North Korea</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUyEd6QBSgat5kkC6svyjudA'>[Travel\food] Mark Wiens</a></li>
