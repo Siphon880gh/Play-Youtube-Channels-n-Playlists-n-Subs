@@ -187,7 +187,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
 
         <div class="panel panel-warning">
             <div class="panel-heading">
-                <i class="fa fa-list"></i> <span>Playlist</span>
+                <span onclick="More.counter('Playlistheader')"><i class="fa fa-list"></i> <span>Playlist</span></span>
             </div>
             <div class="panel-body">
                 <button class="btn btn-default" onclick='openPreviousPlaylist()'><i id="random" class="fa fa-caret-left clickable" style="margin-left:3px;"></i><span>&nbsp;Prev</span></button>
@@ -344,6 +344,9 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
         $(".loop-into-btn").remove();
         eval(ytVideoLooper);
     }
+
     </script>
+
+    <script src="assets/js/app.js"></script>
   </body>
 </html>

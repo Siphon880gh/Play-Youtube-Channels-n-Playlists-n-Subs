@@ -1,4 +1,4 @@
-<script>var prependPath="./";</script>
+<script>window.parent.prependPath="./";</script>
 <?php $prependPath="./"; ?>
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
@@ -13,13 +13,13 @@
      * @events
      *
      * Secret gesture on "Watch videos from Youtube channels"
-     * that opens more channel collections, including those
-     * that may be more personal. The combo here is
-     * click x2, then click-hold for 2 seconds
+     * and "Playlist" headers that open more Fav collections.
+     * In respective order, the combination is
+     * click x2, then click x2.
      * 
     */
     ?>
-    <a href="javascript:void(0);" onclick="More.count();" onmousedown="More.start();" onmouseup="More.stop();">Watch videos from Youtube channels:</a>
+    <a href="javascript:void(0);" onclick="window.parent.More.counter('Favheader');">Watch videos from Youtube channels:</a>
     <div class="float-right float-right-buttons" style="padding-right: 5px;">
       <i id="random" class="fa fa-random clickable" onclick="RandomPlaylist.select();" style="margin-left:3px;"></i>
       <div style="width:1px; height:10px;"></div>
@@ -197,5 +197,4 @@
 </div>
 <script>
 window.parent.resizeIframeFavs();
-More = new More();
 </script>
