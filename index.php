@@ -3,7 +3,8 @@
 // Dua Lipa old music: OLAK5uy_n1RTVv-lJ6-4DjJmFUfF_MoRevOeYTM4Q
 // Bebe Rexha old music: OLAK5uy_mc7x6vdCJWUpWXeF6NEY1ljjfwXoG18do
 // RandomYt: PLJMMfLBtUHMlUCynG24upluI_pE9WFlII
-$defaultPlaylistId = "UU-J-KZfRV8c13fOCkhXdLiQ";
+// $defaultPlaylistId = "UU-J-KZfRV8c13fOCkhXdLiQ";
+$defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
 $playlistId = isset($_GET["playlistId"]) && strlen($_GET["playlistId"]) ? $_GET["playlistId"] : $defaultPlaylistId;
 
 if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) ) {
@@ -190,8 +191,8 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
                 <span onclick="More.counter('Playlistheader')"><i class="fa fa-list"></i> <span>Playlist</span></span>
             </div>
             <div class="panel-body">
-                <button class="btn btn-default" onclick='openPreviousPlaylist()'><i id="random" class="fa fa-caret-left clickable" style="margin-left:3px;"></i><span>&nbsp;Prev</span></button>
                 <button class="btn btn-default" onclick='openNextPlaylist()'><i id="random" class="fa fa-caret-right clickable" style="margin-left:3px;"></i><span>&nbsp;Next</span></button>
+                <button class="btn btn-default" onclick='openPreviousPlaylist()'><i id="random" class="fa fa-xs fa-undo clickable" style="margin-left:3px;"></i><span>&nbsp;Prev</span></button>
                 <button class="btn btn-default" onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable" style="margin-left:3px; margin-top:5px;"></i><span>&nbsp;Random</span></button>
                 <button class="btn btn-secondary" onclick='$("#favs-wrapper iframe").contents().find("#manual").click(); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);' style="margin-top:5px;"><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Playlist ID</span></button>
             </div>
