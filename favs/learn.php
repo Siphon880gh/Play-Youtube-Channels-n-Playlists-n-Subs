@@ -44,6 +44,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6b9rFWGl5vOwkG5m6imCkwX'>[Education\medical] CCRN Disks</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUMSsLqxqvZsNXi0Z-VjN89A'>[Education\medical] Doctor Mike Hansen</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUOKni4MYHRT45UgyMM2f0QQ'>[Education\medical] MaiMaryRN</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UU6QYFutt9cluQ3uSM963_KQ'>[Education\medical] Ninja Nerd Lectures</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUUxQWmWk1_Hk9iDRKvhH29Q'>[Education\medical] Simple Nursing</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUKOvOaJv4GK-oDqx-sj7VVg'>[Education\medical] Chubbyemu</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUyjFUnWxd9ymR9Z8QXAlV3g'>[Education\medical] Dr Adeleke</a></li>
@@ -52,8 +53,9 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUjMCFF9O02YXlJ1MYll3k0Q'>[Education\medical] Pharmacy</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6ZadXv0lxlUc-Ru89BzObZX'>[Fitness] ~Bodybuilding</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6YV7yaU-Uk7Sl_od8dC5jS0'>[Fitness] ~Design</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6bdXPppP_X4ohADNCzeMKj8'>[Fitness] ~Flexibility</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6aYMCXUdkUqkzaOy73IyAhp'>[Fitness] ~Food Prep</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6bdXPppP_X4ohADNCzeMKj8'>[Fitness\Flexibility] Bob & Brad</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUyA6KQ8PgP98E0ToIdq8c7A'>[Fitness\Flexibility] Chiropractor Dr. Alex Tubio</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UURLOLGZl3-QTaJfLmAKgoAw'>[Fitness] Alan Thrall</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUe0TLA0EsQbE-MjuHXevj2A'>[Fitness] Athlean</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UU7aE5B-ZFEAoumyj6FaJ7lg'>[Fitness] Bradley Martyn</a></li>

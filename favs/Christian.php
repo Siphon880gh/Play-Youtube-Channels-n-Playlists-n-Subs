@@ -55,6 +55,7 @@
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6aeGX5E4gisCapdbxrx1fIW'>Sins verses sleep</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUv9-3aFss806GZFxNoTVduQ'>[General teaching\Consistent] Marcus Rogers</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUMfVJ7yCHEvS9xnmu2-Fl_w'>[General teaching\Consistent] Revelations of Jesus Christ</a></li>
+    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UU0f2dw3mHGg-LFjr61q4Q2g'>[General teaching\Consistent] The Demonic Realm Exposed</a></li>
   </ul>
   </ul>
 </div>
