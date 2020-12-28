@@ -27,7 +27,7 @@ var More = {
                                     $("#favs").contents().find("#modal-more").html(responseText);
                                 }
                             };
-                            xhttp.open("GET", prependPath + "list-favs.php?prependPath=" + prependPath, true);
+                            xhttp.open("GET", "list-favs.php?prependPath=" + prependPath, true);
                             xhttp.send();
 
 
