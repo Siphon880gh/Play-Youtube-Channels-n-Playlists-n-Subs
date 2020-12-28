@@ -96,7 +96,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
         var params = new URLSearchParams(window.location.search);
         var hasFavs = params.get("favs")!==null;
         if(hasFavs) {
-            var path = params.get("favs");
+            var path = "favs/" + params.get("favs") + ".php";
             $("#favs").attr("src", path);
         } else {
             var path = "favs.php";
