@@ -51,8 +51,12 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
             // Change URL
             var params = new URLSearchParams(window.location.search);
             params.set("playlistId", arg1);
+
             var favIframeLink = $("#favs-wrapper iframe")[0].contentWindow.location.href;
-            params.set("favs", favIframeLink);
+            var matchBundle = favIframeLink.match(new RegExp(".*/(.*)"));
+            var matched = matchBundle&&matchBundle.length>1?matchBundle[1]:null; 
+
+            params.set("favs", matched);
             window.location.search = params.toString();
 
         },
@@ -64,8 +68,12 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
             if(!wantRandom) {
                 params.set("playlistStart", arg1);
             }
+
             var favIframeLink = $("#favs-wrapper iframe")[0].contentWindow.location.href;
-            params.set("favs", favIframeLink);
+            var matchBundle = favIframeLink.match(new RegExp(".*/(.*)"));
+            var matched = matchBundle&&matchBundle.length>1?matchBundle[1]:null; 
+
+            params.set("favs", matched);
             window.location.search = params.toString();
         },
     } // urlChange
@@ -96,7 +104,10 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
         var params = new URLSearchParams(window.location.search);
         var hasFavs = params.get("favs")!==null;
         if(hasFavs) {
-            var path = "favs/" + params.get("favs") + ".php";
+            var path = "favs/" + params.get("favs");
+            if(path.indexOf("favs/favs/")>=0) path = path.substr("favs/".length-1);
+            if(path.indexOf(".php")===-1) path += ".php";
+            if(path.indexOf("favs.php")>=0) path = "favs.php";
             $("#favs").attr("src", path);
         } else {
             var path = "favs.php";
