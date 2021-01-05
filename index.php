@@ -22,7 +22,23 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
     
     <script>
-    (function js_php_Interface() {
+    function jumpToActivePlaylist() {
+        let $iframe = $("#favs-wrapper iframe");
+        let $iframeContents = $iframe.contents();
+        let $playlistLink = $iframeContents.find(`[data-playlist-id="${window.playlistId}"]`);
+
+        // Calculate scroll position
+        let scrollPosA = $iframe[0].offsetTop;
+        let scrollPosB = $playlistLink[0].offsetTop;
+        let scrollPos = scrollPosA + scrollPosB;
+
+        // Jump to active playlist link and flash the link
+        window.scrollTo(0, scrollPos);
+        $playlistLink.animate({"font-weight": "900"}, 1000).delay(500).animate({"font-weight":"300"}, 2000)
+        // debugger;
+    }
+
+    // (function js_php_Interface() {
         <?php
             $playlistId = ""; // will override
             if(isset($_GET["playlistId"]) && strlen($_GET["playlistId"])) {
@@ -48,7 +64,7 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
                     window.playlistStartIndex = '%s';
             ", $playlistId, $playlistStartIndex);
         ?>
-    })();
+    // })();
     window.urlChange = {
         playlist: (event, arg1)=> {
 
@@ -225,6 +241,7 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
                 <button class="btn btn-default" onclick='openNextPlaylist()'><i id="random" class="fa fa-caret-right clickable" style="margin-left:3px;"></i><span>&nbsp;Next</span></button>
                 <button class="btn btn-default" onclick='openPreviousPlaylist()'><i id="random" class="fa fa-xs fa-undo clickable" style="margin-left:3px;"></i><span>&nbsp;Prev</span></button>
                 <button class="btn btn-default" onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable" style="margin-left:3px; margin-top:5px;"></i><span>&nbsp;Random</span></button>
+                <button class="btn btn-secondary" onclick='jumpToActivePlaylist();' style="margin-top:5px;"><i id="manual" class="fa fa-ruler-vertical clickable"></i><span>&nbsp;Scroll</span></button>
                 <button class="btn btn-secondary" onclick='$("#favs-wrapper iframe").contents().find("#manual").click(); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);' style="margin-top:5px;"><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Playlist ID</span></button>
             </div>
         </div>
@@ -351,7 +368,7 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
                             if(YT.PlayerState.CUED) {
                                 // console.log('Video ID: ', player1.getVideoData()['video_id']);
                                 //player1.loadVideoById;
-                                console.log( "Video ID: " + getVideoId() );
+                                console.log( "State Change @ Video ID=" + getVideoId() );
                             }
                         } // onStateChange
             }
