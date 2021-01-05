@@ -27,6 +27,8 @@
     </div> <!-- /float-right -->
   </div> <!-- /header -->
   <ul>
+    <!-- Disabled : Reason for it was some music videos require sign in. But now disabled because "Age-restricted videos can’t be watched on most 3rd party websites" -->
+    <!-- <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6aRZ5oiQf02iRIyOa5yQkTy'>[~Dev Test] Req Sign In</a></li> -->
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UU9avFXTdbSo5ATvzTRnAVFg'>[Asian Community] Fung Bros</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUK7IIV6Q2junGSdYK3BmZMg'>[Celebs] TMZ</a></li>
     <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UU4khWMmMODpHD0Bt-6HPO2A'>[Comedy] Brent Pella</a></li>
