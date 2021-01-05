@@ -75,14 +75,16 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
                 arrLastOpened = JSON.parse(lastOpened);
             }
 
-            // Modify last 10
-            let playlistName = event.target.innerText;
-            arrLastOpened.filter(itrPlaylistName => itrPlaylistName !== playlistName);
-            arrLastOpened.push(playlistName);
-            arrLastOpened = arrLastOpened.slice(-10);
+            if(event) {
+                // Modify last 10
+                let playlistName = event.target.innerText;
+                arrLastOpened.filter(itrPlaylistName => itrPlaylistName !== playlistName);
+                arrLastOpened.push(playlistName);
+                arrLastOpened = arrLastOpened.slice(-10);
 
-            // Update persistingly last 10
-            localStorage.setItem("YT__last-opened", JSON.stringify(arrLastOpened));
+                // Update persistingly last 10
+                localStorage.setItem("YT__last-opened", JSON.stringify(arrLastOpened));
+            }
 
             // Change URL
             var params = new URLSearchParams(window.location.search);
@@ -228,7 +230,7 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
                     <button class="btn btn-default-off btn-sm loop-into-btn" onclick='window.location.href = window.location.search + "&loop-video-id=" + getVideoId();'><i class="fa fa-recycle"></i> Loop Video</button>
                     <button class="btn btn-default-off btn-sm loop-out-btn" onclick="window.history.back()" style="color:rgba(255,100,100,.6);"><i class="fa fa-sign-in-alt"></i> Exit Loop</button>
                 </span>
-                <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();" style="margin-top:5px;"><i class="fa fa-maximize"></i> Fit Video</button></br>
+                <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();"><i class="fa fa-maximize"></i> Fit Video</button></br>
                 <div style="width:1px; height:10px;"></div>
             </div>
         </div>
@@ -238,13 +240,13 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
                 <span onclick="More.counter('Playlistheader')"><i class="fa fa-list"></i> <span>Playlist</span></span>
             </div>
             <div class="panel-body">
-                <button class="btn btn-default" onclick='openNextPlaylist()'><i id="random" class="fa fa-caret-right clickable" style="margin-left:3px;"></i><span>&nbsp;Next</span></button>
-                <button class="btn btn-default" onclick='openPreviousPlaylist()'><i id="random" class="fa fa-xs fa-undo clickable" style="margin-left:3px;"></i><span>&nbsp;Prev</span></button>
-                <button class="btn btn-default" onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable" style="margin-left:3px; margin-top:5px;"></i><span>&nbsp;Random</span></button>
-                <button class="btn btn-secondary" onclick='jumpToActivePlaylist();' style="margin-top:5px;"><i id="manual" class="fa fa-ruler-vertical clickable"></i><span>&nbsp;Scroll</span></button>
+                <button class="btn btn-default" onclick='openNextPlaylist()'><i id="random" class="fa fa-caret-right clickable"></i><span>&nbsp;Next</span></button>
+                <button class="btn btn-default" onclick='openPreviousPlaylist()'><i id="random" class="fa fa-xs fa-undo clickable"></i><span>&nbsp;Prev</span></button>
+                <button class="btn btn-default" onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable"></i><span>&nbsp;Random</span></button>
+                <button class="btn btn-secondary" onclick='jumpToActivePlaylist();'><i id="manual" class="fa fa-ruler-vertical clickable"></i><span>&nbsp;Scroll</span></button>
                 <!-- Disabled Auth button: Reason for it was some music videos require sign in. But now disabled because "Age-restricted videos can’t be watched on most 3rd party websites" -->
                 <!-- <button class="btn btn-secondary" onclick='window.open("https://accounts.google.com/signin/v2/identifier?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=en&ec=65620&flowName=GlifWebSignIn&flowEntry=ServiceLogin");' style="margin-top:5px;"><i id="manual" class="fa fa-user clickable"></i><span>&nbsp;Auth</span></button> -->
-                <button class="btn btn-secondary" onclick='$("#favs-wrapper iframe").contents().find("#manual").click(); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);' style="margin-top:5px;"><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Playlist ID</span></button>
+                <button class="btn btn-secondary" onclick='$("#favs-wrapper iframe").contents().find("#manual").click(); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);'><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Playlist ID</span></button>
             </div>
         </div>
 
@@ -260,7 +262,7 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
     <script>
     function overridePlaylistId() {
         var newPlaylistId = $('#overridePlaylistId').val();
-        if(newPlaylistId.length) window.parent.urlChange.playlist(newPlaylistId);
+        if(newPlaylistId.length) window.parent.urlChange.playlist(null, newPlaylistId);
     }
     </script>
 
