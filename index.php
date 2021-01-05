@@ -5,13 +5,6 @@
 // RandomYt: PLJMMfLBtUHMlUCynG24upluI_pE9WFlII
 // $defaultPlaylistId = "UU-J-KZfRV8c13fOCkhXdLiQ";
 $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
-$playlistId = isset($_GET["playlistId"]) && strlen($_GET["playlistId"]) ? $_GET["playlistId"] : $defaultPlaylistId;
-
-if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) ) {
-    $num = intval($_GET["playlistStart"]);
-    if($num<=2) $playlistStartIndex=-1;
-    else $playlistStartIndex = $_GET["playlistStart"];
-}
 ?>
 <html>
 <head>
@@ -29,6 +22,33 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
     
     <script>
+    (function js_php_Interface() {
+        <?php
+            $playlistId = ""; // will override
+            if(isset($_GET["playlistId"]) && strlen($_GET["playlistId"])) {
+                $playlistId = $_GET["playlistId"];
+            } else {
+                $playlistId = $defaultPlaylistId;
+                
+                if(isset($_GET["loop-video-id"]) && strlen($_GET["loop-video-id"]))
+                    echo sprintf("window.history.pushState(null, 'defaultPlaylist', `?playlistId=%s&loop-video-id=%s`);", $playlistId, $_GET["loop-video-id"]);
+                else
+                    echo sprintf("window.history.pushState(null, 'defaultPlaylist', `?playlistId=%s`);", $playlistId);
+            }
+
+            $playlistStartIndex = ""; // default
+            if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) ) {
+                $num = intval($_GET["playlistStart"]);
+                if($num<=2) $playlistStartIndex=-1;
+                else $playlistStartIndex = $_GET["playlistStart"];
+            }
+
+            echo sprintf("
+                    window.playlistId = '%s';
+                    window.playlistStartIndex = '%s';
+            ", $playlistId, $playlistStartIndex);
+        ?>
+    })();
     window.urlChange = {
         playlist: (event, arg1)=> {
 
@@ -189,7 +209,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
                 <button id="most-recent" class="btn btn-default btn-sm" onclick="urlChange.start(1); $(this).addClass('active');"><i class="fa fa-list-ol"></i> Most recent</button>
                 <button class="btn btn-default-off btn-sm" onclick="urlChange.start('RANDOM');"><i class="fa fa-random"></i> Next random</button>
                 <span class="info-loop-group">
-                    <button class="btn btn-default-off btn-sm loop-into-btn" onclick='window.location.href = "?loop-video-id=" + getVideoId();'><i class="fa fa-recycle"></i> Loop Video</button>
+                    <button class="btn btn-default-off btn-sm loop-into-btn" onclick='window.location.href = window.location.search + "&loop-video-id=" + getVideoId();'><i class="fa fa-recycle"></i> Loop Video</button>
                     <button class="btn btn-default-off btn-sm loop-out-btn" onclick="window.history.back()" style="color:rgba(255,100,100,.6);"><i class="fa fa-sign-in-alt"></i> Exit Loop</button>
                 </span>
                 <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();" style="margin-top:5px;"><i class="fa fa-maximize"></i> Fit Video</button></br>
@@ -302,16 +322,16 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
 
     var ytPlaylist = `
     function onYouTubeIframeAPIReady() {
-        // var shuffling = <?php echo isset($playlistStartIndex)?"true":"false"; ?>;
-        window.player1 = new YT.Player("player", {
+        // var shuffling = window.playlistStartIndex.length?true:false;
+            window.player1 = new YT.Player("player", {
             height: '390',
             width: '640',
             playerVars: {
                 playsinline: 1,
                 // allowsInlineMediaPlayback: true,
                 listType:'playlist',
-                list:'<?php echo $playlistId; ?>',
-                <?php echo isset($playlistStartIndex)?"index:$playlistStartIndex,\n":""; ?>
+                list: playlistId,
+                index: window.playlistStartIndex.length?window.playlistStartIndex:null,
                 autoplay: 1,
             },
             events: {
