@@ -15,7 +15,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
 ?>
 <html>
 <head>
-    <title>Youtube Channel Shuffler by Weng</title>
+    <title>Youtube Viewer and Shuffler by Weng</title>
     <meta property="fb:app_id" content="685633705547844" />
     <meta property="og:image" content="https://www.publicdomainpictures.net/pictures/250000/nahled/youtube-1515875370Xwr.jpg" />
     
@@ -179,7 +179,7 @@ if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) 
 
     <div id="player"></div>
     <div class="spacer-v"></div>
-    <div id="app-desc">By Weng. <a href="#" onclick="event.preventDefault(); $(this).next().show(); $(this).hide();">Read More</a><span style="display:none;">Play youtube videos from favorited channels and playlists in order or randomly. You can fit the video to the window so you can watch on one part of the screen. As an advance internet user, you can place a playlist ID in the URL param as <code>?playlistId=...</code> or start the playlist at a song position with the URL param like <code>&playlistStart=1</code>. As a developer, you can add more favorite channels or playlists at favs.php.</span></div>
+    <div id="app-desc" style="font-size:1.25rem;">Youtube Viewer and Shuffler<br/>By Weng. <span style="font-size:.8rem;">Youtube has changed their video algorithms and are not consistently showing my favorite subscriptions' most recent videos on the front page. With this app you can show the most recent videos from all your subscriptions and more. <a href="#" onclick="event.preventDefault(); $(this).next().show(); $(this).hide();">Read More</a><span style="display:none;">Play youtube videos from favorited channels and playlists in order or randomly. You can fit the video to the window so you can watch on one part of the screen. As an advance internet user, you can place a playlist ID in the URL param as <code>?playlistId=...</code> or start the playlist at a song position with the URL param like <code>&playlistStart=1</code>. As a developer, you can add more favorite channels or playlists at favs.php.</span></span></div>
     <div id="buttons">
         <div class="panel panel-warning">
             <div class="panel-heading">
