@@ -26,50 +26,86 @@
       <i id="manual" class="fa fa-cloud-upload-alt clickable" onclick="ManualPlaylist.prompt();"></i>
     </div> <!-- /float-right -->
   </div> <!-- /header -->
-  <ul>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLs1-UdHIwbo497viX2cCYHUNVBsORkhbl'>[Entertainment\Videogames] Playthrough: Call of Duty WW2</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL_sYhAj0WXROBlFPHkRJ2-AgOq8ndsPJK'>[Entertainment\Videogames] Playthrough: Chrono Trigger</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL7RtZMiaOk8gRGz8Jr3DaLGcLo_Ai0_EE'>[Entertainment\Videogames] Playthrough: Demon's Souls Remake</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLD14CA711E34ACAFD'>[Entertainment\Videogames] Playthrough: EarthBound</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLs1-UdHIwbo4HiYSZ0ykpBhr86L8_AOL3'>[Entertainment\Videogames] Playthrough: Cyberpunk 2077</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLR2vpfke_UnB6o0t0bpiZo3wuUg0ql1pK'>[Entertainment\Videogames] Playthrough: Half Life 1</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLj_Goi54wf0d2xk_aLt-cFer_XTqI4qaN'>[Entertainment\Videogames] Playthrough: Half Life 2</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLMBYlcH3smRzz8VqMEUO2i9Vu3ynWAkQ0'>[Entertainment\Videogames] Playthrough: God of War</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLAnfG6CHIYjwTwqSJgWMFktc6Xo1VxJ8B'>[Entertainment\Videogames] Playthrough: Halo 2</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLAnfG6CHIYjx8Da2Aw1q0hbhuKE3pbQYz'>[Entertainment\Videogames] Playthrough: Halo Combact Evolved</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLs1-UdHIwbo6ayzHIHratdbJQ9i9XtrBh'>[Entertainment\Videogames] Playthrough: Immortals Fenyx Rising</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL_sYhAj0WXRMFBAf-HK4XtmjWDNSKoPVI'>[Entertainment\Videogames] Playthrough: Kid Icarus Uprising</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL8EC21DD302AEF995'>[Entertainment\Videogames] Playthrough: Paper Mario</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLkR3RWLcKJUQxM_1P5fBuIzo51njAG1pV'>[Entertainment\Videogames] Playthrough: Paper Mario Color Splash</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLkR3RWLcKJUTtbcVGfBfZi7Z4UvY7BZSv'>[Entertainment\Videogames] Playthrough: Paper Mario Sticker Star</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLCD434C085CB7C8EA'>[Entertainment\Videogames] Playthrough: Paper Mario, Super</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLF00C64B86BD75D79'>[Entertainment\Videogames] Playthrough: Paper Mario Thousand-Year Door</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='UUYmGCAwhHmpV4LZrbvpjaTg'>[Entertainment\Videogames] Playthrough: Resident Evil 3 Remake ~Jill Mods</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLkR3RWLcKJUQWf9JidznuOIvMWIBHmF2v'>[Entertainment\Videogames] Playthrough: Super Mario 64</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLkR3RWLcKJUTBMe6blf5YMaU2DhdtF4Iv'>[Entertainment\Videogames] Playthrough: Super Mario Galaxy</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL_sYhAj0WXROScbAOakRhAsINVoa9sSmh'>[Entertainment\Videogames] Playthrough: Super Mario Galaxy 2</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL57hJfweW_2s1aLE9WtLCzKAAWWK0VJeH'>[Entertainment\Videogames] Playthrough: Super Mario RPG</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLkR3RWLcKJUSMTYZ3NAXVCk4S3PflWaVf'>[Entertainment\Videogames] Playthrough: Super Mario Sunshine</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL_sYhAj0WXRM5w3LkVEVGE_7dbvf4n41S'>[Entertainment\Videogames] Playthrough: Super Mario Superstar Saga</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL-7t9DoIELCQPdyHZAy5xdfDXM6HDpEkv'>[Entertainment\Videogames] Playthrough: Super Mario Odyssey</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6aglhKWjYkDFci7FwrBpYJP'>[Entertainment\Videogames] Playthrough: Torchlight 2</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL_sYhAj0WXRM2_xfO1O6P040gwIwlhqcP'>[Entertainment\Videogames] Playthrough: Xenoblade Chronicles</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL_sYhAj0WXRPQf_RR-km-i34wPrQrhncN'>[Entertainment\Videogames] Playthrough: Xenoblade Chronicles 2</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLzg85AHZsA6YbtfGkRpvwToPqZe9ZzQF_'>[Entertainment\Videogames] Playthrough: Zelda ~Romhacks</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL-7t9DoIELCTaNipmD-W5tJ727C7c1z0N'>[Entertainment\Videogames] Playthrough: Zelda Hyrule Warriors 2014</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL-7t9DoIELCSzP5rT-nmxOr5uvsgkG4ss'>[Entertainment\Videogames] Playthrough: Zelda Hyrule Warriors: Age of Calamity</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL_sYhAj0WXRMHL_fIWlbHhyxh8d2GhM_r'>[Entertainment\Videogames] Playthrough: Zelda A Link to the Past</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLFdQ3YMJDN9jbWIFvmjgvolBLieiUkP2o'>[Entertainment\Videogames] Playthrough: Zelda Breath of the Wild</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLDgypNs3MY2RVI1ZpZX0tDE_JW3q3zgMT'>[Entertainment\Videogames] Playthrough: Zelda Breath of the Wild (No Commentary)</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLEE458B6CFC6D6035'>[Entertainment\Videogames] Playthrough: Zelda Ocarina of Time</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLF41D831CF4427BE5'>[Entertainment\Videogames] Playthrough: Zelda Majora's Mask</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL_sYhAj0WXRNkqeo_T2DJ-pOVVlgzt_GW'>[Entertainment\Videogames] Playthrough: Zelda Phantom Hourglass </a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL_sYhAj0WXRM_YCtn-d-RAh__2lNr-5ny'>[Entertainment\Videogames] Playthrough: Zelda Skyward Sword </a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL_sYhAj0WXRPVCwyLyphrwVDdqhhSyC9n'>[Entertainment\Videogames] Playthrough: Zelda Tri-Force Heroes</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PLFdQ3YMJDN9itelE3ZIIpsP0lPCuUWxtC'>[Entertainment\Videogames] Playthrough: Zelda Twilight Princess</a></li>
-    <li><a href="javascript:void(0);" onclick='window.parent.urlChange.playlist(event, $(this).data("playlist-id"));' data-playlist-id='PL_lABM4PHKBKFfw25CMPWmsQYKtT2wDzx'>[Entertainment\Videogames] Playthrough: Zelda Wind Waker</a></li>
+  <ul class="playlists-target">
   </ul>
 </div>
 <script>
-window.parent.resizeIframeFavs();
+
+var playlistList = [
+  {id: 'PLs1-UdHIwbo497viX2cCYHUNVBsORkhbl', name: '[Entertainment/Videogames] Playthrough: Call of Duty WW2'},
+{id: 'PL_sYhAj0WXROBlFPHkRJ2-AgOq8ndsPJK', name: '[Entertainment/Videogames] Playthrough: Chrono Trigger'},
+{id: 'PL7RtZMiaOk8gRGz8Jr3DaLGcLo_Ai0_EE', name: '[Entertainment/Videogames] Playthrough: Demon\'s Souls Remake'},
+{id: 'PLD14CA711E34ACAFD', name: '[Entertainment/Videogames] Playthrough: EarthBound'},
+{id: 'PLs1-UdHIwbo4HiYSZ0ykpBhr86L8_AOL3', name: '[Entertainment/Videogames] Playthrough: Cyberpunk 2077'},
+{id: 'PLR2vpfke_UnB6o0t0bpiZo3wuUg0ql1pK', name: '[Entertainment/Videogames] Playthrough: Half Life 1'},
+{id: 'PLj_Goi54wf0d2xk_aLt-cFer_XTqI4qaN', name: '[Entertainment/Videogames] Playthrough: Half Life 2'},
+{id: 'PLMBYlcH3smRzz8VqMEUO2i9Vu3ynWAkQ0', name: '[Entertainment/Videogames] Playthrough: God of War'},
+{id: 'PLAnfG6CHIYjwTwqSJgWMFktc6Xo1VxJ8B', name: '[Entertainment/Videogames] Playthrough: Halo 2'},
+{id: 'PLAnfG6CHIYjx8Da2Aw1q0hbhuKE3pbQYz', name: '[Entertainment/Videogames] Playthrough: Halo Combact Evolved'},
+{id: 'PLs1-UdHIwbo6ayzHIHratdbJQ9i9XtrBh', name: '[Entertainment/Videogames] Playthrough: Immortals Fenyx Rising'},
+{id: 'PL_sYhAj0WXRMFBAf-HK4XtmjWDNSKoPVI', name: '[Entertainment/Videogames] Playthrough: Kid Icarus Uprising'},
+{id: 'PL8EC21DD302AEF995', name: '[Entertainment/Videogames] Playthrough: Paper Mario'},
+{id: 'PLkR3RWLcKJUQxM_1P5fBuIzo51njAG1pV', name: '[Entertainment/Videogames] Playthrough: Paper Mario Color Splash'},
+{id: 'PLkR3RWLcKJUTtbcVGfBfZi7Z4UvY7BZSv', name: '[Entertainment/Videogames] Playthrough: Paper Mario Sticker Star'},
+{id: 'PLCD434C085CB7C8EA', name: '[Entertainment/Videogames] Playthrough: Paper Mario, Super'},
+{id: 'PLF00C64B86BD75D79', name: '[Entertainment/Videogames] Playthrough: Paper Mario Thousand-Year Door'},
+{id: 'UUYmGCAwhHmpV4LZrbvpjaTg', name: '[Entertainment/Videogames] Playthrough: Resident Evil 3 Remake ~Jill Mods'},
+{id: 'PLkR3RWLcKJUQWf9JidznuOIvMWIBHmF2v', name: '[Entertainment/Videogames] Playthrough: Super Mario 64'},
+{id: 'PLkR3RWLcKJUTBMe6blf5YMaU2DhdtF4Iv', name: '[Entertainment/Videogames] Playthrough: Super Mario Galaxy'},
+{id: 'PL_sYhAj0WXROScbAOakRhAsINVoa9sSmh', name: '[Entertainment/Videogames] Playthrough: Super Mario Galaxy 2'},
+{id: 'PL57hJfweW_2s1aLE9WtLCzKAAWWK0VJeH', name: '[Entertainment/Videogames] Playthrough: Super Mario RPG'},
+{id: 'PLkR3RWLcKJUSMTYZ3NAXVCk4S3PflWaVf', name: '[Entertainment/Videogames] Playthrough: Super Mario Sunshine'},
+{id: 'PL_sYhAj0WXRM5w3LkVEVGE_7dbvf4n41S', name: '[Entertainment/Videogames] Playthrough: Super Mario Superstar Saga'},
+{id: 'PL-7t9DoIELCQPdyHZAy5xdfDXM6HDpEkv', name: '[Entertainment/Videogames] Playthrough: Super Mario Odyssey'},
+{id: 'PLzg85AHZsA6aglhKWjYkDFci7FwrBpYJP', name: '[Entertainment/Videogames] Playthrough: Torchlight 2'},
+{id: 'PL_sYhAj0WXRM2_xfO1O6P040gwIwlhqcP', name: '[Entertainment/Videogames] Playthrough: Xenoblade Chronicles'},
+{id: 'PL_sYhAj0WXRPQf_RR-km-i34wPrQrhncN', name: '[Entertainment/Videogames] Playthrough: Xenoblade Chronicles 2'},
+{id: 'PLzg85AHZsA6YbtfGkRpvwToPqZe9ZzQF_', name: '[Entertainment/Videogames] Playthrough: Zelda ~Romhacks'},
+{id: 'PL-7t9DoIELCTaNipmD-W5tJ727C7c1z0N', name: '[Entertainment/Videogames] Playthrough: Zelda Hyrule Warriors 2014'},
+{id: 'PL-7t9DoIELCSzP5rT-nmxOr5uvsgkG4ss', name: '[Entertainment/Videogames] Playthrough: Zelda Hyrule Warriors: Age of Calamity'},
+{id: 'PL_sYhAj0WXRMHL_fIWlbHhyxh8d2GhM_r', name: '[Entertainment/Videogames] Playthrough: Zelda A Link to the Past'},
+{id: 'PLFdQ3YMJDN9jbWIFvmjgvolBLieiUkP2o', name: '[Entertainment/Videogames] Playthrough: Zelda Breath of the Wild'},
+{id: 'PLDgypNs3MY2RVI1ZpZX0tDE_JW3q3zgMT', name: '[Entertainment/Videogames] Playthrough: Zelda Breath of the Wild (No Commentary)'},
+{id: 'PLEE458B6CFC6D6035', name: '[Entertainment/Videogames] Playthrough: Zelda Ocarina of Time'},
+{id: 'PLF41D831CF4427BE5', name: '[Entertainment/Videogames] Playthrough: Zelda Majora\'s Mask'},
+{id: 'PL_sYhAj0WXRNkqeo_T2DJ-pOVVlgzt_GW', name: '[Entertainment/Videogames] Playthrough: Zelda Phantom Hourglass '},
+{id: 'PL_sYhAj0WXRM_YCtn-d-RAh__2lNr-5ny', name: '[Entertainment/Videogames] Playthrough: Zelda Skyward Sword '},
+{id: 'PL_sYhAj0WXRPVCwyLyphrwVDdqhhSyC9n', name: '[Entertainment/Videogames] Playthrough: Zelda Tri-Force Heroes'},
+{id: 'PLFdQ3YMJDN9itelE3ZIIpsP0lPCuUWxtC', name: '[Entertainment/Videogames] Playthrough: Zelda Twilight Princess'},
+{id: 'PL_lABM4PHKBKFfw25CMPWmsQYKtT2wDzx', name: '[Entertainment/Videogames] Playthrough: Zelda Wind Waker'},
+];
+
+$(document).ready(function(){
+  function changeVideo(event) {
+    event.preventDefault();
+    var id = $(event.target).attr("data-playlist-id") ;
+    window.parent.urlChange.playlist(event, id);
+  }
+  var $playlistContainer = $(".playlists-target");
+
+  for(var i =0; i<playlistList.length; i++) {
+    var playlistObject = playlistList[i];
+    var id = playlistObject.id;
+    var name = playlistObject.name;
+
+    var li = $("<li></li>")
+    var a = $("<a></a>");
+
+    // Add interactivity
+    a.attr("href","javascript:void(0);");
+    a.attr("data-playlist-id",id);
+    a.click(changeVideo);
+    
+    // Change text
+    a.text(name);
+
+    // Append a into li
+    li.append(a);
+
+    // Append to playlist list
+    $playlistContainer.append(li);
+  }
+
+  window.parent.resizeIframeFavs();
+});
 </script>
