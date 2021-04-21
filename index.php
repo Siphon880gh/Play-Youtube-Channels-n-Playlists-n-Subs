@@ -90,9 +90,11 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
             var params = new URLSearchParams(window.location.search);
             params.set("playlistId", arg1);
 
+            // Set URL so can load the same extended playlist collection
             var favIframeLink = $("#favs-wrapper iframe")[0].contentWindow.location.href;
-            var matchBundle = favIframeLink.match(new RegExp(".*/(.*)"));
-            var matched = matchBundle&&matchBundle.length>1?matchBundle[1]:null; 
+            var matchBundle = favIframeLink.match(new RegExp("favs=(.*)"));
+            var matched = matchBundle&&matchBundle.length>1?matchBundle[1]:"default"; 
+            if(matched) matched = matched.replaceAll(".php", "");
 
             params.set("favs", matched);
             window.location.search = params.toString();
@@ -107,9 +109,11 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
                 params.set("playlistStart", arg1);
             }
 
+            // Set URL so can load the same extended playlist collection
             var favIframeLink = $("#favs-wrapper iframe")[0].contentWindow.location.href;
-            var matchBundle = favIframeLink.match(new RegExp(".*/(.*)"));
-            var matched = matchBundle&&matchBundle.length>1?matchBundle[1]:null; 
+            var matchBundle = favIframeLink.match(new RegExp("favs=(.*)"));
+            var matched = matchBundle&&matchBundle.length>1?matchBundle[1]:"default";
+            if(matched) matched = matched.replaceAll(".php", "");
 
             params.set("favs", matched);
             window.location.search = params.toString();
@@ -142,10 +146,10 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
         var params = new URLSearchParams(window.location.search);
         var hasFavs = params.get("favs")!==null;
         if(hasFavs) {
-            var path = "favs/" + params.get("favs");
-            if(path.indexOf("favs/favs/")>=0) path = path.substr("favs/".length-1);
-            if(path.indexOf(".php")===-1) path += ".php";
-            if(path.indexOf("favs.php")>=0) path = "favs.php";
+            var path = "favs.php?favs=" + params.get("favs");
+            // if(path.indexOf("favs/favs/")>=0) path = path.substr("favs/".length-1);
+            // if(path.indexOf(".php")===-1) path += ".php";
+            // if(path.indexOf("favs.php")>=0) path = "favs.php";
             $("#favs").attr("src", path);
         } else {
             var path = "favs.php";

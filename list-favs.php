@@ -13,15 +13,17 @@ $a = removeElement(".htaccess", $a);
 $a = removeElement(".", $a);
 $a = removeElement("..", $a);
 $a = removeElement("index.php", $a);
+$a = removeElement("index.html", $a);
 
 echo "
 <div class='fav-collections'>
 <b>More favs collections:</b><br/><br/>
-<a href=\"" . $prependPath . "favs.php\">favs.php</a>
+<a href=\"" . $prependPath . "favs.php\">default</a>
     ";
 foreach($a as $link) {
+    $collection = str_replace(".json", "", $link);
     echo "
-<a href=\"" . $prependPath . "favs/$link\">$link</a>
+<a href=\"" . $prependPath . "favs.php?favs=$collection\">$collection</a>
     ";
 }
 echo "</div>";
