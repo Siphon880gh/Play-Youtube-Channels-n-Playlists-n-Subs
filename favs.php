@@ -35,13 +35,13 @@ var currentCollection = params.get("favs") || "default";
 if(currentCollection==="favs") currentCollection = "default";
 
 
-$(document).ready(function(){
-  function changeVideo(event) {
+function changeVideo(event) {
     event.preventDefault();
     var id = $(event.target).attr("data-playlist-id") ;
     window.parent.urlChange.playlist(event, id);
   }
 
+$(document).ready(function(){
   function renderPlaylists(collection) {
     var $playlistContainer = $(".playlists-target");
 
@@ -56,7 +56,7 @@ $(document).ready(function(){
         // Add interactivity
         a.attr("href","javascript:void(0);");
         a.attr("data-playlist-id",id);
-        a.click(changeVideo);
+        a.attr("onclick", "changeVideo(event)");
         
         // Change text
         a.text(name);

@@ -181,14 +181,16 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
 
         if(nextPlaylistId!==null) {
             var $a = $("#favs-wrapper iframe").contents().find(`[data-playlist-id='${nextPlaylistId}']`);
-            $b = $a.closest("li")
+            var $b = $a.closest("li")
                 .next("li")
                 .find("a:nth-child(1)");
 
-            $b.click();
+            debugger;
+            $b.trigger("click");
             // debugger;
         } else {
             var $a = $("#favs-wrapper iframe").contents().find(`[data-playlist-id]`).first();
+            debugger;
             searchParams.set("playlistId", $a.data("playlist-id"));
             var urlTrailing = searchParams.toString();
             window.location.search = urlTrailing;
