@@ -59,7 +59,7 @@ $(document).ready(function(){
         a.attr("onclick", "changeVideo(event)");
         
         // Change text
-        a.text(name);
+        a.html(name);
 
         // Append a into li
         li.append(a);
