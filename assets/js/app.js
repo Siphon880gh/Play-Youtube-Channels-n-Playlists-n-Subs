@@ -16,7 +16,9 @@ var More = {
                         this.areas = [];
                     } else {
 
-                        if (More.areas.slice(-4).join(",") === "Favheader,Favheader,Playlistheader,Playlistheader") {
+                        // let secretCombo = "Favheader,Favheader,Playlistheader";
+                        let secretCombo = "Favheader,Favheader,Favheader";
+                        if (More.areas.slice(-4).join(",") === secretCombo) {
                             More.count = 0;
                             More.areas = [];
 
