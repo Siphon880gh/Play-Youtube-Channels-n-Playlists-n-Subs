@@ -19,17 +19,23 @@
      * 
     */
     ?>
-    <a href="javascript:void(0);" onclick="window.parent.More.counter('Favheader');">Watch videos from Youtube channels:</a>
+    <a href="javascript:void(0);" onclick="window.parent.More.counter('Favheader');">Youtube uploads and playlists:</a>
     <div class="float-right float-right-buttons" style="padding-right: 5px;">
       <i id="random" class="fa fa-random clickable" onclick="RandomPlaylist.select();" style="margin-left:3px;"></i>
       <div style="width:1px; height:10px;"></div>
       <i id="manual" class="fa fa-cloud-upload-alt clickable" onclick="ManualPlaylist.prompt();"></i>
     </div> <!-- /float-right -->
+
+    <div style="float:right; font-size: 1rem;">
+      <a href="javascript:void(0)" onclick='localStorage.setItem("YT__last-opened", "[]"); $(".crossed-out").removeClass("crossed-out");'>Clear history</a>
+    </div>
   </div> <!-- /header -->
+
   <div style="text-align: center; margin-top:20px;">
     <label for="playlist-filter">Filter:</label>
     <input id="playlist-filter" class="playlist-filter" type="text" oninput="filterListItems($(event.target).val(), $('.playlists-target'));">
   </div>
+
   <ul class="playlists-target">
   </ul>
 </div>
