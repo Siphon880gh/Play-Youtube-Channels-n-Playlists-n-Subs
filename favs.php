@@ -37,8 +37,10 @@ if(currentCollection==="favs") currentCollection = "default";
 
 function changeVideo(event) {
     event.preventDefault();
-    var id = $(event.target).attr("data-playlist-id") ;
-    window.parent.urlChange.playlist(event, id);
+    var isChildHTMLAndNotLink = $(event.target)[0].tagName.toLowerCase()!=="a";
+    var $el = isChildHTMLAndNotLink?$(event.target).closest("a"):$(event.target);
+    var id = $el.attr("data-playlist-id");
+    window.parent.urlChange.playlist($el, id);
   }
 
 $(document).ready(function(){

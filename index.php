@@ -66,7 +66,7 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
         ?>
     // })();
     window.urlChange = {
-        playlist: (event, arg1)=> {
+        playlist: ($el, arg1)=> {
 
             // Get last 10
             let lastOpened = localStorage.getItem("YT__last-opened");
@@ -75,9 +75,9 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
                 arrLastOpened = JSON.parse(lastOpened);
             }
 
-            if(event) {
+            if($el && $el.length) {
                 // Modify last 10
-                let playlistName = event.target.innerText;
+                let playlistName = $el[0].innerHTML;
                 arrLastOpened.filter(itrPlaylistName => itrPlaylistName !== playlistName);
                 arrLastOpened.push(playlistName);
                 arrLastOpened = arrLastOpened.slice(-10);
@@ -404,8 +404,15 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
         eval(ytVideoLooper);
     }
 
+    // Give time for user to read error (age related restriction, etc), then play next video
+    setTimeout(()=>{
+        if($("#player .ytp-error").length!==0) {
+            player1.nextVideo();
+            console.log("Error playing video detected. Attempting to play another video.")
+        }
+    },  3500);
     </script>
 
-    <script src="assets/js/app.js"></script>
+    <script src="assets/js/app.js?v=2"></script>
   </body>
 </html>
