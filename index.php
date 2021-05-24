@@ -22,6 +22,10 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
     
     <script>
+    function utils__getPlaylistIdFromURL() {
+        return String(new URLSearchParams(window.location.search).get("playlistId"));
+    }
+
     function jumpToActivePlaylist() {
         let $iframe = $("#favs-wrapper iframe");
         let $iframeContents = $iframe.contents();
@@ -66,29 +70,33 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
         ?>
     // })();
     window.urlChange = {
-        playlist: ($el, arg1)=> {
+        playlist: ($el, playlistId)=> {
 
             // Get last 10
             let lastOpened = localStorage.getItem("YT__last-opened");
-            let arrLastOpened = [];
+            window.arrLastOpened = [];
             if(lastOpened) {
                 arrLastOpened = JSON.parse(lastOpened);
             }
 
             if($el && $el.length) {
-                // Modify last 10
-                let playlistName = $el[0].innerHTML;
-                arrLastOpened.filter(itrPlaylistName => itrPlaylistName !== playlistName);
-                arrLastOpened.push(playlistName);
-                arrLastOpened = arrLastOpened.slice(-10);
 
-                // Update persistingly last 10
-                localStorage.setItem("YT__last-opened", JSON.stringify(arrLastOpened));
+                // Wait 10 seconds before adding to last watched list fails. 
+                // Obsolete: Only add playlist to be crossed out on next app opening if you watched >10 seconds
+                // setTimeout(()=>{
+                    // Equivalent: Push playlist Id to the top if it exists or inserts to the top if it doesn't
+                    arrLastOpened = arrLastOpened.filter(aPlayerlistId => aPlayerlistId !== playlistId);
+                    arrLastOpened.push(playlistId);
+                    arrLastOpened = arrLastOpened.slice(-10);
+                    var lastWatchedList = JSON.stringify(arrLastOpened);
+                    localStorage.setItem("YT__last-opened", lastWatchedList);
+                    // console.log("Updated last watched list: " + lastWatchedList);
+                // }, 10000);
             }
 
             // Change URL
             var params = new URLSearchParams(window.location.search);
-            params.set("playlistId", arg1);
+            params.set("playlistId", playlistId);
 
             // Set URL so can load the same extended playlist collection
             var favIframeLink = $("#favs-wrapper iframe")[0].contentWindow.location.href;

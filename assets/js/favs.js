@@ -25,9 +25,12 @@ $(() => {
     if (lastOpened) {
         arrLastOpened = JSON.parse(lastOpened);
     }
-
+    
     // Cross out the last 10
-    arrLastOpened.forEach(itrPlaylistName => {
-        $(`li a:contains('${itrPlaylistName}')`).addClass("crossed-out");
-    });
+    setTimeout(()=>{
+        arrLastOpened.forEach(playlistId => {
+            console.log("Last seen playlist id: " + playlistId);
+            $("#favs-wrapper iframe").contents().find(`[data-playlist-id="${playlistId}"]`).addClass("crossed-out");
+        });
+    }, 1000);
 })
