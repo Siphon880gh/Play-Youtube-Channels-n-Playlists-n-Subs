@@ -26,14 +26,37 @@
       <i id="manual" class="fa fa-cloud-upload-alt clickable" onclick="ManualPlaylist.prompt();"></i>
     </div> <!-- /float-right -->
   </div> <!-- /header -->
+  <div style="text-align: center; margin-top:20px;">
+    <label for="playlist-filter">Filter:</label>
+    <input id="playlist-filter" class="playlist-filter" type="text" oninput="filterListItems($(event.target).val(), $('.playlists-target'));">
+  </div>
   <ul class="playlists-target">
   </ul>
 </div>
 <script>
+// case insensitive jquery contains
+jQuery.expr[':'].contains = function(a, i, m) {
+  return jQuery(a).text().toUpperCase()
+      .indexOf(m[3].toUpperCase()) >= 0;
+};
+
 var params = new URLSearchParams(window.location.search);
 var currentCollection = params.get("favs") || "default";
 if(currentCollection==="favs") currentCollection = "default";
 
+function filterListItems(userFilterText, listItems) {
+  var allListItems = listItems.find("li");
+
+  // Filtering vs reset to showing all list items
+  if(userFilterText.length) {
+
+    allListItems.hide();
+    var filteredIn = listItems.find(`li:contains('${userFilterText}')`);
+    filteredIn.show();
+  } else {
+    allListItems.show();
+  }
+} // filterListItems
 
 function changeVideo(event) {
     event.preventDefault();

@@ -386,8 +386,6 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
 
     } // end onYouTubeIframeAPIReady`;
 
-
-
     // console.log("Debug Youtube Playlist API: ", ytPlaylist);
     // console.log("Debug Youtube Video Looping API: ", ytVideoLooper);
     // console.log("Debug Youtube API: If random video is not working, check the API code. Maybe the API has changed/updated.");
