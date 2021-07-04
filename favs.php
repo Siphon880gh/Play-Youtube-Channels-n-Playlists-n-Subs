@@ -33,7 +33,7 @@
 
   <div style="text-align: center; margin-top:20px;">
     <label for="playlist-filter">Filter:</label>
-    <input id="playlist-filter" class="playlist-filter" type="text" oninput="filterListItems($(event.target).val(), $('.playlists-target'));">
+    <input id="playlist-filter" class="playlist-filter" type="text" oninput="filterListItems($(event.target).val(), $('.playlists-target')); saveFilteredForRefresh($(event.target).val());">
   </div>
 
   <ul class="playlists-target">
@@ -63,6 +63,10 @@ function filterListItems(userFilterText, listItems) {
     allListItems.show();
   }
 } // filterListItems
+
+function saveFilteredForRefresh(userFilterText) {
+  localStorage.setItem("YT__last-filtered", userFilterText);
+} // saveFilteredForRefresh
 
 function changeVideo(event) {
     event.preventDefault();
@@ -98,6 +102,14 @@ $(document).ready(function(){
         // Append to playlist list
         $playlistContainer.append(li);
       } // for
+
+
+      // Continuing the filtered search input
+      let lastFiltered = localStorage.getItem("YT__last-filtered");
+      if(lastFiltered && lastFiltered.length) {
+          let $filterInput = $("#favs").contents().find("#playlist-filter");
+          $filterInput.val(lastFiltered).trigger("input");
+      }
 
       resizeIframeNow();
   } // renderPlaylists
