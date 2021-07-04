@@ -106,10 +106,14 @@ $(document).ready(function(){
     window.parent.resizeIframeFavs();
   }
 
-  $.get("./favs/" + currentCollection + ".json", function(data, status){
+  $.ajax({
+      url: "./favs/" + currentCollection + ".json",
+      method:"GET",
+      cache: false
+    }
+    , function(data, status){
     if(data) {
       collection = data;
-      renderPlaylists(collection);
     }
   });
 
