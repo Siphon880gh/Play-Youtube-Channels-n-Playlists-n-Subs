@@ -58,10 +58,12 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
             }
 
             $playlistStartIndex = ""; // default
-            if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) ) {
+            // if( isset($_GET["playlistStart"]) && is_numeric(intval($_GET["playlistStart"])) ) {
+            if( isset($_GET["playlistStart"]) ) {
                 $num = intval($_GET["playlistStart"]);
-                if($num<=2) $playlistStartIndex=-1;
-                else $playlistStartIndex = $_GET["playlistStart"];
+                // if($num<=2) $playlistStartIndex=-1;
+                // else $playlistStartIndex = $_GET["playlistStart"];
+                $playlistStartIndex = $num;
             }
 
             echo sprintf("
@@ -135,7 +137,8 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
     }
 
     function isShuffleMode() {
-        const isShuffling = window.location.href.indexOf("playlistStart=")===-1;
+        // let isShuffling = window.location.href.indexOf("playlistStart=")===-1;
+        let isShuffling =  localStorage.getItem("YT__shuffle_mode")==="1";
         console.log("isShuffleMode: ", isShuffling);
         return isShuffling;
     }
@@ -143,8 +146,9 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
     $(()=>{
         // Set visual shuffle mnode button
         if(!isShuffleMode()) {
-            $("button#most-recent").addClass("active");
+            $("#most-recent").addClass("active");
         }
+        debugger;
     })
     </script>
 
@@ -194,7 +198,6 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
                 .next("li")
                 .find("a:nth-child(1)");
 
-            debugger;
             $b.trigger("click");
             // debugger;
         } else {
@@ -225,6 +228,16 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
             window.location.search = urlTrailing;
         }
     } // openPreviousPlaylist
+    function setShuffleMode(wantShuffled) {
+        var $mostRecent = $("#most-recent");
+        if(wantShuffled) {
+            $mostRecent.addClass("active"); // most recent
+            localStorage.setItem("YT__shuffle_mode", 0); // no shuffling
+        } else {
+            $mostRecent.removeClass("active"); // not most recent
+            localStorage.setItem("YT__shuffle_mode", 1); // shuffling
+        }
+    }
     </script>
 
 </head>
@@ -239,8 +252,8 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
                 <i class="fa fa-video"></i> <span>Video</span>
             </div>
             <div class="panel-body">
-                <button id="most-recent" class="btn btn-default btn-sm" onclick="urlChange.start(1); $(this).addClass('active');"><i class="fa fa-list-ol"></i> Most recent</button>
-                <button class="btn btn-default-off btn-sm" onclick="urlChange.start('RANDOM');"><i class="fa fa-random"></i> Next random</button>
+                <button id="most-recent" class="btn btn-default btn-sm" onclick="setShuffleMode(true); urlChange.start(1); $(this).addClass('active');"><i class="fa fa-list-ol"></i> Most recent</button>
+                <button class="btn btn-default-off btn-sm" onclick="setShuffleMode(false); urlChange.start('RANDOM');"><i class="fa fa-random"></i> Next random</button>
                 <span class="info-loop-group">
                     <button class="btn btn-default-off btn-sm loop-into-btn" onclick='window.location.href = window.location.search + "&loop-video-id=" + getVideoId();'><i class="fa fa-recycle"></i> Loop Video</button>
                     <button class="btn btn-default-off btn-sm loop-out-btn" onclick="window.history.back()" style="color:rgba(255,100,100,.6);"><i class="fa fa-sign-in-alt"></i> Exit Loop</button>
