@@ -109,12 +109,13 @@ $(document).ready(function(){
   $.ajax({
       url: "./favs/" + currentCollection + ".json",
       method:"GET",
-      cache: false
-    }
-    , function(data, status){
-    if(data) {
-      collection = data;
-    }
+      cache: false,
+      success: function(data, status) {
+        if(data) {
+          window.collection = data;
+          renderPlaylists(window.collection);
+        }
+      }
   });
 
 });
