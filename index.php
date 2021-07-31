@@ -84,13 +84,18 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
 
             if($el && $el.length) {
 
-                // Wait 10 seconds before adding to last watched list fails. 
                 // Obsolete: Only add playlist to be crossed out on next app opening if you watched >10 seconds
+                // because you might missclick a playlist or decided not to watch it and the purpose of crossing 
+                // out playlists is so that you know it's been explored for the week.
+
                 // setTimeout(()=>{
                     // Equivalent: Push playlist Id to the top if it exists or inserts to the top if it doesn't
                     arrLastOpened = arrLastOpened.filter(aPlayerlistId => aPlayerlistId !== playlistId);
                     arrLastOpened.push(playlistId);
-                    arrLastOpened = arrLastOpened.slice(-10);
+
+                    // Keep track of only 10 crossed out playlists
+                    // arrLastOpened = arrLastOpened.slice(-10);
+
                     var lastWatchedList = JSON.stringify(arrLastOpened);
                     localStorage.setItem("YT__last-opened", lastWatchedList);
                     // console.log("Updated last watched list: " + lastWatchedList);
