@@ -32,7 +32,7 @@
   </div> <!-- /header -->
 
   <div style="text-align: center; margin-top:20px;">
-    <label for="playlist-filter" onclick='$("#playlist-filter").val("");'>Filter:</label>
+    <label for="playlist-filter" onclick='$("#playlist-filter").val(""); filterListItems("", $(".playlists-target")); saveFilteredForRefresh("");'>Filter:</label>
     <input id="playlist-filter" class="playlist-filter" type="text" oninput="filterListItems($(event.target).val(), $('.playlists-target')); saveFilteredForRefresh($(event.target).val());">
   </div>
 
