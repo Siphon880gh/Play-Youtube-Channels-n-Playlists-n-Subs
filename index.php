@@ -143,7 +143,12 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
 
     function isShuffleMode() {
         // let isShuffling = window.location.href.indexOf("playlistStart=")===-1;
-        let isShuffling =  localStorage.getItem("YT__shuffle_mode")==="1";
+
+        // If first opening app, default is no shuffling
+        if(localStorage.getItem("YT__shuffle_mode")===null)
+        localStorage.getItem("YT__shuffle_mode")==="0";
+
+        let isShuffling = localStorage.getItem("YT__shuffle_mode")==="1";
         console.log("isShuffleMode: ", isShuffling);
         return isShuffling;
     }
