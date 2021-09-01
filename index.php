@@ -104,6 +104,7 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
 
             // Change URL
             var params = new URLSearchParams(window.location.search);
+            params.delete("loop-video-id"); // User clicked Most recent or Next random, so no more looping
             params.set("playlistId", playlistId);
 
             // Set URL so can load the same extended playlist collection
@@ -119,6 +120,7 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
         start: (arg1)=> {
 
             var params = new URLSearchParams(window.location.search);
+            params.delete("loop-video-id"); // User clicked Most recent or Next random, so no more looping
             params.delete("playlistStart");
             var wantRandom = arg1==="RANDOM";
             if(!wantRandom) {
@@ -250,6 +252,36 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
     }
     </script>
 
+    <script>
+    function handleLoopBtn($this) {
+        if($this.hasClass("active")) {
+            $this.removeClass("active");
+            window.history.back();
+        } else {
+            $this.addClass("active");
+            window.location.href = window.location.search + "&loop-video-id=" + getVideoId();
+        }
+    }
+    </script>
+
+    <style>
+    .loop-btn:not(.active) i::before {
+        content: "\f1b8";
+    } 
+    .loop-btn:not(.active)::after {
+        content: " Loop Video";
+    } 
+    .loop-btn.active i::before {
+        content: "\f2f6";
+    } 
+    .loop-btn.active::after {
+        content: " Exit Loop";
+    } 
+    .loop-btn.active {
+        color:rgba(255,100,100,.6)
+    } 
+    </style>
+
 </head>
   <body>
 
@@ -262,11 +294,10 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
                 <i class="fa fa-video"></i> <span>Video</span>
             </div>
             <div class="panel-body">
-                <button id="most-recent" class="btn btn-default btn-sm" onclick="setShuffleMode(true); urlChange.start(1); $(this).addClass('active');"><i class="fa fa-list-ol"></i> Most recent</button>
+                <button id="most-recent" class="btn btn-default btn-sm" onclick="setShuffleMode(true); urlChange.start(1); $(this).addClass('active');"><i class="fa"></i> Most recent</button>
                 <button class="btn btn-default-off btn-sm" onclick="setShuffleMode(false); urlChange.start('RANDOM');"><i class="fa fa-random"></i> Next random</button>
                 <span class="info-loop-group">
-                    <button class="btn btn-default-off btn-sm loop-into-btn" onclick='window.location.href = window.location.search + "&loop-video-id=" + getVideoId();'><i class="fa fa-recycle"></i> Loop Video</button>
-                    <button class="btn btn-default-off btn-sm loop-out-btn" onclick="window.history.back()" style="color:rgba(255,100,100,.6);"><i class="fa fa-sign-in-alt"></i> Exit Loop</button>
+                    <button class="btn btn-default-off btn-sm loop-btn" onclick='handleLoopBtn($(this));'><i class="fa"></i></button>
                 </span>
                 <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();"><i class="fa fa-maximize"></i> Fit Video</button></br>
                 <div style="width:1px; height:10px;"></div>
@@ -427,10 +458,10 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
     let loopVideoId = params.get("loop-video-id");
 
     if(loopVideoId===null) {
-        $(".loop-out-btn").remove();
+        $(".loop-btn").removeClass("active");
         eval(ytPlaylist);
     } else {
-        $(".loop-into-btn").remove();
+        $(".loop-btn").addClass("active");
         eval(ytVideoLooper);
     }
 
