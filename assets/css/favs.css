@@ -37,9 +37,11 @@ body {
     padding-left: 10px;
 }
 
+
+/* 
 #favs li:before {
     content: "- ";
-}
+} */
 
 a:visited {
     color: blue;

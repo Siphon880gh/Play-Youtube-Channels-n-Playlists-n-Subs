@@ -90,9 +90,13 @@ $(document).ready(function(){
 
         // Add interactivity
         a.attr("href","javascript:void(0);");
-        a.attr("data-playlist-id",id);
-        a.attr("onclick", "changeVideo(event)");
-        
+        if(id) {
+          a.attr("data-playlist-id",id);
+          a.attr("onclick", "changeVideo(event)");
+        } else {
+          a.addClass('not-link')
+          li.addClass('not-link')
+        }
         // Change text
         a.html(name);
 
@@ -133,3 +137,14 @@ $(document).ready(function(){
 });
 
 </script>
+<style>
+  a.not-link {
+    color: gray !important;
+    text-decoration: none;
+    cursor: default;
+  }
+  li.not-link {
+    list-style-type: none;
+    margin-bottom: 5px;
+  }
+</style>
