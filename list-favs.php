@@ -14,12 +14,13 @@ $a = removeElement(".", $a);
 $a = removeElement("..", $a);
 $a = removeElement("index.php", $a);
 $a = removeElement("index.html", $a);
+$a = removeElement("default.json", $a);
 
 echo "
 <div class='fav-collections'>
 <b>More favs collections:</b><br/><br/>
-<a href=\"" . $prependPath . "favs.php\">default</a>
-    ";
+<a href=\"" . $prependPath . "favs.php\">[Default]</a>";
+
 foreach($a as $link) {
     $collection = str_replace(".json", "", $link);
     echo "
