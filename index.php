@@ -1,11 +1,11 @@
 
 <?php
 // Other defaults:
-// Dua Lipa old music: OLAK5uy_n1RTVv-lJ6-4DjJmFUfF_MoRevOeYTM4Q
-// Bebe Rexha old music: OLAK5uy_mc7x6vdCJWUpWXeF6NEY1ljjfwXoG18do
-// RandomYt: PLJMMfLBtUHMlUCynG24upluI_pE9WFlII
-// $defaultPlaylistId = "UU-J-KZfRV8c13fOCkhXdLiQ";
-$defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
+// $defaultPlaylistId = "OLAK5uy_mc7x6vdCJWUpWXeF6NEY1ljjfwXoG18do"; // Bebe Rexha old music
+// $defaultPlaylistId = "OLAK5uy_n1RTVv-lJ6-4DjJmFUfF_MoRevOeYTM4Q"; // Dua Lipa old music
+// $defaultPlaylistId = "UU-J-KZfRV8c13fOCkhXdLiQ"; // // Dua Lipa music
+// $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm"; // Keep the beat going
+$defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
 ?>
 <html>
 <head>
@@ -336,7 +336,7 @@ $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm";
     </script>
 
     <!-- Modal: Override Playlist ID -->
-    <div id="modal-override-playlist-id" class="modal modal-sm fade" style="left: 50%; transform: translateX(-50%); top:50%; translateY(-40%);">
+    <div id="modal-override-playlist-id" class="modal modal-sm fade" style="position:absolute !important; left: 495px; top:700px; transform:translateX(-100%);" old-style-attempt="left: 50%; top:50%; transform: translateX(-50%) translateY(-40%);">
         <div class="modal-dialog-off">
         
             <!-- Modal content-->
