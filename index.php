@@ -3,7 +3,7 @@
 // Other defaults:
 // $defaultPlaylistId = "OLAK5uy_mc7x6vdCJWUpWXeF6NEY1ljjfwXoG18do"; // Bebe Rexha old music
 // $defaultPlaylistId = "OLAK5uy_n1RTVv-lJ6-4DjJmFUfF_MoRevOeYTM4Q"; // Dua Lipa old music
-// $defaultPlaylistId = "UU-J-KZfRV8c13fOCkhXdLiQ"; // // Dua Lipa music
+// $defaultPlaylistId = "UU-J-KZfRV8c13fOCkhXdLiQ"; // // Dua Lipa docs and music
 // $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm"; // Keep the beat going
 $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
 ?>
@@ -21,6 +21,13 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
     <link rel="stylesheet" href="assets/css/index.css">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
+
+    <style>
+    /** Placed here for now since Flobro cache can't clear */
+    .d-none {
+        display: none;
+    }
+    </style>
     
     <script>
     function utils__getPlaylistIdFromURL() {
@@ -315,7 +322,18 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
                 <button class="btn btn-secondary" onclick='jumpToActivePlaylist();'><i id="manual" class="fa fa-ruler-vertical clickable"></i><span>&nbsp;Scroll</span></button>
                 <!-- Disabled Auth button: Reason for it was some music videos require sign in. But now disabled because "Age-restricted videos can’t be watched on most 3rd party websites" -->
                 <!-- <button class="btn btn-secondary" onclick='window.open("https://accounts.google.com/signin/v2/identifier?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=en&ec=65620&flowName=GlifWebSignIn&flowEntry=ServiceLogin");' style="margin-top:5px;"><i id="manual" class="fa fa-user clickable"></i><span>&nbsp;Auth</span></button> -->
-                <button class="btn btn-secondary" onclick='$("#favs-wrapper iframe").contents().find("#manual").click(); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);'><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Playlist ID</span></button>
+                <button class="btn btn-secondary" onclick='$("#override-playlist-ui").toggleClass("fade d-none"); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);'><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Playlist ID</span>
+                </button>
+            </div>
+            <div id="override-playlist-ui" class="panel-body fade d-none" style="padding:7.5px; border-radius:5px; text-align:center; width:fit-content; margin:0 auto 10px auto; border:1px solid lightgray;">
+                <div class="modal-header" style="padding:5px; border-bottom:0;">
+                    <h4 class="modal-title">Override playlist ID</h4>
+                </div>
+                <div class="modal-body" style="text-align:center; padding: 5px;">
+                    <input id="overridePlaylistId" type="text" style="margin-right:10px; margin-bottom:10px;"></input>
+                    <button type="button" class="btn btn-primary" onclick="overridePlaylistId()">Run</button>
+                    <span style="clear:both;"></span>
+                </div>
             </div>
         </div>
 
@@ -334,26 +352,6 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
         if(newPlaylistId.length) window.parent.urlChange.playlist(null, newPlaylistId);
     }
     </script>
-
-    <!-- Modal: Override Playlist ID -->
-    <div id="modal-override-playlist-id" class="modal modal-sm fade" style="position:absolute !important; left: 495px; top:700px; transform:translateX(-100%);" old-style-attempt="left: 50%; top:50%; transform: translateX(-50%) translateY(-40%);">
-        <div class="modal-dialog-off">
-        
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">×</button>
-                    <h4 class="modal-title">Override playlist ID</h4>
-                </div>
-                <div class="modal-body" style="text-align:left;">
-                    <input id="overridePlaylistId" type="text" style="margin-right:10px; margin-bottom:10px;"></input>
-                    <button type="button" class="btn btn-primary" onclick="overridePlaylistId()">Run</button>
-                    <span style="clear:both;"></span>
-                </div>
-            </div>
-
-        </div>
-    </div> <!-- /Modal -->
 
     <script>
     /** 
