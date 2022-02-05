@@ -172,6 +172,20 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
     </script>
 
     <script>
+    // Pre-search
+    $(()=>{
+        var paramsSearch = new URLSearchParams(window.location.search);
+        var search = paramsSearch.get("search");
+        if(search) {
+            setTimeout(()=>{
+                let $filter = $("#favs").contents().find("#playlist-filter");
+                $filter.val(search);
+                $filter.trigger("input");
+                console.log(`Search: ${search}`);
+            }, 1000);
+        }
+    })
+
     // Overriding fav playlists
     $(()=>{
         // URL settings
