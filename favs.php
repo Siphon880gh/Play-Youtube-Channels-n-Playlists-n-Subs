@@ -32,6 +32,8 @@
   </div> <!-- /header -->
 
   <div style="text-align: center; margin-top:20px;">
+    <a href="javascript:void(0)" onclick='$("#playlist-filter").val("").trigger("input");'><i class="fa fa-eraser"></i></a>
+    <span>&nbsp;</span>
     <label for="playlist-filter" onclick='$("#playlist-filter").val(""); filterListItems("", $(".playlists-target")); saveFilteredForRefresh("");'>Filter:</label>
     <input id="playlist-filter" class="playlist-filter" type="text" oninput="filterListItems($(event.target).val(), $('.playlists-target')); saveFilteredForRefresh($(event.target).val());" autocomplete="on">
   </div>
