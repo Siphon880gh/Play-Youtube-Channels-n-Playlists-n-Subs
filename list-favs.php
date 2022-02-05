@@ -14,7 +14,7 @@ $a = removeElement(".", $a);
 $a = removeElement("..", $a);
 $a = removeElement("index.php", $a);
 $a = removeElement("index.html", $a);
-$a = removeElement("default.json", $a);
+$a = removeElement("Default.json", $a);
 
 echo "
 <div class='fav-collections'>

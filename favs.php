@@ -47,8 +47,8 @@ jQuery.expr[':'].contains = function(a, i, m) {
 };
 
 var params = new URLSearchParams(window.location.search);
-var currentCollection = params.get("favs") || "default";
-if(currentCollection==="favs") currentCollection = "default";
+var currentCollection = params.get("favs") || "Default";
+if(currentCollection==="favs") currentCollection = "Default";
 
 function filterListItems(userFilterText, listItems) {
   var allListItems = listItems.find("li");
