@@ -117,7 +117,7 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
             // Set URL so can load the same extended playlist collection
             var favIframeLink = $("#favs-wrapper iframe")[0].contentWindow.location.href;
             var matchBundle = favIframeLink.match(new RegExp("favs=(.*)"));
-            var matched = matchBundle&&matchBundle.length>1?matchBundle[1]:"default"; 
+            var matched = matchBundle&&matchBundle.length>1?matchBundle[1]:"Default"; 
             if(matched) matched = matched.replaceAll(".php", "");
 
             params.set("favs", matched);
@@ -137,7 +137,7 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
             // Set URL so can load the same extended playlist collection
             var favIframeLink = $("#favs-wrapper iframe")[0].contentWindow.location.href;
             var matchBundle = favIframeLink.match(new RegExp("favs=(.*)"));
-            var matched = matchBundle&&matchBundle.length>1?matchBundle[1]:"default";
+            var matched = matchBundle&&matchBundle.length>1?matchBundle[1]:"Default";
             if(matched) matched = matched.replaceAll(".php", "");
 
             params.set("favs", matched);
