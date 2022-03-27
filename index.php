@@ -17,7 +17,7 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <script src="assets/js/favs.js"></script>
+    <script src="assets/js/favs.js?v=2"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
     <link rel="stylesheet" href="assets/css/index.css">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
@@ -79,35 +79,38 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
             ", $playlistId, $playlistStartIndex);
         ?>
     // })();
+
+    // Get last 10
+    let lastOpened = localStorage.getItem("YT__last-opened");
+    window.arrLastOpened = [];
+    if(lastOpened) {
+        arrLastOpened = JSON.parse(lastOpened);
+    }
+
+    if(window.playlistId) {
+        // Obsolete: Only add playlist to be crossed out on next app opening if you watched >10 seconds
+        // because you might missclick a playlist or decided not to watch it and the purpose of crossing 
+        // out playlists is so that you know it's been explored for the week.
+
+        setTimeout(()=>{
+            // Equivalent: Push playlist Id to the top if it exists or inserts to the top if it doesn't
+            arrLastOpened = arrLastOpened.filter(aPlayerlistId => aPlayerlistId !== window.playlistId);
+            arrLastOpened.push(window.playlistId);
+
+            // Keep track of only 10 crossed out playlists
+            // arrLastOpened = arrLastOpened.slice(-10);
+            // debugger;
+
+            var lastWatchedList = JSON.stringify(arrLastOpened);
+            localStorage.setItem("YT__last-opened", lastWatchedList);
+            renderCrossedOutPlaylists(arrLastOpened);
+            // console.log("Updated last watched list: " + lastWatchedList);
+        }, 10000);
+    }
+
+
     window.urlChange = {
         playlist: ($el, playlistId)=> {
-
-            // Get last 10
-            let lastOpened = localStorage.getItem("YT__last-opened");
-            window.arrLastOpened = [];
-            if(lastOpened) {
-                arrLastOpened = JSON.parse(lastOpened);
-            }
-
-            if($el && $el.length) {
-
-                // Obsolete: Only add playlist to be crossed out on next app opening if you watched >10 seconds
-                // because you might missclick a playlist or decided not to watch it and the purpose of crossing 
-                // out playlists is so that you know it's been explored for the week.
-
-                // setTimeout(()=>{
-                    // Equivalent: Push playlist Id to the top if it exists or inserts to the top if it doesn't
-                    arrLastOpened = arrLastOpened.filter(aPlayerlistId => aPlayerlistId !== playlistId);
-                    arrLastOpened.push(playlistId);
-
-                    // Keep track of only 10 crossed out playlists
-                    // arrLastOpened = arrLastOpened.slice(-10);
-
-                    var lastWatchedList = JSON.stringify(arrLastOpened);
-                    localStorage.setItem("YT__last-opened", lastWatchedList);
-                    // console.log("Updated last watched list: " + lastWatchedList);
-                // }, 10000);
-            }
 
             // Change URL
             var params = new URLSearchParams(window.location.search);
@@ -169,9 +172,7 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
         }
         // debugger;
     })
-    </script>
-
-    <script>
+    
     // Pre-search
     $(()=>{
         var paramsSearch = new URLSearchParams(window.location.search);
@@ -271,9 +272,7 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
             localStorage.setItem("YT__shuffle_mode", 1); // shuffling
         }
     }
-    </script>
-
-    <script>
+    
     function handleLoopBtn($this) {
         if($this.hasClass("active")) {
             $this.removeClass("active");

@@ -34,6 +34,8 @@
   <div style="text-align: center; margin-top:20px;">
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="❤️") { $("#playlist-filter").val("❤️") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>❤️</a>
     <span>&nbsp;</span>
+    <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Nelk") { $("#playlist-filter").val("Nelk") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Nelk]</a>
+    <span>&nbsp;</span>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="News") { $("#playlist-filter").val("News") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[News]</a>
     <span>&nbsp;</span>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Propa") { $("#playlist-filter").val("Propa") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Propa]</a>

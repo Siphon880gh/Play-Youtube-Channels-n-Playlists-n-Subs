@@ -16,21 +16,26 @@ class RandomPlaylist {
 } // RandomPlaylist
 RandomPlaylist = new RandomPlaylist();
 
-$(() => {
-    // The last 10 opened playlists
+window.renderCrossedOutPlaylists = function(arrLastOpened) {
+    $("#favs-wrapper iframe").contents().find("a.crossed-out").removeClass("crossed-out");
 
-    // Get last 10
+    arrLastOpened.forEach(playlistId => {
+        console.log("Last seen playlist id: " + playlistId);
+        $("#favs-wrapper iframe").contents().find(`[data-playlist-id="${playlistId}"]`).addClass("crossed-out");
+    });
+}
+$(() => {
+    // Main: Render cross out for the last 10 opened playlists
+
+    // Sub: Get last 10
     let lastOpened = localStorage.getItem("YT__last-opened");
     let arrLastOpened = [];
     if (lastOpened) {
         arrLastOpened = JSON.parse(lastOpened);
     }
     
-    // Cross out the last 10
+    // Sub: Cross out the last 10
     setTimeout(()=>{
-        arrLastOpened.forEach(playlistId => {
-            console.log("Last seen playlist id: " + playlistId);
-            $("#favs-wrapper iframe").contents().find(`[data-playlist-id="${playlistId}"]`).addClass("crossed-out");
-        });
+        renderCrossedOutPlaylists(arrLastOpened);
     }, 1000);
 })
