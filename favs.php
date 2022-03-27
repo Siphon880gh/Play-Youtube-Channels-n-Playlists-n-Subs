@@ -32,6 +32,15 @@
   </div> <!-- /header -->
 
   <div style="text-align: center; margin-top:20px;">
+    <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="❤️") { $("#playlist-filter").val("❤️") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>❤️</a>
+    <span>&nbsp;</span>
+    <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Propa") { $("#playlist-filter").val("Propa") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Propa]</a>
+    <span>&nbsp;</span>
+    <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Reddit") { $("#playlist-filter").val("Reddit") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Reddit]</a>
+    <span>&nbsp;</span>
+    <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Zelda") { $("#playlist-filter").val("Zelda") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Zelda]</a>
+    <span>&nbsp;</span>
+    <br/><br/>
     <a href="javascript:void(0)" onclick='$("#playlist-filter").val("").trigger("input");'><i class="fa fa-eraser"></i></a>
     <span>&nbsp;</span>
     <label for="playlist-filter" onclick='$("#playlist-filter").val(""); filterListItems("", $(".playlists-target")); saveFilteredForRefresh("");'>Filter:</label>
