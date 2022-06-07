@@ -9,9 +9,9 @@ ManualPlaylist = new ManualPlaylist();
 class RandomPlaylist {
     constructor() {}
     select() {
-            var count = $("li").length;
+            var count = $("li:visible").length;
             var randomPlaylist = parseInt(Math.random() * (count + 1));
-            $("li").eq(randomPlaylist).find("a").click();
+            $("li:visible").eq(randomPlaylist).find("a").click();
         } // select
 } // RandomPlaylist
 RandomPlaylist = new RandomPlaylist();

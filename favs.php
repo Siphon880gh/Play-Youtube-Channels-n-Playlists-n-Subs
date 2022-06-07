@@ -42,12 +42,25 @@
     <span>&nbsp;</span>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Zelda") { $("#playlist-filter").val("Zelda") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Zelda]</a>
     <span>&nbsp;</span>
+
     <div style="width:1px; height:5px;"></div>
+    <span style="border:1px solid gray; border-radius:5px;">
+      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Mood") { $("#playlist-filter").val("Mood") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Mood]</a>
+      <span>|</span>
+      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Travel") { $("#playlist-filter").val("Travel") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Travel]</a>
+      <span>|</span>
+      <a href="javascript:void(0)" onclick='RandomPlaylist.select();'>[Rand]</a>
+    </span>
+    <span>&nbsp;</span>
+
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="News") { $("#playlist-filter").val("News") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[News]</a>
     <span>&nbsp;</span>
+    <div style="width:1px; height:5px;"></div>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Opinion") { $("#playlist-filter").val("Opinion") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Opinion]</a>
     <span>&nbsp;</span>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Review") { $("#playlist-filter").val("Review") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Review]</a>
+    <span>&nbsp;</span>
+    <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Trailer") { $("#playlist-filter").val("Trailer") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Trailer]</a>
     <span>&nbsp;</span>
     <br/><br/>
     <a href="javascript:void(0)" onclick='$("#playlist-filter").val("").trigger("input");'><i class="fa fa-eraser"></i></a>
