@@ -32,6 +32,21 @@
   </div> <!-- /header -->
 
   <div style="text-align: center; margin-top:20px;">
+    <span style="border:1px solid gray; border-radius:5px;">
+      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Mood") { $("#playlist-filter").val("Mood") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Mood]</a>
+      <span>|</span>
+      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Travel") { $("#playlist-filter").val("Travel") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Travel]</a>
+      <span>|</span>
+      <a href="javascript:void(0)" onclick='RandomPlaylist.select();'>[Rand]</a>
+      <span>|</span>
+      <a target="_blank" href="//docs.google.com/spreadsheets/d/12KOsTfkDUbC-eJSxzKCKn1MGp0o4vSE65wNBd_FI_jg/edit#gid=1451394616">[Motiv]</a>
+      <span>|</span>
+      <a  target="_blank" href="//wengindustry.com/tools/daily-portal/#analysis">[Analysis]</a>
+      <span>|</span>
+      <a  target="_blank" href="//wengindustry.com/tools/daily-portal/#impaired">[Impaired]</a>
+    </span>
+
+    <div style="width:1px; height:5px;"></div>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="❤️") { $("#playlist-filter").val("❤️") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>❤️</a>
     <span>&nbsp;</span>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Nelk") { $("#playlist-filter").val("Nelk") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Nelk]</a>
@@ -44,18 +59,8 @@
     <span>&nbsp;</span>
 
     <div style="width:1px; height:5px;"></div>
-    <span style="border:1px solid gray; border-radius:5px;">
-      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Mood") { $("#playlist-filter").val("Mood") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Mood]</a>
-      <span>|</span>
-      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Travel") { $("#playlist-filter").val("Travel") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Travel]</a>
-      <span>|</span>
-      <a href="javascript:void(0)" onclick='RandomPlaylist.select();'>[Rand]</a>
-    </span>
-    <span>&nbsp;</span>
-
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="News") { $("#playlist-filter").val("News") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[News]</a>
     <span>&nbsp;</span>
-    <div style="width:1px; height:5px;"></div>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Opinion") { $("#playlist-filter").val("Opinion") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Opinion]</a>
     <span>&nbsp;</span>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Review") { $("#playlist-filter").val("Review") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Review]</a>
