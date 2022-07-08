@@ -32,21 +32,23 @@
   </div> <!-- /header -->
 
   <div style="text-align: center; margin-top:20px;">
-    <span style="border:1px solid gray; border-radius:5px;">
-      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Mood") { $("#playlist-filter").val("Mood") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Mood]</a>
+    <div style="border-bottom:1px solid rgba(125,125,125,.7); border-radius:0; display:inline-block; padding: 5px 10px; padding-bottom: 15px;">
+
+      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Mood OR NLP") { $("#playlist-filter").val("Mood OR NLP") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Mood OR NLP]</a>
       <span>|</span>
       <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Travel") { $("#playlist-filter").val("Travel") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Travel]</a>
       <span>|</span>
       <a href="javascript:void(0)" onclick='RandomPlaylist.select();'>[Rand]</a>
-      <span>|</span>
+
+      <div style="width:1px; height:5px;"></div>
       <a target="_blank" href="//docs.google.com/spreadsheets/d/12KOsTfkDUbC-eJSxzKCKn1MGp0o4vSE65wNBd_FI_jg/edit#gid=1451394616">[Motiv]</a>
       <span>|</span>
-      <a  target="_blank" href="//wengindustry.com/tools/daily-portal/#analysis">[Analysis]</a>
+      <a target="_blank" href="//wengindustry.com/tools/daily-portal/#analysis">[Analysis]</a>
       <span>|</span>
-      <a  target="_blank" href="//wengindustry.com/tools/daily-portal/#impaired">[Impaired]</a>
-    </span>
+      <a target="_blank" href="//wengindustry.com/tools/daily-portal/#impaired">[Impaired]</a>
+    </div>
 
-    <div style="width:1px; height:5px;"></div>
+    <div style="width:1px; height:10px;"></div>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="❤️") { $("#playlist-filter").val("❤️") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>❤️</a>
     <span>&nbsp;</span>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="👂") { $("#playlist-filter").val("👂") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>👂</a>
@@ -69,11 +71,12 @@
     <span>&nbsp;</span>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Trailer") { $("#playlist-filter").val("Trailer") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Trailer]</a>
     <span>&nbsp;</span>
-    <br/><br/>
+    
+    <div style='margin-top:25px'></div>
     <a href="javascript:void(0)" onclick='$("#playlist-filter").val("").trigger("input");'><i class="fa fa-eraser"></i></a>
     <span>&nbsp;</span>
     <label for="playlist-filter" onclick='$("#playlist-filter").val(""); filterListItems("", $(".playlists-target")); saveFilteredForRefresh("");'>Filter:</label>
-    <input id="playlist-filter" class="playlist-filter" type="text" oninput="filterListItems($(event.target).val(), $('.playlists-target')); saveFilteredForRefresh($(event.target).val());" autocomplete="on">
+    <input id="playlist-filter" class="playlist-filter" type="text" oninput="filterListItems($(event.target).val(), $('.playlists-target')); saveFilteredForRefresh($(event.target).val());" autocomplete="on" placeholder="term OR term OR...">
   </div>
 
   <ul class="playlists-target">
@@ -91,16 +94,27 @@ var currentCollection = params.get("favs") || "Default";
 if(currentCollection==="favs") currentCollection = "Default";
 
 function filterListItems(userFilterText, listItems) {
-  var allListItems = listItems.find("li");
 
   // Filtering vs reset to showing all list items
   if(userFilterText.length) {
 
-    allListItems.hide();
-    var filteredIn = listItems.find(`li:contains('${userFilterText}')`);
-    filteredIn.show();
+    let $allListItems = listItems.find("li");
+    $allListItems.hide();
+
+    var $filteredIn = null;
+    var terms = userFilterText.split("OR").map(term => term.trim())
+    terms.forEach(term=>{
+      if(term.length===0) return true; // eg. A OR
+
+      if($filteredIn===null) {
+        $filteredIn = listItems.find(`li:contains('${term}')`);
+      } else {
+        $.merge($filteredIn, listItems.find(`li:contains('${term}')`));
+      }
+    }) // forEach
+    $filteredIn.show();
   } else {
-    allListItems.show();
+    $allListItems.show();
   }
 } // filterListItems
 
