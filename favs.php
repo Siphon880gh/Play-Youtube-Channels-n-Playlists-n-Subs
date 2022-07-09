@@ -94,11 +94,11 @@ var currentCollection = params.get("favs") || "Default";
 if(currentCollection==="favs") currentCollection = "Default";
 
 function filterListItems(userFilterText, listItems) {
+  let $allListItems = listItems.find("li");
 
   // Filtering vs reset to showing all list items
   if(userFilterText.length) {
 
-    let $allListItems = listItems.find("li");
     $allListItems.hide();
 
     var $filteredIn = null;
