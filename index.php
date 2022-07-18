@@ -30,6 +30,14 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
     </style>
     
     <script>
+    // Fit video?
+        let a = new URLSearchParams(window.location.search).get("fit-video")
+        if(a!==null) {
+            setTimeout(()=>{
+                $("#fit-video").click();
+            }, 500)
+        }
+
     function utils__getPlaylistIdFromURL() {
         return String(new URLSearchParams(window.location.search).get("playlistId"));
     }
@@ -307,7 +315,7 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
 
     <div id="player"></div>
     <div class="spacer-v"></div>
-    <div id="app-desc" style="font-size:1.25rem;">Youtube Viewer and Shuffler<br/>By Weng. <span style="font-size:.8rem;">Youtube has changed their video algorithms and are not consistently showing my favorite subscriptions' most recent videos on the front page. With this app you can show the most recent videos from all your subscriptions and more. <a href="#" onclick="event.preventDefault(); $(this).next().show(); $(this).hide();">Read More</a><span style="display:none;">Play youtube videos from favorited channels and playlists in order or randomly. You can fit the video to the window so you can watch on one part of the screen. As an advance internet user, you can place a playlist ID in the URL param as <code>?playlistId=...</code> or start the playlist at a song position with the URL param like <code>&playlistStart=1</code>. As a developer, you can add more favorite channels or playlists at favs.php.</span></span></div>
+    <div id="app-desc" style="font-size:1.25rem;">Youtube Viewer and Shuffler<br/>By Weng. <span style="font-size:.8rem;">Youtube has changed their video algorithms and are not consistently showing my favorite subscriptions' most recent videos on the front page. With this app you can show the most recent videos from all your subscriptions and more. <a href="#" onclick="event.preventDefault(); $(this).next().show(); $(this).hide();">Read More</a><span style="display:none;">Play youtube videos from favorited channels and playlists in order or randomly. You can fit the video to the window so you can watch on one part of the screen. As an advance internet user, you can place a playlist ID in the URL param as <code>?playlistId=...</code> or start the playlist at a song position with the URL param like <code>&playlistStart=1</code>. Want the video player fitted to the window when the page loads? Use URL parameter <code>fit-video</code>. As a developer, you can add more favorite channels or playlists at favs.php and /favs.</span></span></div>
     <div id="buttons">
         <div class="panel panel-warning">
             <div class="panel-heading">
