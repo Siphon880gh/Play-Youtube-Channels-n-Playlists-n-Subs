@@ -19,7 +19,7 @@
      * 
     */
     ?>
-    <a href="javascript:void(0);" onclick="window.parent.More.counter('Favheader');">Youtube uploads and playlists:</a>
+    <a href="javascript:void(0);" onclick="fetchPlaylist('Default'); window.parent.More.counter('Favheader');">Youtube uploads and playlists:</a>
     <div class="float-right float-right-buttons" style="padding-right: 5px;">
       <i id="random" class="fa fa-random clickable" onclick="RandomPlaylist.select();" style="margin-left:3px;"></i>
       <div style="width:1px; height:10px;"></div>
@@ -130,15 +130,35 @@ function changeVideo(event) {
     window.parent.urlChange.playlist($el, id);
   }
 
-$(document).ready(function(){
+// Fetch and render list of playlists
+
+function fetchPlaylist(calledCollection) {
+    if(calledCollection)
+      currentCollection = calledCollection;
+
+    // debugger;
+
+    $.ajax({
+        url: "./favs/" + currentCollection + ".json",
+        method:"GET",
+        cache: false,
+        success: function(data, status) {
+          if(data) {
+            window.collection = data;
+            renderPlaylists(window.collection);
+          }
+        }
+    });
+  } // fetchPlaylist
   function renderPlaylists(collection) {
     var $playlistContainer = $(".playlists-target");
+    $playlistContainer.html("");
 
     for(var i =0; i<collection.length; i++) {
         var playlistObject = collection[i];
         var id = (typeof playlistObject.id!=="undefined")?playlistObject.id:-1;
         var name = playlistObject.name;
-        console.log({id,name})
+        // console.log({id,name})
 
         var li = $("<li></li>")
         var a = $("<a></a>");
@@ -177,18 +197,8 @@ $(document).ready(function(){
     window.parent.resizeIframeFavs();
   }
 
-  $.ajax({
-      url: "./favs/" + currentCollection + ".json",
-      method:"GET",
-      cache: false,
-      success: function(data, status) {
-        if(data) {
-          window.collection = data;
-          renderPlaylists(window.collection);
-        }
-      }
-  });
-
+$(document).ready(function(){
+  fetchPlaylist();
 });
 
 </script>
