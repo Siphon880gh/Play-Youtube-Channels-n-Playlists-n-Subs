@@ -267,6 +267,18 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
         return $current;
     }
 
+    function intern_backTrackOverNonLink($current) {
+        $current = $current.closest("li")
+                .prev("li")
+                .find("a:nth-child(1)");
+
+        if($current.hasClass("not-link")) {
+            $current = intern_backTrackOverNonLink($current)
+        }
+
+        return $current;
+    }
+
     function openNextPlaylist() {
         var searchParams = (new URLSearchParams(window.location.search));
         var nextPlaylistId = searchParams.get("playlistId");
@@ -309,6 +321,18 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
             $b = $a.closest("li")
                 .prev("li")
                 .find("a:nth-child(1)");
+
+            // Check if already at first item
+            if($b.length===0) {
+                $b = $("#favs-wrapper iframe").contents().find(".playlists-target li:not(.not-link)").last();
+                $b = $b.find("a:nth-child(1)");
+
+            }
+
+            // Check if on a separator, or basically on a non-link element
+            if($b.hasClass("not-link")) {
+                $b = intern_backTrackOverNonLink($b)
+            }
 
             $b.click();
             // debugger;
