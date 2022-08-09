@@ -136,21 +136,22 @@ $(document).ready(function(){
 
     for(var i =0; i<collection.length; i++) {
         var playlistObject = collection[i];
-        var id = playlistObject.id;
+        var id = (typeof playlistObject.id!=="undefined")?playlistObject.id:-1;
         var name = playlistObject.name;
+        console.log({id,name})
 
         var li = $("<li></li>")
         var a = $("<a></a>");
 
         // Add interactivity
         a.attr("href","javascript:void(0);");
-        if(id) {
+        if(id===-1) {
+          a.addClass('not-link') // dependency out there
+          li.addClass('not-link') // dependency out there
+        } else if(id) {
           a.attr("data-playlist-id",id);
           a.attr("onclick", "changeVideo(event)");
-        } else {
-          a.addClass('not-link')
-          li.addClass('not-link')
-        }
+        } 
         // Change text
         a.html(name);
 
