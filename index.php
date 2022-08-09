@@ -86,7 +86,32 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
                     window.playlistStartIndex = '%s';
             ", $playlistId, $playlistStartIndex);
         ?>
+
     // })();
+
+    // Flash playlist name at the top
+    $(()=>{
+        setTimeout(()=>{
+
+            var playlistName = (()=>{
+                let u = (new URLSearchParams(window.location.search)).get("playlistId");
+                let e = null;
+                if(u) {
+                    e = $("#favs-wrapper iframe").contents().find(`[data-playlist-id='${u}']`);
+                }
+                if(e) {
+                    return e.text();
+                } else {
+                    return "";
+                }
+
+            })();
+            $("#playlist-name-flash").removeClass("d-none").text(playlistName)
+        }, 3000);
+        setTimeout(()=>{
+            $("#playlist-name-flash").addClass("d-none")
+        }, 10000);
+    });
 
     // Get last 10
     let lastOpened = localStorage.getItem("YT__last-opened");
@@ -336,6 +361,7 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
 
 </head>
   <body>
+    <div id="playlist-name-flash" class="d-none" style="position:fixed; top: 5px; left:5px; display:inline; padding: 0 5px; z-index:9999; opacity:.90; font-size: 1.2rem; background-color:darkgray; color:white"></div>
 
     <div id="player"></div>
     <div class="spacer-v"></div>
