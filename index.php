@@ -391,8 +391,8 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
     <div class="spacer-v"></div>
     <div id="app-desc" style="font-size:1.25rem;">Youtube Viewer and Shuffler<br/>By Weng. <span style="font-size:.8rem;">Youtube has changed their video algorithms and are not consistently showing my favorite subscriptions' most recent videos on the front page. With this app you can show the most recent videos from all your subscriptions and more. <a href="#" onclick="event.preventDefault(); $(this).next().show(); $(this).hide();">Read More</a><span style="display:none;">Play youtube videos from favorited channels and playlists in order or randomly. You can fit the video to the window so you can watch on one part of the screen. As an advance internet user, you can place a playlist ID in the URL param as <code>?playlistId=...</code> or start the playlist at a song position with the URL param like <code>&playlistStart=1</code>. Want the video player fitted to the window when the page loads? Use URL parameter <code>fit-video</code>. As a developer, you can add more favorite channels or playlists at favs.php and /favs.</span></span></div>
     <div id="buttons">
-        <div class="panel panel-warning">
-            <div class="panel-heading">
+        <div class="panel panel-warning"  style="border-color:rgba(200,0,0,.75);">
+            <div class="panel-heading" style="background-color:rgba(200,0,0,.35); border-color:rgba(200,0,0,.75);">
                 <i class="fa fa-video"></i> <span>Video</span>
             </div>
             <div class="panel-body">
@@ -406,8 +406,8 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
             </div>
         </div>
 
-        <div class="panel panel-warning">
-            <div class="panel-heading">
+        <div class="panel panel-warning" style="border-color:rgba(196,125,123,.75);">
+            <div class="panel-heading" style="background-color:rgba(196,125,123,.75); color:rgba(255,255,255,0.75);">
                 <span onclick="More.counter('Playlistheader')"><i class="fa fa-list"></i> <span>Playlist</span></span>
             </div>
             <div class="panel-body">
