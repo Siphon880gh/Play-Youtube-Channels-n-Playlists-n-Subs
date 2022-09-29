@@ -36,6 +36,8 @@
 
       <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Mood OR NLP") { $("#playlist-filter").val("Mood OR NLP") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Mood OR NLP]</a>
       <span>|</span>
+      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="NLP") { $("#playlist-filter").val("NLP") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[NLP]</a>
+      <span>|</span>
       <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Travel") { $("#playlist-filter").val("Travel") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Travel]</a>
       <span>|</span>
       <a href="javascript:void(0)" onclick='RandomPlaylist.select();'>[Rand]</a>
