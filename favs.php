@@ -43,9 +43,11 @@
       <a href="javascript:void(0)" onclick='RandomPlaylist.select();'>[Rand]</a>
 
       <div style="width:1px; height:5px;"></div>
+      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Comedy") { $("#playlist-filter").val("Comedy") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Comedy/Wake]</a>
+      <span>|</span>
       <a target="_blank" href="//docs.google.com/spreadsheets/d/12KOsTfkDUbC-eJSxzKCKn1MGp0o4vSE65wNBd_FI_jg/edit#gid=1451394616">[Motiv]</a>
       <span>|</span>
-      <a target="_blank" href="//wengindustry.com/tools/daily-portal/#analysis">[Analysis]</a>
+      <a target="_blank" href="//wengindustry.com/tools/daily-portal/#analysis">[Paralysis]</a>
       <span>|</span>
       <a target="_blank" href="//wengindustry.com/tools/daily-portal/#impaired">[Impaired]</a>
     </div>

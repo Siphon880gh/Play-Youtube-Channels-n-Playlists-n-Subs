@@ -385,61 +385,66 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
 
 </head>
   <body>
-    <div id="playlist-name-flash" class="d-none" style="position:fixed; top: 5px; left:5px; display:inline; padding: 0 5px; z-index:9999; opacity:.90; font-size: 1.2rem; background-color:darkgray; color:white"></div>
+    <div id="playlist-name-flash" class="d-none"></div>
 
     <div id="player"></div>
     <div class="spacer-v"></div>
-    <div id="app-desc" style="font-size:1.25rem;">Youtube Viewer and Shuffler<br/>By Weng. <span style="font-size:.8rem;">Youtube has changed their video algorithms and are not consistently showing my favorite subscriptions' most recent videos on the front page. With this app you can show the most recent videos from all your subscriptions and more. <a href="#" onclick="event.preventDefault(); $(this).next().show(); $(this).hide();">Read More</a><span style="display:none;">Play youtube videos from favorited channels and playlists in order or randomly. You can fit the video to the window so you can watch on one part of the screen. As an advance internet user, you can place a playlist ID in the URL param as <code>?playlistId=...</code> or start the playlist at a song position with the URL param like <code>&playlistStart=1</code>. Want the video player fitted to the window when the page loads? Use URL parameter <code>fit-video</code>. As a developer, you can add more favorite channels or playlists at favs.php and /favs.</span></span></div>
-    <div id="buttons">
-        <div class="panel panel-warning"  style="border-color:rgba(200,0,0,.75);">
-            <div class="panel-heading" style="background-color:rgba(200,0,0,.35); border-color:rgba(200,0,0,.75);">
-                <i class="fa fa-video"></i> <span>Video</span>
-            </div>
-            <div class="panel-body">
-                <button id="most-recent" class="btn btn-default btn-sm" onclick="setShuffleMode(true); urlChange.start(1); $(this).addClass('active');"><i class="fa"></i> Most recent</button>
-                <button class="btn btn-default-off btn-sm" onclick="setShuffleMode(false); urlChange.start('RANDOM');"><i class="fa fa-random"></i> Next random</button>
-                <span class="info-loop-group">
-                    <button class="btn btn-default-off btn-sm loop-btn" onclick='handleLoopBtn($(this));'><i class="fa"></i></button>
-                </span>
-                <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();"><i class="fa fa-maximize"></i> Fit Video</button></br>
-                <div style="width:1px; height:10px;"></div>
-            </div>
-        </div>
 
-        <div class="panel panel-warning" style="border-color:rgba(196,125,123,.75);">
-            <div class="panel-heading" style="background-color:rgba(196,125,123,.75); color:rgba(255,255,255,0.75);">
-                <span onclick="More.counter('Playlistheader')"><i class="fa fa-list"></i> <span>Playlist</span></span>
-            </div>
-            <div class="panel-body">
-                <button class="btn btn-default" onclick='openNextPlaylist()'><i id="random" class="fa fa-caret-right clickable"></i><span>&nbsp;Next</span></button>
-                <button class="btn btn-default" onclick='openPreviousPlaylist()'><i id="random" class="fa fa-xs fa-undo clickable"></i><span>&nbsp;Prev</span></button>
-                <button class="btn btn-default" onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable"></i><span>&nbsp;Random</span></button>
-                <button class="btn btn-secondary" onclick='$("#override-playlist-ui").toggleClass("fade d-none"); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);'><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Playlist ID</span>
-                <button class="btn btn-secondary" onclick='jumpToActivePlaylist();'><i id="manual" class="fa fa-ruler-vertical clickable"></i><span>&nbsp;Scroll</span></button>
-                <!-- Disabled Auth button: Reason for it was some music videos require sign in. But now disabled because "Age-restricted videos can’t be watched on most 3rd party websites" -->
-                <!-- <button class="btn btn-secondary" onclick='window.open("https://accounts.google.com/signin/v2/identifier?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=en&ec=65620&flowName=GlifWebSignIn&flowEntry=ServiceLogin");' style="margin-top:5px;"><i id="manual" class="fa fa-user clickable"></i><span>&nbsp;Auth</span></button> -->
-                </button>
-            </div>
-            <div id="override-playlist-ui" class="panel-body fade d-none" style="padding:7.5px; border-radius:5px; text-align:center; width:fit-content; margin:0 auto 10px auto; border:1px solid lightgray;">
-                <div class="modal-header" style="padding:5px; border-bottom:0;">
-                    <h4 class="modal-title">Override playlist ID</h4>
+    <div class="container-custom p-20">
+
+        <div id="app-desc">Youtube Viewer and Shuffler<br/>By Weng. Youtube has changed their video algorithms and are not consistently showing my favorite subscriptions' most recent videos on the front page. With this app you can show the most recent videos from all your subscriptions and more. <a href="#" onclick="event.preventDefault(); $(this).next().show(); $(this).hide();">Read More</a><span style="display:none;">Play youtube videos from favorited channels and playlists in order or randomly. You can fit the video to the window so you can watch on one part of the screen. As an advance internet user, you can place a playlist ID in the URL param as <code>?playlistId=...</code> or start the playlist at a song position with the URL param like <code>&playlistStart=1</code>. Want the video player fitted to the window when the page loads? Use URL parameter <code>fit-video</code>. As a developer, you can add more favorite channels or playlists at favs.php and /favs.</span></span></div>
+        <div id="buttons">
+            <div class="panel panel-warning"  style="border-color:rgba(200,0,0,.75);">
+                <div class="panel-heading" style="background-color:rgba(200,0,0,.35); border-color:rgba(200,0,0,.75);">
+                    <i class="fa fa-video"></i> <span>Video</span>
                 </div>
-                <div class="modal-body" style="text-align:center; padding: 5px;">
-                    <input id="overridePlaylistId" type="text" style="margin-right:10px; margin-bottom:10px;"></input>
-                    <button type="button" class="btn btn-primary" onclick="overridePlaylistId()">Run</button>
-                    <span style="clear:both;"></span>
+                <div class="panel-body">
+                    <button id="most-recent" class="btn btn-default btn-sm" onclick="setShuffleMode(true); urlChange.start(1); $(this).addClass('active');"><i class="fa"></i> Most recent</button>
+                    <button class="btn btn-default-off btn-sm" onclick="setShuffleMode(false); urlChange.start('RANDOM');"><i class="fa fa-random"></i> Next random</button>
+                    <span class="info-loop-group">
+                        <button class="btn btn-default-off btn-sm loop-btn" onclick='handleLoopBtn($(this));'><i class="fa"></i></button>
+                    </span>
+                    <button id="fit-video" class="btn btn-default-off btn-sm" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();"><i class="fa fa-maximize"></i> Fit Video</button></br>
+                    <div style="width:1px; height:10px;"></div>
                 </div>
             </div>
+
+            <div class="panel panel-warning" style="border-color:rgba(196,125,123,.75);">
+                <div class="panel-heading" style="background-color:rgba(230,125,123,.75); color:rgba(255,255,255,0.75);">
+                    <span onclick="More.counter('Playlistheader')"><i class="fa fa-list"></i> <span>Playlist</span></span>
+                </div>
+                <div class="panel-body">
+                    <button class="btn btn-default" onclick='openNextPlaylist()'><i id="random" class="fa fa-caret-right clickable"></i><span>&nbsp;Next</span></button>
+                    <button class="btn btn-default" onclick='openPreviousPlaylist()'><i id="random" class="fa fa-xs fa-undo clickable"></i><span>&nbsp;Prev</span></button>
+                    <button class="btn btn-default" onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable"></i><span>&nbsp;Random</span></button>
+                    <button class="btn btn-secondary" onclick='$("#override-playlist-ui").toggleClass("fade d-none"); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);'><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Playlist ID</span>
+                    <button class="btn btn-secondary" onclick='jumpToActivePlaylist();'><i id="manual" class="fa fa-ruler-vertical clickable"></i><span>&nbsp;Scroll</span></button>
+                    <!-- Disabled Auth button: Reason for it was some music videos require sign in. But now disabled because "Age-restricted videos can’t be watched on most 3rd party websites" -->
+                    <!-- <button class="btn btn-secondary" onclick='window.open("https://accounts.google.com/signin/v2/identifier?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=en&ec=65620&flowName=GlifWebSignIn&flowEntry=ServiceLogin");' style="margin-top:5px;"><i id="manual" class="fa fa-user clickable"></i><span>&nbsp;Auth</span></button> -->
+                    </button>
+                </div>
+                <div id="override-playlist-ui" class="panel-body fade d-none" style="padding:7.5px; border-radius:5px; text-align:center; width:fit-content; margin:0 auto 10px auto; border:1px solid lightgray;">
+                    <div class="modal-header" style="padding:5px; border-bottom:0;">
+                        <h4 class="modal-title">Override playlist ID</h4>
+                    </div>
+                    <div class="modal-body" style="text-align:center; padding: 5px;">
+                        <input id="overridePlaylistId" type="text" style="margin-right:10px; margin-bottom:10px;"></input>
+                        <button type="button" class="btn btn-primary" onclick="overridePlaylistId()">Run</button>
+                        <span style="clear:both;"></span>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-    </div>
+        <!-- </div> --> <!-- Extra div? -->
+        <div id="favs-wrapper">
+        </div>
+        <div id="discover-more">
+            Discover new channels with: <a href="http://randomyt.com" target="_blank">RandomYt</a>.
+        </div>
 
-    </div>
-    <div id="favs-wrapper" style="width:512px;">
-    </div>
-    <div id="discover-more">
-        Discover new channels with: <a href="http://randomyt.com" target="_blank">RandomYt</a>.
-    </div>
+    </div> <!-- p-20 custom container -->
 
     <script>
     function overridePlaylistId() {

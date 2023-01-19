@@ -1,3 +1,7 @@
+.p-20 {
+    padding: 20px;
+}
+
 .d-none {
     display: none !important;
 }
@@ -9,8 +13,16 @@ h2 {
 #app-desc {
     color: gray;
     /* font-size: .8rem; */
-    width: 512px;
-    padding-left: 10px;
+    /* width: 512px; */
+    text-align: center;
+    margin: 0 auto;
+    /* padding-left: 10px; */
+}
+
+@media screen and (min-width:658px) {
+    #app-desc {
+        width: 50vw;
+    }
 }
 
 .spacer-v {
@@ -18,8 +30,9 @@ h2 {
 }
 
 #buttons {
-    padding-left: 10px;
-    margin-top: 10;
+    /* padding-left: 10px; */
+    text-align: center;
+    margin-top: 20px;
 }
 
 #buttons button {
@@ -60,5 +73,37 @@ body {
 }
 
 .panel {
-    max-width: 512px;
+    /* max-width: 512px; */
+    display: inline-block;
+    min-height: 125px;
+    vertical-align: top;
+}
+
+@media screen and (min-width: 1090px) {
+    .panel {
+        width: 48vw;
+    }
+}
+
+#player {
+    min-width: 50vw;
+    display: block;
+    margin: 0 auto;
+}
+
+#playlist-name-flash {
+    width: 50vw;
+    display: block;
+    margin: 0 auto;
+    padding: 0 5px;
+    z-index: 9999;
+    opacity: .90;
+    font-size: 1.2rem;
+    background-color: darkgray;
+    color: white
+}
+
+#favs-wrapper {
+    /* min-width: 512px; */
+    margin: 0 auto;
 }
