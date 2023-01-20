@@ -50,6 +50,10 @@
       <a target="_blank" href="//wengindustry.com/tools/daily-portal/#analysis">[Paralysis]</a>
       <span>|</span>
       <a target="_blank" href="//wengindustry.com/tools/daily-portal/#impaired">[Impaired]</a>
+
+      <div style="width:1px; height:5px;"></div>
+      <a target="_blank" href="//www.youtube.com/watch?v=nMfPqeZjc2c">[White Noise Background]</a>
+
     </div>
 
     <div style="width:1px; height:10px;"></div>
