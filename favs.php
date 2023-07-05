@@ -52,6 +52,8 @@
       <a target="_blank" href="//wengindustry.com/tools/daily-portal/#impaired">[Impaired]</a>
 
       <div style="width:1px; height:5px;"></div>
+      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Loopable") { $("#playlist-filter").val("Loopable") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Loopable]</a>
+      <span>|</span>
       <a target="_blank" href="//www.youtube.com/watch?v=nMfPqeZjc2c">[White Noise Background]</a>
 
     </div>
