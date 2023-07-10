@@ -137,6 +137,11 @@ function changeVideo(event) {
     var isChildHTMLAndNotLink = $(event.target)[0].tagName.toLowerCase()!=="a";
     var $el = isChildHTMLAndNotLink?$(event.target).closest("a"):$(event.target);
     var id = $el.attr("data-playlist-id");
+    var isPlaylistWantsShuffle = $el.text().toLowerCase().includes("(shuffle)") || $el.text().toLowerCase().includes("(shuffled)") // true or false
+    console.log({isPlaylistWantsShuffle});
+    if(isPlaylistWantsShuffle) {
+      localStorage.setItem("YT__playlistWantsShuffle", "1");
+    }
     window.parent.urlChange.playlist($el, id);
   }
 

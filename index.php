@@ -165,8 +165,9 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
             var params = new URLSearchParams(window.location.search);
             params.delete("loop-video-id"); // User clicked Most recent or Next random, so no more looping
             params.delete("playlistStart");
-            var wantRandom = arg1==="RANDOM";
-            if(!wantRandom) {
+
+            var userWantsRandom = arg1==="RANDOM";
+            if(!userWantsRandom) {
                 params.set("playlistStart", arg1);
             }
 
@@ -234,6 +235,7 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
         } else {
             var path = "favs.php";
         }
+
 
         var tag = document.createElement("iframe");
         // tag.className.push("favs")
@@ -477,6 +479,19 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
         let params = new URLSearchParams(window.location.href);
     }
 
+    function getVideoIndexOrNull() {
+        debugger;
+        // return null;
+        const a = window.playlistStartIndex.length?window.playlistStartIndex:null;
+        const b = localStorage.getItem("YT__playlistWantsShuffle")==="1";
+        if(b) {
+            localStorage.removeItem("YT__playlistWantsShuffle");
+            return null;
+        }
+
+        return a;
+    } // getVideoIndexOrNull
+
     var ytVideoLooper = `
     function onYouTubeIframeAPIReady() {
     window.player1 = new YT.Player("player", {
@@ -525,7 +540,8 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
             events: {
                 'onReady': function (event) {
                     console.log("Using Youtube Iframe API with Youtube Playlist algorithm ytPlaylist");
-                    if(isShuffleMode()) {
+                    debugger;
+                    if(isShuffleMode() || getVideoIndexOrNull()===null) {
                         event.target.pauseVideo();
                         setTimeout( function() { 
                             event.target.setShuffle({'shufflePlaylist' : true}); 
