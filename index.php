@@ -585,7 +585,15 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
             player1.nextVideo();
             console.log("Error playing video detected. Attempting to play another video.")
         }
-    },  3500);
+    },  3500)
+    
+    // If from a bookmark that has search playlist keywords
+    $(()=>{
+        let params = new URLSearchParams(document.location.search);
+        let search = params.get("search");
+        if(search)
+            $("#playlist-filter").val(search).trigger("input")
+    });
     </script>
 
     <script src="assets/js/app.js?v=2"></script>
