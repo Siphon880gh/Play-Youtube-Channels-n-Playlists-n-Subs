@@ -18,9 +18,24 @@ h2 {
     margin: 0 auto;
     /* padding-left: 10px; */
 }
+#funding-needed {
+    padding: 10px;
+    background-color: #fcf8e3;
+    border: 2px solid rgba(255,248,227);
+    position:relative;
+    color: gray;
+    text-align: center;
+    margin: 0 auto;
+    margin-top:10px;
+}
+#funding-needed > .inner {
+    position:absolute; 
+    top:5px; 
+    right:5px;
+}
 
 @media screen and (min-width:658px) {
-    #app-desc {
+    #app-desc, #funding-needed {
         width: 50vw;
     }
 }

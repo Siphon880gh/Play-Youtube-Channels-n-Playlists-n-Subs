@@ -394,7 +394,13 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
 
     <div class="container-custom p-20">
 
-        <div id="app-desc">Youtube Viewer and Shuffler<br/>By Weng. Youtube has changed their video algorithms and are not consistently showing my favorite subscriptions' most recent videos on the front page. With this app you can show the most recent videos from all your subscriptions and more. <a href="#" onclick="event.preventDefault(); $(this).next().show(); $(this).hide();">Read More</a><span style="display:none;">Play youtube videos from favorited channels and playlists in order or randomly. You can fit the video to the window so you can watch on one part of the screen. As an advance internet user, you can place a playlist ID in the URL param as <code>?playlistId=...</code> or start the playlist at a song position with the URL param like <code>&playlistStart=1</code>. Want the video player fitted to the window when the page loads? Use URL parameter <code>fit-video</code>. As a developer, you can add more favorite channels or playlists at favs.php and /favs.</span></span></div>
+
+        <div id="app-desc">Youtube Viewer and Shuffler<br/>By Weng. I can track my favorite channels and playlists. Why? Youtube changed how new videos show on my feed. Clicking a video just out of curiosity affects subsequent home views from showing my subscriptions. So something has gotta be done! <a href="#" onclick="event.preventDefault(); $(this).next().show(); $(this).hide();">Read More</a><span style="display:none;">Play youtube videos from favorited channels and playlists in order or randomly. You can fit the video to the window so you can watch on one part of the screen. As an advance internet user, you can place a playlist ID in the URL param as <code>?playlistId=...</code> or start the playlist at a song position with the URL param like <code>&playlistStart=1</code>. Want the video player fitted to the window when the page loads? Use URL parameter <code>fit-video</code>. As a developer, you can add more favorite channels or playlists at favs.php and /favs.</span></span></div>
+        <div id="funding-needed" onclick="$(this).remove()">
+            <div class="inner">X</div>
+            💵 Funding needed. If only I have some time, I'll add an interface to add playlists or channels. Right now it's done through a JSON file on my side. I'd also add OAuth2 for your own profiles. Please <a href="https://www.wengindustry.com/me/contact" target="_blank">let me know</a> if you express interest in scaling up the app. Your name will be added and special requests possible.
+            </span>
+        </div>
         <div id="buttons">
             <div class="panel panel-warning"  style="border-color:rgba(200,0,0,.75);">
                 <div class="panel-heading" style="background-color:rgba(200,0,0,.35); border-color:rgba(200,0,0,.75);">
@@ -480,7 +486,6 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
     }
 
     function getVideoIndexOrNull() {
-        debugger;
         // return null;
         const a = window.playlistStartIndex.length?window.playlistStartIndex:null;
         const b = localStorage.getItem("YT__playlistWantsShuffle")==="1";
@@ -540,7 +545,6 @@ $defaultPlaylistId = "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW";
             events: {
                 'onReady': function (event) {
                     console.log("Using Youtube Iframe API with Youtube Playlist algorithm ytPlaylist");
-                    debugger;
                     if(isShuffleMode() || getVideoIndexOrNull()===null) {
                         event.target.pauseVideo();
                         setTimeout( function() { 

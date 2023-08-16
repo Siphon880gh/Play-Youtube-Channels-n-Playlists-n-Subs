@@ -64,8 +64,8 @@
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="👂") { $("#playlist-filter").val("👂") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>👂</a>
     <span>&nbsp;</span>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Nelk") { $("#playlist-filter").val("Nelk") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Nelk]</a>
-    <span>&nbsp;</span>
-    <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Propa") { $("#playlist-filter").val("Propa") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Propa]</a>
+    <!-- <span>&nbsp;</span>
+    <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Propa") { $("#playlist-filter").val("Propa") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Propa]</a> -->
     <span>&nbsp;</span>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Reddit") { $("#playlist-filter").val("Reddit") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Reddit]</a>
     <span>&nbsp;</span>
