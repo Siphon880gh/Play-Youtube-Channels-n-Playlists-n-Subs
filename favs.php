@@ -61,9 +61,11 @@
     </div>
 
     <div style="width:1px; height:10px;"></div>
-    <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="👂") { $("#playlist-filter").val("👂") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>👂</a>
+    <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="👀") { $("#playlist-filter").val("👀") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");' style="text-decoration:none;">👀</a>
     <span>&nbsp;</span>
-    <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="❤️") { $("#playlist-filter").val("❤️") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>❤️</a>
+    <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="👂") { $("#playlist-filter").val("👂") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");' style="text-decoration:none;">👂</a>
+    <span>&nbsp;</span>
+    <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="❤️") { $("#playlist-filter").val("❤️") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");' style="text-decoration:none;">❤️</a>
     <span>&nbsp;</span>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Nelk") { $("#playlist-filter").val("Nelk") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Nelk]</a>
     <!-- <span>&nbsp;</span>
@@ -85,7 +87,7 @@
     <span>&nbsp;</span>
     
     <div style='margin-top:25px'></div>
-    <a href="javascript:void(0)" onclick='$("#playlist-filter").val("").trigger("input");'><i class="fa fa-eraser"></i></a>
+    <a href="javascript:void(0)" onclick='$("#playlist-filter").val("").trigger("input");'><i class="fa fa-eraser" style="color:rgba(122,0,0);"></i></a>
     <span>&nbsp;</span>
     <label for="playlist-filter" onclick='$("#playlist-filter").val(""); filterListItems("", $(".playlists-target")); saveFilteredForRefresh("");'>Filter:</label>
     <input id="playlist-filter" class="playlist-filter" type="text" oninput="filterListItems($(event.target).val(), $('.playlists-target')); saveFilteredForRefresh($(event.target).val());" autocomplete="on" placeholder="term OR term OR...">
