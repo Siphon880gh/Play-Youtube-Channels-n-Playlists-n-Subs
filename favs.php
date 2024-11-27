@@ -61,9 +61,9 @@
     </div>
 
     <div style="width:1px; height:10px;"></div>
-    <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="👁️") { $("#playlist-filter").val("👁️") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");' style="text-decoration:none;">👁️</a>
-    <span>&nbsp;</span>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="👀") { $("#playlist-filter").val("👀") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");' style="text-decoration:none;">👀</a>
+    <span>&nbsp;</span>
+    <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="👁️") { $("#playlist-filter").val("👁️") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");' style="text-decoration:none;">👁️</a>
     <span>&nbsp;</span>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="👂") { $("#playlist-filter").val("👂") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");' style="text-decoration:none;">👂</a>
     <span>&nbsp;</span>
