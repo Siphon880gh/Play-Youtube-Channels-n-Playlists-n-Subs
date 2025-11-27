@@ -5,7 +5,7 @@
 <link href="<?php echo $prependPath; ?>assets/css/favs.css" rel="stylesheet"></link>
 <script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
 <?php include($prependPath."assets/templates/favs.php"); ?>
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.min.css">
 <div id="favs">
   <div class="header">
     <?php
