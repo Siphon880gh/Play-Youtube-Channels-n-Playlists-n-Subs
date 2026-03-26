@@ -425,6 +425,130 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
             }, 800);
         }
     }
+
+    window.ytDiagnostics = {
+        lastState: null,
+        lastStateName: "",
+        lastStateAt: 0,
+        lastProgressAt: 0,
+        lastCurrentTime: null,
+        lastVideoId: "",
+        watchdogId: null,
+        lastWatchdogLogAt: 0
+    };
+
+    function getPlayerStateName(stateCode) {
+        if(typeof YT === "undefined" || !YT.PlayerState) {
+            return String(stateCode);
+        }
+
+        switch(stateCode) {
+            case YT.PlayerState.UNSTARTED: return "UNSTARTED";
+            case YT.PlayerState.ENDED: return "ENDED";
+            case YT.PlayerState.PLAYING: return "PLAYING";
+            case YT.PlayerState.PAUSED: return "PAUSED";
+            case YT.PlayerState.BUFFERING: return "BUFFERING";
+            case YT.PlayerState.CUED: return "CUED";
+            default: return String(stateCode);
+        }
+    }
+
+    function getPlayerSnapshot() {
+        if(!window.player1) {
+            return { hasPlayer: false };
+        }
+
+        let snapshot = { hasPlayer: true };
+
+        try { snapshot.state = window.player1.getPlayerState(); } catch(e) { snapshot.stateError = String(e); }
+        try { snapshot.stateName = getPlayerStateName(snapshot.state); } catch(e) { snapshot.stateNameError = String(e); }
+        try { snapshot.videoId = getVideoId(); } catch(e) { snapshot.videoIdError = String(e); }
+        try { snapshot.currentTime = window.player1.getCurrentTime(); } catch(e) { snapshot.currentTimeError = String(e); }
+        try { snapshot.duration = window.player1.getDuration(); } catch(e) { snapshot.durationError = String(e); }
+        try { snapshot.playlistIndex = window.player1.getPlaylistIndex(); } catch(e) { snapshot.playlistIndexError = String(e); }
+        try { snapshot.playlist = window.player1.getPlaylist(); } catch(e) { snapshot.playlistError = String(e); }
+        if(Array.isArray(snapshot.playlist)) {
+            snapshot.playlistLength = snapshot.playlist.length;
+            delete snapshot.playlist;
+        }
+
+        return snapshot;
+    }
+
+    function logPlayerStateChange(event, source) {
+        let stateCode = event && typeof event.data !== "undefined" ? event.data : null;
+        let stateName = getPlayerStateName(stateCode);
+        let snapshot = getPlayerSnapshot();
+
+        window.ytDiagnostics.lastState = stateCode;
+        window.ytDiagnostics.lastStateName = stateName;
+        window.ytDiagnostics.lastStateAt = Date.now();
+
+        if(snapshot.videoId) {
+            window.ytDiagnostics.lastVideoId = snapshot.videoId;
+        }
+
+        if(stateCode === YT.PlayerState.PLAYING) {
+            window.ytDiagnostics.lastProgressAt = Date.now();
+            if(typeof snapshot.currentTime === "number") {
+                window.ytDiagnostics.lastCurrentTime = snapshot.currentTime;
+            }
+        }
+
+        console.log("[YT] state", {
+            source,
+            stateCode,
+            stateName,
+            snapshot
+        });
+    }
+
+    function startPlayerWatchdog() {
+        if(window.ytDiagnostics.watchdogId !== null) {
+            clearInterval(window.ytDiagnostics.watchdogId);
+        }
+
+        window.ytDiagnostics.watchdogId = setInterval(()=>{
+            if(!window.player1 || typeof window.player1.getPlayerState !== "function") {
+                return;
+            }
+
+            let snapshot = getPlayerSnapshot();
+            let now = Date.now();
+
+            if(typeof snapshot.currentTime === "number") {
+                if(window.ytDiagnostics.lastCurrentTime === null || snapshot.currentTime > window.ytDiagnostics.lastCurrentTime + 0.25) {
+                    window.ytDiagnostics.lastCurrentTime = snapshot.currentTime;
+                    window.ytDiagnostics.lastProgressAt = now;
+                }
+            }
+
+            let state = snapshot.state;
+            let noProgressForMs = window.ytDiagnostics.lastProgressAt ? (now - window.ytDiagnostics.lastProgressAt) : 0;
+            let shouldLogStall = false;
+
+            if(state === YT.PlayerState.PLAYING && noProgressForMs > 12000) {
+                shouldLogStall = true;
+            }
+
+            if(state === YT.PlayerState.BUFFERING && noProgressForMs > 15000) {
+                shouldLogStall = true;
+            }
+
+            if((state === YT.PlayerState.UNSTARTED || state === YT.PlayerState.PAUSED) && noProgressForMs > 10000) {
+                shouldLogStall = true;
+            }
+
+            if(shouldLogStall && now - window.ytDiagnostics.lastWatchdogLogAt > 10000) {
+                window.ytDiagnostics.lastWatchdogLogAt = now;
+                console.error("[YT] playback stalled or stopped unexpectedly", {
+                    lastState: window.ytDiagnostics.lastStateName,
+                    noProgressForMs,
+                    snapshot
+                });
+            }
+        }, 4000);
+    }
     </script>
 
     <style>
@@ -571,6 +695,8 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
             'onReady': function (event) {
                 console.log("Using Youtube Iframe API with Youtube Video Looper algorithm ytVideoLooper");
                 $("#player-fallback").addClass("d-none");
+                startPlayerWatchdog();
+                logPlayerStateChange({data: event.target.getPlayerState()}, "videoLooper:onReady");
                 event.target.pauseVideo();
                         setTimeout( function() { 
                             event.target.setShuffle(true);
@@ -580,6 +706,7 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
                         }, 300);
             }, // end onReady
             'onStateChange': function(event) {
+                logPlayerStateChange(event, "videoLooper:onStateChange");
                 // Tips on PlayerState: https://stackoverflow.com/questions/5957916/how-to-handle-youtube-video-events-started-finished-etc-in-uiwebview-ios
                 if (event.data == YT.PlayerState.UNSTARTED) {
                     player1.playVideo();
@@ -612,6 +739,8 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
                 'onReady': function (event) {
                     console.log("Using Youtube Iframe API with Youtube Playlist algorithm ytPlaylist");
                     $("#player-fallback").addClass("d-none");
+                    startPlayerWatchdog();
+                    logPlayerStateChange({data: event.target.getPlayerState()}, "playlist:onReady");
                     if(isShuffleMode() || getVideoIndexOrNull()===null) {
                         event.target.pauseVideo();
                         setTimeout( function() { 
@@ -623,6 +752,7 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
                     } // end isShuffleMode
                 }, // end onReady
                 'onStateChange': function(event) {
+                            logPlayerStateChange(event, "playlist:onStateChange");
                             if(event.data === YT.PlayerState.CUED) {
                                 // console.log('Video ID: ', player1.getVideoData()['video_id']);
                                 //player1.loadVideoById;
