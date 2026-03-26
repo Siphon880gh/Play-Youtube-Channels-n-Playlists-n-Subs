@@ -131,15 +131,60 @@ function filterListItems(userFilterText, listItems) {
         $.merge($filteredIn, listItems.find(`li:contains('${term}')`));
       }
     }) // forEach
-    $filteredIn.show();
+    if($filteredIn!==null) {
+      $filteredIn.show();
+    }
   } else {
     $allListItems.show();
   }
+
+  syncCategoryBrowser();
 } // filterListItems
 
 function saveFilteredForRefresh(userFilterText) {
   localStorage.setItem("YT__last-filtered", userFilterText);
 } // saveFilteredForRefresh
+
+function extractCategoriesFromPlaylistLabel(labelText) {
+  var matches = String(labelText || "").match(/\[([^\]]+)\]/g) || [];
+  return matches
+    .map(function(match) {
+      return match.slice(1, -1).trim();
+    })
+    .filter(function(category) {
+      return category.length > 0;
+    });
+}
+
+function getVisiblePlaylistCategories() {
+  var categories = [];
+  var seenCategories = {};
+
+  $(".playlists-target li:visible").each(function() {
+    var $playlistLink = $(this).find("a[data-playlist-id]").first();
+    if(!$playlistLink.length) {
+      return true;
+    }
+
+    extractCategoriesFromPlaylistLabel($playlistLink.text()).forEach(function(category) {
+      if(seenCategories[category]) {
+        return;
+      }
+
+      seenCategories[category] = true;
+      categories.push(category);
+    });
+  });
+
+  return categories;
+}
+
+function syncCategoryBrowser() {
+  var categories = getVisiblePlaylistCategories();
+  if(window.parent && typeof window.parent.renderCategoryBrowser === "function") {
+    window.parent.renderCategoryBrowser(categories);
+  }
+}
 
 function changeVideo(event) {
     event.preventDefault();
@@ -209,9 +254,12 @@ function fetchPlaylist(calledCollection) {
 
       // Continuing the filtered search input
       let lastFiltered = localStorage.getItem("YT__last-filtered");
+      let $filterInput = $("#playlist-filter");
       if(lastFiltered && lastFiltered.length) {
-          let $filterInput = $("#favs").contents().find("#playlist-filter");
-          $filterInput.val(lastFiltered).trigger("input");
+          $filterInput.val(lastFiltered);
+          filterListItems(lastFiltered, $playlistContainer);
+      } else {
+          syncCategoryBrowser();
       }
 
       resizeIframeNow();

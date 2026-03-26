@@ -800,7 +800,111 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
 
     </div> <!-- p-20 custom container -->
 
+    <div id="category-browser" class="category-browser d-none">
+        <button id="category-browser-toggle" class="category-browser-toggle" type="button" onclick="toggleCategoryBrowser(event);" aria-label="Open playlist categories" aria-expanded="false">
+            <i class="fa fa-tags"></i>
+        </button>
+        <div id="category-browser-panel" class="category-browser-panel" hidden>
+            <div class="category-browser-title">Categories</div>
+            <div id="category-browser-list" class="category-browser-list"></div>
+        </div>
+    </div>
+
     <script>
+    function extractCategoriesFromPlaylistLabel(labelText) {
+        let matches = String(labelText || "").match(/\[([^\]]+)\]/g) || [];
+        return matches
+            .map((match)=>match.slice(1, -1).trim())
+            .filter((category)=>category.length > 0);
+    }
+
+    function escapeHtml(labelText) {
+        return $("<div></div>").text(labelText).html();
+    }
+
+    function closeCategoryBrowser() {
+        $("#category-browser-panel").attr("hidden", true);
+        $("#category-browser-toggle").attr("aria-expanded", "false");
+    }
+
+    function toggleCategoryBrowser(event) {
+        if(event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        let $panel = $("#category-browser-panel");
+        let isOpen = !$panel.is("[hidden]");
+
+        if(isOpen) {
+            closeCategoryBrowser();
+        } else {
+            $panel.removeAttr("hidden");
+            $("#category-browser-toggle").attr("aria-expanded", "true");
+        }
+    }
+
+    function scrollToPlaylistCategory(category) {
+        let iframe = $("#favs-wrapper iframe")[0];
+        if(!iframe || !iframe.contentWindow || !iframe.contentWindow.document) {
+            return;
+        }
+
+        let $iframeBody = $(iframe.contentWindow.document);
+        let $match = $iframeBody.find(".playlists-target a[data-playlist-id]").filter(function() {
+            return $(this).is(":visible") && extractCategoriesFromPlaylistLabel($(this).text()).indexOf(category) !== -1;
+        }).first();
+
+        if(!$match.length) {
+            return;
+        }
+
+        closeCategoryBrowser();
+
+        let iframeTop = $(iframe).offset().top;
+        let targetTop = iframeTop + $match.offset().top - 18;
+        window.scrollTo({
+            top: Math.max(targetTop, 0),
+            behavior: "smooth"
+        });
+
+        $match.addClass("category-jump-hit");
+        setTimeout(()=>{
+            $match.removeClass("category-jump-hit");
+        }, 1800);
+    }
+
+    window.renderCategoryBrowser = function(categories) {
+        let $browser = $("#category-browser");
+        let $list = $("#category-browser-list");
+
+        if(!$browser.length || !$list.length) {
+            return;
+        }
+
+        if(!Array.isArray(categories) || categories.length === 0) {
+            closeCategoryBrowser();
+            $browser.addClass("d-none");
+            $list.html("");
+            return;
+        }
+
+        $browser.removeClass("d-none");
+        $list.html(
+            categories.map((category)=>{
+                return '<button type="button" class="category-browser-item" data-category="' + escapeHtml(category) + '" onclick="scrollToPlaylistCategory(this.getAttribute(\'data-category\'))">[' + escapeHtml(category) + ']</button>';
+            }).join("")
+        );
+
+        $("#category-browser-toggle").attr("title", categories.length + " categories");
+    };
+
+    $(document).on("click", function(event) {
+        if($(event.target).closest("#category-browser").length===0) {
+            closeCategoryBrowser();
+        }
+    });
+
     function overridePlaylistId() {
         var newPlaylistId = $('#overridePlaylistId').val();
         if(newPlaylistId.length) window.parent.urlChange.playlist(null, newPlaylistId);
