@@ -7,7 +7,7 @@
 <?php include($prependPath."assets/templates/favs.php"); ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.min.css">
 <div id="favs">
-  <div class="header">
+  <div class="header favs-header">
     <?php
     /**
      * @events
@@ -19,20 +19,20 @@
      * 
     */
     ?>
-    <a href="javascript:void(0);" onclick="fetchPlaylist('Default'); window.parent.More.counter('Favheader');">Youtube uploads and playlists:</a>
-    <div class="float-right float-right-buttons" style="padding-right: 5px;">
+    <a class="favs-title-link" href="javascript:void(0);" onclick="fetchPlaylist('Default'); window.parent.More.counter('Favheader');">Youtube uploads and playlists:</a>
+    <div class="float-right float-right-buttons favs-header-tools" style="padding-right: 5px;">
       <i id="random" class="fa fa-random clickable" onclick="RandomPlaylist.select();" style="margin-left:3px;"></i>
       <div style="width:1px; height:10px;"></div>
       <i id="manual" class="fa fa-cloud-upload-alt clickable" onclick="ManualPlaylist.prompt();"></i>
     </div> <!-- /float-right -->
 
-    <div style="float:right; font-size: 1rem;">
-      <a href="javascript:void(0)" onclick='localStorage.setItem("YT__last-opened", "[]"); $(".crossed-out").removeClass("crossed-out");'>Clear history</a>
+    <div class="favs-history">
+      <a class="favs-history-link" href="javascript:void(0)" onclick='localStorage.setItem("YT__last-opened", "[]"); $(".crossed-out").removeClass("crossed-out");'>Clear history</a>
     </div>
   </div> <!-- /header -->
 
-  <div style="text-align: center; margin-top:20px;">
-    <div style="border-bottom:1px solid rgba(125,125,125,.7); border-radius:0; display:inline-block; padding: 5px 10px; padding-bottom: 15px;">
+  <div class="favs-controls">
+    <div class="quick-filters">
 
       <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Mood OR NLP") { $("#playlist-filter").val("Mood OR NLP") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Mood OR NLP]</a>
       <span>|</span>
@@ -60,7 +60,7 @@
 
     </div>
 
-    <div style="width:1px; height:10px;"></div>
+    <div class="emoji-filters">
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="👀") { $("#playlist-filter").val("👀") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");' style="text-decoration:none;">👀</a>
     <span>&nbsp;</span>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="👁️") { $("#playlist-filter").val("👁️") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");' style="text-decoration:none;">👁️</a>
@@ -88,12 +88,14 @@
     <span>&nbsp;</span>
     <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Trailer") { $("#playlist-filter").val("Trailer") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Trailer]</a>
     <span>&nbsp;</span>
-    
-    <div style='margin-top:25px'></div>
-    <a href="javascript:void(0)" onclick='$("#playlist-filter").val("").trigger("input");'><i class="fa fa-eraser" style="color:rgba(122,0,0);"></i></a>
+    </div>
+
+    <div class="filter-bar">
+    <a class="filter-reset" href="javascript:void(0)" onclick='$("#playlist-filter").val("").trigger("input");'><i class="fa fa-eraser" style="color:rgba(122,0,0);"></i></a>
     <span>&nbsp;</span>
     <label for="playlist-filter" onclick='$("#playlist-filter").val(""); filterListItems("", $(".playlists-target")); saveFilteredForRefresh("");'>Filter:</label>
     <input id="playlist-filter" class="playlist-filter" type="text" oninput="filterListItems($(event.target).val(), $('.playlists-target')); saveFilteredForRefresh($(event.target).val());" autocomplete="on" placeholder="term OR term OR...">
+    </div>
   </div>
 
   <ul class="playlists-target">
