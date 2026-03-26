@@ -365,6 +365,66 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
             window.location.href = window.location.search + "&loop-video-id=" + getVideoId();
         }
     }
+
+    function getCurrentYoutubeUrl() {
+        let params = new URLSearchParams(window.location.search);
+        let activePlaylistId = params.get("playlistId") || window.playlistId;
+        let activeVideoId = params.get("loop-video-id");
+
+        if(activeVideoId && activePlaylistId) {
+            return "https://www.youtube.com/watch?v=" + encodeURIComponent(activeVideoId) + "&list=" + encodeURIComponent(activePlaylistId);
+        }
+
+        if(activePlaylistId) {
+            return "https://www.youtube.com/playlist?list=" + encodeURIComponent(activePlaylistId);
+        }
+
+        if(activeVideoId) {
+            return "https://www.youtube.com/watch?v=" + encodeURIComponent(activeVideoId);
+        }
+
+        return "https://www.youtube.com/";
+    }
+
+    function openPlaylistOnYoutube() {
+        window.open(getCurrentYoutubeUrl(), "_blank", "noopener");
+    }
+
+    function showPlayerFallback(reason) {
+        let label = "Embedded playback hit a YouTube player restriction.";
+        if(reason === 5 || reason === "5") {
+            label = "Embedded playback failed in the YouTube HTML5 player.";
+        } else if(reason === 100 || reason === "100") {
+            label = "The video is no longer available.";
+        } else if(reason === 101 || reason === "101" || reason === 150 || reason === "150") {
+            label = "The video owner blocked playback on other sites.";
+        }
+
+        $("#player-fallback")
+            .removeClass("d-none")
+            .find(".fallback-reason")
+            .text(label);
+    }
+
+    function handlePlayerError(event) {
+        let errorCode = event && typeof event.data !== "undefined" ? event.data : "";
+        console.log("YouTube player error", errorCode);
+        showPlayerFallback(errorCode);
+
+        if(loopVideoId !== null) {
+            return;
+        }
+
+        if(window.player1 && typeof window.player1.nextVideo === "function") {
+            setTimeout(()=>{
+                try {
+                    window.player1.nextVideo();
+                } catch(e) {
+                    console.log("Unable to advance after player error", e);
+                }
+            }, 800);
+        }
+    }
     </script>
 
     <style>
@@ -390,6 +450,10 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
     <div id="playlist-name-flash" class="d-none"></div>
 
     <div id="player"></div>
+    <div id="player-fallback" class="alert alert-warning d-none" style="margin: 10px auto 0 auto; max-width: 640px;">
+        <span class="fallback-reason">Embedded playback hit a YouTube player restriction.</span>
+        <button class="btn btn-warning btn-xs" onclick="openPlaylistOnYoutube();" style="margin-left:10px;">Open in YouTube</button>
+    </div>
     <div class="spacer-v"></div>
 
     <div class="container-custom p-20">
@@ -425,11 +489,11 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
                     <button class="btn btn-default" onclick='openNextPlaylist()'><i id="random" class="fa fa-caret-right clickable"></i><span>&nbsp;Next</span></button>
                     <button class="btn btn-default" onclick='openPreviousPlaylist()'><i id="random" class="fa fa-xs fa-undo clickable"></i><span>&nbsp;Prev</span></button>
                     <button class="btn btn-default" onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable"></i><span>&nbsp;Random</span></button>
-                    <button class="btn btn-secondary" onclick='$("#override-playlist-ui").toggleClass("fade d-none"); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);'><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Playlist ID</span>
+                    <button class="btn btn-default" onclick='openPlaylistOnYoutube();'><i class="fa fa-external-link-alt clickable"></i><span>&nbsp;Open in YouTube</span></button>
+                    <button class="btn btn-secondary" onclick='$("#override-playlist-ui").toggleClass("fade d-none"); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);'><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Playlist ID</span></button>
                     <button class="btn btn-secondary" onclick='jumpToActivePlaylist();'><i id="manual" class="fa fa-ruler-vertical clickable"></i><span>&nbsp;Scroll</span></button>
                     <!-- Disabled Auth button: Reason for it was some music videos require sign in. But now disabled because "Age-restricted videos can’t be watched on most 3rd party websites" -->
                     <!-- <button class="btn btn-secondary" onclick='window.open("https://accounts.google.com/signin/v2/identifier?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=en&ec=65620&flowName=GlifWebSignIn&flowEntry=ServiceLogin");' style="margin-top:5px;"><i id="manual" class="fa fa-user clickable"></i><span>&nbsp;Auth</span></button> -->
-                    </button>
                 </div>
                 <div id="override-playlist-ui" class="panel-body fade d-none" style="padding:7.5px; border-radius:5px; text-align:center; width:fit-content; margin:0 auto 10px auto; border:1px solid lightgray;">
                     <div class="modal-header" style="padding:5px; border-bottom:0;">
@@ -506,9 +570,10 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
         events: {
             'onReady': function (event) {
                 console.log("Using Youtube Iframe API with Youtube Video Looper algorithm ytVideoLooper");
+                $("#player-fallback").addClass("d-none");
                 event.target.pauseVideo();
                         setTimeout( function() { 
-                            event.target.setShuffle({'shufflePlaylist' : true}); 
+                            event.target.setShuffle(true);
                             event.target.setLoop(true); // if reaches end of playlist, can keep going
                             event.target.nextVideo();
                             event.target.playVideo();
@@ -522,7 +587,8 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
                 if (event.data == YT.PlayerState.ENDED) {
                     player1.playVideo();
                 }   
-            } // on statechange
+            }, // on statechange
+            'onError': handlePlayerError
         } // events
     }); // end Init Youtube player
 
@@ -545,10 +611,11 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
             events: {
                 'onReady': function (event) {
                     console.log("Using Youtube Iframe API with Youtube Playlist algorithm ytPlaylist");
+                    $("#player-fallback").addClass("d-none");
                     if(isShuffleMode() || getVideoIndexOrNull()===null) {
                         event.target.pauseVideo();
                         setTimeout( function() { 
-                            event.target.setShuffle({'shufflePlaylist' : true}); 
+                            event.target.setShuffle(true);
                             event.target.setLoop(true); // if reaches end of playlist, can keep going
                             event.target.nextVideo();
                             event.target.playVideo();
@@ -556,12 +623,13 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
                     } // end isShuffleMode
                 }, // end onReady
                 'onStateChange': function(event) {
-                            if(YT.PlayerState.CUED) {
+                            if(event.data === YT.PlayerState.CUED) {
                                 // console.log('Video ID: ', player1.getVideoData()['video_id']);
                                 //player1.loadVideoById;
                                 console.log( "State Change @ Video ID=" + getVideoId() );
                             }
-                        } // onStateChange
+                        }, // onStateChange
+                'onError': handlePlayerError
             }
         }); // end Init Youtube player
 
@@ -586,8 +654,7 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
     // Give time for user to read error (age related restriction, etc), then play next video
     setTimeout(()=>{
         if($("#player .ytp-error").length!==0) {
-            player1.nextVideo();
-            console.log("Error playing video detected. Attempting to play another video.")
+            handlePlayerError({data: "dom-error"});
         }
     },  3500)
     
