@@ -709,6 +709,11 @@ body::before {
         padding-right: 8px;
     }
 
+    #playlist-position-indicator .playlist-position-label {
+        flex: 1 1 auto;
+        text-align: center;
+    }
+
     #playlist-position-indicator .playlist-position-arrow {
         width: 28px;
         height: 28px;

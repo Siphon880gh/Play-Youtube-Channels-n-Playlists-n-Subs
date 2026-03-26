@@ -546,6 +546,15 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
             return;
         }
 
+        if(
+            window.ytDiagnostics.recoveryInFlight ||
+            window.ytDiagnostics.iframeReloadInFlight ||
+            window.ytDiagnostics.playerRebuildInFlight ||
+            window.ytDiagnostics.pendingRestore !== null
+        ) {
+            return;
+        }
+
         if(window.player1 && typeof window.player1.nextVideo === "function") {
             setTimeout(()=>{
                 try {
@@ -565,7 +574,15 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
         lastCurrentTime: null,
         lastVideoId: "",
         watchdogId: null,
-        lastWatchdogLogAt: 0
+        lastWatchdogLogAt: 0,
+        recoveryInFlight: false,
+        lastRecoveryAt: 0,
+        recoveryAttempts: 0,
+        lastRecoveryVideoId: "",
+        lastRecoveryTime: null,
+        iframeReloadInFlight: false,
+        playerRebuildInFlight: false,
+        pendingRestore: null
     };
 
     function getPlayerStateName(stateCode) {
@@ -590,6 +607,8 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
         }
 
         let snapshot = { hasPlayer: true };
+        let playerHost = document.getElementById("player");
+        let playerIframe = null;
 
         try { snapshot.state = window.player1.getPlayerState(); } catch(e) { snapshot.stateError = String(e); }
         try { snapshot.stateName = getPlayerStateName(snapshot.state); } catch(e) { snapshot.stateNameError = String(e); }
@@ -598,12 +617,342 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
         try { snapshot.duration = window.player1.getDuration(); } catch(e) { snapshot.durationError = String(e); }
         try { snapshot.playlistIndex = window.player1.getPlaylistIndex(); } catch(e) { snapshot.playlistIndexError = String(e); }
         try { snapshot.playlist = window.player1.getPlaylist(); } catch(e) { snapshot.playlistError = String(e); }
+        try {
+            if(typeof window.player1.getIframe === "function") {
+                playerIframe = window.player1.getIframe();
+            }
+        } catch(e) {
+            snapshot.iframeError = String(e);
+        }
+        if(!playerIframe && playerHost) {
+            playerIframe = playerHost.querySelector("iframe");
+        }
+        snapshot.hasIframe = !!playerIframe;
+        snapshot.hasInlineError = !!(playerHost && playerHost.querySelector(".ytp-error"));
         if(Array.isArray(snapshot.playlist)) {
             snapshot.playlistLength = snapshot.playlist.length;
             delete snapshot.playlist;
         }
 
         return snapshot;
+    }
+
+    function getPlayerIframeElement() {
+        let playerHost = document.getElementById("player");
+        let playerIframe = null;
+
+        try {
+            if(window.player1 && typeof window.player1.getIframe === "function") {
+                playerIframe = window.player1.getIframe();
+            }
+        } catch(e) {
+        }
+
+        if(!playerIframe && playerHost) {
+            playerIframe = playerHost.querySelector("iframe");
+        }
+
+        return playerIframe || null;
+    }
+
+    function configurePlayerIframe() {
+        let playerIframe = getPlayerIframeElement();
+        if(!playerIframe) {
+            return;
+        }
+
+        playerIframe.referrerPolicy = "origin-when-cross-origin";
+    }
+
+    function clearRecoveryMemory() {
+        window.ytDiagnostics.lastRecoveryTime = null;
+        window.ytDiagnostics.pendingRestore = null;
+        window.ytDiagnostics.recoveryInFlight = false;
+        window.ytDiagnostics.iframeReloadInFlight = false;
+        window.ytDiagnostics.playerRebuildInFlight = false;
+    }
+
+    function hasFatalPlayerSnapshot(snapshot, now) {
+        if(!snapshot || !snapshot.hasPlayer) {
+            return false;
+        }
+
+        let hasApiFailure = !!(
+            snapshot.stateError ||
+            snapshot.currentTimeError ||
+            snapshot.durationError ||
+            snapshot.videoIdError
+        );
+
+        if(hasApiFailure) {
+            return true;
+        }
+
+        return !!snapshot.hasInlineError;
+    }
+
+    function trackRecoveryVideo(videoId) {
+        if(!videoId) {
+            return;
+        }
+
+        if(window.ytDiagnostics.lastRecoveryVideoId !== videoId) {
+            window.ytDiagnostics.lastRecoveryVideoId = videoId;
+            window.ytDiagnostics.lastCurrentTime = null;
+            window.ytDiagnostics.lastProgressAt = 0;
+            window.ytDiagnostics.recoveryAttempts = 0;
+            clearRecoveryMemory();
+        }
+    }
+
+    function resumePlaybackOnPlayer(player, target) {
+        if(!player || !target) {
+            return false;
+        }
+
+        let videoId = target.videoId || "";
+        let playlistIndex = typeof target.playlistIndex === "number" ? target.playlistIndex : -1;
+        let resumeFrom = typeof target.resumeFrom === "number" && isFinite(target.resumeFrom) ? Math.max(0, target.resumeFrom) : 0;
+
+        if(loopVideoId !== null && videoId && typeof player.loadVideoById === "function") {
+            player.loadVideoById(videoId, resumeFrom);
+            return true;
+        }
+
+        if(playlistIndex >= 0 && typeof player.playVideoAt === "function") {
+            player.playVideoAt(playlistIndex);
+            setTimeout(()=>{
+                try {
+                    if(resumeFrom > 0 && typeof player.seekTo === "function") {
+                        player.seekTo(resumeFrom, true);
+                    }
+                    if(typeof player.playVideo === "function") {
+                        player.playVideo();
+                    }
+                } catch(e) {
+                    console.log("Unable to finish playlist recovery", e);
+                }
+            }, 700);
+            return true;
+        }
+
+        if(videoId && typeof player.loadVideoById === "function") {
+            player.loadVideoById(videoId, resumeFrom);
+            return true;
+        }
+
+        if(typeof player.playVideo === "function") {
+            player.playVideo();
+            return true;
+        }
+
+        return false;
+    }
+
+    function consumePendingRestore(player) {
+        if(!window.ytDiagnostics.pendingRestore) {
+            return false;
+        }
+
+        let target = window.ytDiagnostics.pendingRestore;
+        window.ytDiagnostics.pendingRestore = null;
+        window.ytDiagnostics.iframeReloadInFlight = false;
+        window.ytDiagnostics.playerRebuildInFlight = false;
+
+        console.warn("[YT] restoring playback after player rebuild", target);
+        let didResume = resumePlaybackOnPlayer(player, target);
+        if(!didResume) {
+            window.ytDiagnostics.recoveryInFlight = false;
+        }
+        return didResume;
+    }
+
+    function rebuildPlayer(target) {
+        if(window.ytDiagnostics.playerRebuildInFlight) {
+            return;
+        }
+
+        window.ytDiagnostics.iframeReloadInFlight = false;
+        window.ytDiagnostics.playerRebuildInFlight = true;
+        window.ytDiagnostics.pendingRestore = target;
+
+        console.warn("[YT] rebuilding player after stalled recovery", target);
+
+        try {
+            if(window.player1 && typeof window.player1.destroy === "function") {
+                window.player1.destroy();
+            }
+        } catch(e) {
+            console.log("Unable to destroy crashed player before rebuild", e);
+        }
+
+        let playerHost = document.getElementById("player");
+        if(playerHost) {
+            let freshPlayerHost = document.createElement("div");
+            freshPlayerHost.id = "player";
+            playerHost.replaceWith(freshPlayerHost);
+        }
+
+        window.player1 = null;
+
+        setTimeout(()=>{
+            try {
+                onYouTubeIframeAPIReady();
+            } catch(e) {
+                window.ytDiagnostics.playerRebuildInFlight = false;
+                window.ytDiagnostics.pendingRestore = null;
+                window.ytDiagnostics.recoveryInFlight = false;
+                console.error("[YT] player rebuild failed", e);
+            }
+        }, 100);
+
+        setTimeout(()=>{
+            if(window.ytDiagnostics.playerRebuildInFlight) {
+                window.ytDiagnostics.playerRebuildInFlight = false;
+                window.ytDiagnostics.pendingRestore = null;
+                window.ytDiagnostics.recoveryInFlight = false;
+                console.warn("[YT] player rebuild timed out");
+            }
+        }, 12000);
+    }
+
+    function reloadPlayerIframe(target) {
+        if(window.ytDiagnostics.iframeReloadInFlight || window.ytDiagnostics.playerRebuildInFlight) {
+            return false;
+        }
+
+        let playerIframe = getPlayerIframeElement();
+        let iframeSrc = playerIframe && typeof playerIframe.src === "string" ? playerIframe.src : "";
+        if(!playerIframe || !iframeSrc.length) {
+            return false;
+        }
+
+        window.ytDiagnostics.iframeReloadInFlight = true;
+        window.ytDiagnostics.pendingRestore = target;
+
+        console.warn("[YT] reloading player iframe", {
+            src: iframeSrc,
+            videoId: target.videoId,
+            playlistIndex: target.playlistIndex,
+            resumeFrom: target.resumeFrom
+        });
+
+        configurePlayerIframe();
+        playerIframe.src = "";
+
+        setTimeout(()=>{
+            try {
+                playerIframe.src = iframeSrc;
+            } catch(e) {
+                console.log("Unable to restore player iframe src", e);
+            }
+        }, 150);
+
+        setTimeout(()=>{
+            window.ytDiagnostics.iframeReloadInFlight = false;
+            try {
+                if(window.ytDiagnostics.pendingRestore === target) {
+                    if(resumePlaybackOnPlayer(window.player1, target)) {
+                        window.ytDiagnostics.pendingRestore = null;
+                    }
+                }
+            } catch(e) {
+                console.log("Unable to resume after iframe reload", e);
+            }
+            window.ytDiagnostics.recoveryInFlight = false;
+        }, 2500);
+
+        setTimeout(()=>{
+            if(window.ytDiagnostics.pendingRestore === target && !window.ytDiagnostics.playerRebuildInFlight) {
+                rebuildPlayer(target);
+            }
+        }, 7000);
+
+        return true;
+    }
+
+    function attemptPlaybackRecovery(snapshot, noProgressForMs) {
+        if(!window.player1) {
+            return;
+        }
+
+        let now = Date.now();
+        let videoId = snapshot && snapshot.videoId ? snapshot.videoId : window.ytDiagnostics.lastVideoId;
+        let playlistIndex = snapshot && typeof snapshot.playlistIndex === "number" ? snapshot.playlistIndex : -1;
+        let resumeFrom = 0;
+
+        trackRecoveryVideo(videoId);
+
+        if(window.ytDiagnostics.recoveryInFlight) {
+            return;
+        }
+
+        if(now - window.ytDiagnostics.lastRecoveryAt < 15000) {
+            return;
+        }
+
+        if(window.ytDiagnostics.recoveryAttempts >= 3) {
+            return;
+        }
+
+        if(snapshot && typeof snapshot.currentTime === "number" && isFinite(snapshot.currentTime)) {
+            resumeFrom = snapshot.currentTime;
+        }
+
+        if(typeof window.ytDiagnostics.lastCurrentTime === "number" && isFinite(window.ytDiagnostics.lastCurrentTime)) {
+            resumeFrom = Math.max(resumeFrom, window.ytDiagnostics.lastCurrentTime);
+        }
+
+        resumeFrom = Math.max(0, resumeFrom - 1.5);
+
+        window.ytDiagnostics.recoveryInFlight = true;
+        window.ytDiagnostics.lastRecoveryAt = now;
+        window.ytDiagnostics.recoveryAttempts += 1;
+        window.ytDiagnostics.lastRecoveryTime = resumeFrom;
+
+        console.warn("[YT] attempting playback recovery", {
+            videoId,
+            playlistIndex,
+            resumeFrom,
+            noProgressForMs,
+            recoveryAttempts: window.ytDiagnostics.recoveryAttempts
+        });
+
+        let recoveryTarget = {
+            videoId,
+            playlistIndex,
+            resumeFrom,
+            noProgressForMs,
+            recoveryAttempts: window.ytDiagnostics.recoveryAttempts
+        };
+
+        if(window.ytDiagnostics.recoveryAttempts >= 3) {
+            rebuildPlayer(recoveryTarget);
+            return;
+        }
+
+        if(window.ytDiagnostics.recoveryAttempts >= 2) {
+            if(!reloadPlayerIframe(recoveryTarget)) {
+                rebuildPlayer(recoveryTarget);
+            }
+            return;
+        }
+
+        try {
+            if(!resumePlaybackOnPlayer(window.player1, recoveryTarget)) {
+                window.ytDiagnostics.recoveryInFlight = false;
+            }
+        } catch(e) {
+            window.ytDiagnostics.recoveryInFlight = false;
+            console.error("[YT] playback recovery failed", e);
+            return;
+        }
+
+        setTimeout(()=>{
+            if(Date.now() - window.ytDiagnostics.lastRecoveryAt >= 5000) {
+                window.ytDiagnostics.recoveryInFlight = false;
+            }
+        }, 5000);
     }
 
     function logPlayerStateChange(event, source) {
@@ -617,12 +966,17 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
 
         if(snapshot.videoId) {
             window.ytDiagnostics.lastVideoId = snapshot.videoId;
+            trackRecoveryVideo(snapshot.videoId);
         }
 
         if(stateCode === YT.PlayerState.PLAYING) {
             window.ytDiagnostics.lastProgressAt = Date.now();
             if(typeof snapshot.currentTime === "number") {
                 window.ytDiagnostics.lastCurrentTime = snapshot.currentTime;
+                if(window.ytDiagnostics.lastRecoveryTime !== null && snapshot.currentTime >= Math.max(0, window.ytDiagnostics.lastRecoveryTime - 0.5)) {
+                    clearRecoveryMemory();
+                    window.ytDiagnostics.recoveryAttempts = 0;
+                }
             }
         }
 
@@ -649,28 +1003,52 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
             let snapshot = getPlayerSnapshot();
             refreshPlaylistPositionIndicator();
             let now = Date.now();
+            let hasFatalPlayerFailure = hasFatalPlayerSnapshot(snapshot, now);
+            let previousCurrentTime = window.ytDiagnostics.lastCurrentTime;
 
             if(typeof snapshot.currentTime === "number") {
-                if(window.ytDiagnostics.lastCurrentTime === null || snapshot.currentTime > window.ytDiagnostics.lastCurrentTime + 0.25) {
+                if(previousCurrentTime === null || snapshot.currentTime > previousCurrentTime + 0.25) {
                     window.ytDiagnostics.lastCurrentTime = snapshot.currentTime;
                     window.ytDiagnostics.lastProgressAt = now;
+                    if(window.ytDiagnostics.recoveryAttempts > 0) {
+                        clearRecoveryMemory();
+                        window.ytDiagnostics.recoveryAttempts = 0;
+                    }
                 }
             }
 
             let state = snapshot.state;
             let noProgressForMs = window.ytDiagnostics.lastProgressAt ? (now - window.ytDiagnostics.lastProgressAt) : 0;
             let shouldLogStall = false;
+            let shouldAttemptRecovery = false;
+
+            if(hasFatalPlayerFailure && !window.ytDiagnostics.playerRebuildInFlight) {
+                console.error("[YT] player iframe became unusable", snapshot);
+                attemptPlaybackRecovery(snapshot, noProgressForMs || 0);
+                return;
+            }
 
             if(state === YT.PlayerState.PLAYING && noProgressForMs > 12000) {
                 shouldLogStall = true;
+                shouldAttemptRecovery = true;
             }
 
             if(state === YT.PlayerState.BUFFERING && noProgressForMs > 15000) {
                 shouldLogStall = true;
+                shouldAttemptRecovery = true;
             }
 
-            if((state === YT.PlayerState.UNSTARTED || state === YT.PlayerState.PAUSED) && noProgressForMs > 10000) {
+            if(state === YT.PlayerState.UNSTARTED && noProgressForMs > 10000) {
                 shouldLogStall = true;
+                shouldAttemptRecovery = true;
+            }
+
+            if(state === YT.PlayerState.PAUSED && noProgressForMs > 10000) {
+                shouldLogStall = true;
+            }
+
+            if(window.ytDiagnostics.iframeReloadInFlight) {
+                return;
             }
 
             if(shouldLogStall && now - window.ytDiagnostics.lastWatchdogLogAt > 10000) {
@@ -680,6 +1058,10 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
                     noProgressForMs,
                     snapshot
                 });
+            }
+
+            if(shouldAttemptRecovery) {
+                attemptPlaybackRecovery(snapshot, noProgressForMs);
             }
         }, 4000);
     }
@@ -983,12 +1365,19 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
         height: '390',
         width: '640',
         videoId: loopVideoId, // Equivalent: player1.loadVideoById("3VqeJGcW680")
+        playerVars: {
+            origin: window.location.origin
+        },
         events: {
             'onReady': function (event) {
                 console.log("Using Youtube Iframe API with Youtube Video Looper algorithm ytVideoLooper");
                 $("#player-fallback").addClass("d-none");
+                configurePlayerIframe();
                 startPlayerWatchdog();
                 logPlayerStateChange({data: event.target.getPlayerState()}, "videoLooper:onReady");
+                if(consumePendingRestore(event.target)) {
+                    return;
+                }
                 event.target.pauseVideo();
                         setTimeout( function() { 
                             event.target.setShuffle(true);
@@ -1021,6 +1410,7 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
             width: '640',
             playerVars: {
                 playsinline: 1,
+                origin: window.location.origin,
                 // allowsInlineMediaPlayback: true,
                 listType:'playlist',
                 list: playlistId,
@@ -1031,8 +1421,12 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
                 'onReady': function (event) {
                     console.log("Using Youtube Iframe API with Youtube Playlist algorithm ytPlaylist");
                     $("#player-fallback").addClass("d-none");
+                    configurePlayerIframe();
                     startPlayerWatchdog();
                     logPlayerStateChange({data: event.target.getPlayerState()}, "playlist:onReady");
+                    if(consumePendingRestore(event.target)) {
+                        return;
+                    }
                     if(isShuffleMode() || getVideoIndexOrNull()===null) {
                         event.target.pauseVideo();
                         setTimeout( function() { 
