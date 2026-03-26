@@ -422,10 +422,9 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
         }
     }
 
-    function refreshPlaylistPositionIndicator() {
+    function getPlaylistPositionDetails() {
         if(!window.player1) {
-            setPlaylistPositionIndicator("", false);
-            return;
+            return null;
         }
 
         let playlist;
@@ -437,13 +436,11 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
             playlistIndex = window.player1.getPlaylistIndex();
             videoId = getVideoId();
         } catch(e) {
-            setPlaylistPositionIndicator("", false);
-            return;
+            return null;
         }
 
         if(!Array.isArray(playlist) || playlist.length === 0) {
-            setPlaylistPositionIndicator("", false);
-            return;
+            return null;
         }
 
         if(typeof playlistIndex !== "number" || playlistIndex < 0) {
@@ -451,11 +448,81 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
         }
 
         if(typeof playlistIndex !== "number" || playlistIndex < 0) {
+            return null;
+        }
+
+        return {
+            playlist: playlist,
+            playlistIndex: playlistIndex,
+            videoId: videoId
+        };
+    }
+
+    function openPreviousVideoInPlaylist() {
+        let details = getPlaylistPositionDetails();
+        if(!details) {
+            return;
+        }
+
+        try {
+            if(details.playlistIndex <= 0) {
+                window.player1.seekTo(0, true);
+                window.player1.playVideo();
+            } else {
+                window.player1.playVideoAt(details.playlistIndex - 1);
+            }
+        } catch(e) {
+            console.log("Unable to open previous video in playlist", e);
+        }
+
+        queuePlaylistPositionIndicatorRefresh();
+    }
+
+    function openFirstVideoInPlaylist() {
+        let details = getPlaylistPositionDetails();
+        if(!details) {
+            return;
+        }
+
+        try {
+            window.player1.playVideoAt(0);
+        } catch(e) {
+            console.log("Unable to open first video in playlist", e);
+        }
+
+        queuePlaylistPositionIndicatorRefresh();
+    }
+
+    function openNextVideoInPlaylist() {
+        let details = getPlaylistPositionDetails();
+        if(!details) {
+            return;
+        }
+
+        try {
+            let isLastVideo = details.playlistIndex >= details.playlist.length - 1;
+            if(isLastVideo) {
+                if(window.confirm("Loop back to the first video in this playlist?")) {
+                    window.player1.playVideoAt(0);
+                }
+            } else {
+                window.player1.playVideoAt(details.playlistIndex + 1);
+            }
+        } catch(e) {
+            console.log("Unable to open next video in playlist", e);
+        }
+
+        queuePlaylistPositionIndicatorRefresh();
+    }
+
+    function refreshPlaylistPositionIndicator() {
+        let details = getPlaylistPositionDetails();
+        if(!details) {
             setPlaylistPositionIndicator("", false);
             return;
         }
 
-        let label = "Playlist position " + (playlistIndex + 1) + " / " + playlist.length;
+        let label = "Playlist position " + (details.playlistIndex + 1) + " / " + details.playlist.length;
         if(isShuffleMode()) {
             label += " shuffled";
         }
@@ -642,11 +709,14 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
 
     <div id="player"></div>
     <div id="playlist-position-indicator" class="d-none" role="group" aria-label="Playlist navigation">
-        <button type="button" class="playlist-position-arrow playlist-position-arrow-prev" onclick="openPreviousPlaylist();" aria-label="Previous playlist">
+        <button type="button" class="playlist-position-arrow playlist-position-arrow-first" onclick="openFirstVideoInPlaylist();" aria-label="First video">
+            <span>1</span>
+        </button>
+        <button type="button" class="playlist-position-arrow playlist-position-arrow-prev" onclick="openPreviousVideoInPlaylist();" aria-label="Previous video">
             <i class="fa fa-chevron-left"></i>
         </button>
         <span class="playlist-position-label"></span>
-        <button type="button" class="playlist-position-arrow playlist-position-arrow-next" onclick="openNextPlaylist();" aria-label="Next playlist">
+        <button type="button" class="playlist-position-arrow playlist-position-arrow-next" onclick="openNextVideoInPlaylist();" aria-label="Next video">
             <i class="fa fa-chevron-right"></i>
         </button>
     </div>

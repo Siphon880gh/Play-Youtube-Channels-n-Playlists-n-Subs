@@ -1,1 +1,0 @@
-Attempted to get playlist count because then the shuffling will truly become random. However, is it really needed? Getting the first several videos will get you more recent videos.
