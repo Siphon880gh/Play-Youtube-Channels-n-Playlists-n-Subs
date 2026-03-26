@@ -406,10 +406,74 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
             .text(label);
     }
 
+    function setPlaylistPositionIndicator(text, isVisible) {
+        let $indicator = $("#playlist-position-indicator");
+        let $label = $indicator.find(".playlist-position-label");
+        if(!$indicator.length || !$label.length) {
+            return;
+        }
+
+        if(isVisible) {
+            $label.text(text);
+            $indicator.removeClass("d-none");
+        } else {
+            $indicator.addClass("d-none");
+            $label.text("");
+        }
+    }
+
+    function refreshPlaylistPositionIndicator() {
+        if(!window.player1) {
+            setPlaylistPositionIndicator("", false);
+            return;
+        }
+
+        let playlist;
+        let playlistIndex;
+        let videoId = "";
+
+        try {
+            playlist = window.player1.getPlaylist();
+            playlistIndex = window.player1.getPlaylistIndex();
+            videoId = getVideoId();
+        } catch(e) {
+            setPlaylistPositionIndicator("", false);
+            return;
+        }
+
+        if(!Array.isArray(playlist) || playlist.length === 0) {
+            setPlaylistPositionIndicator("", false);
+            return;
+        }
+
+        if(typeof playlistIndex !== "number" || playlistIndex < 0) {
+            playlistIndex = playlist.indexOf(videoId);
+        }
+
+        if(typeof playlistIndex !== "number" || playlistIndex < 0) {
+            setPlaylistPositionIndicator("", false);
+            return;
+        }
+
+        let label = "Playlist position " + (playlistIndex + 1) + " / " + playlist.length;
+        if(isShuffleMode()) {
+            label += " shuffled";
+        }
+
+        setPlaylistPositionIndicator(label, true);
+    }
+
+    function queuePlaylistPositionIndicatorRefresh() {
+        [0, 250, 1000].forEach((delay)=>{
+            setTimeout(refreshPlaylistPositionIndicator, delay);
+        });
+    }
+
     function handlePlayerError(event) {
         let errorCode = event && typeof event.data !== "undefined" ? event.data : "";
         console.log("YouTube player error", errorCode);
         showPlayerFallback(errorCode);
+        queuePlaylistPositionIndicatorRefresh();
 
         if(loopVideoId !== null) {
             return;
@@ -501,6 +565,8 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
             stateName,
             snapshot
         });
+
+        queuePlaylistPositionIndicatorRefresh();
     }
 
     function startPlayerWatchdog() {
@@ -514,6 +580,7 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
             }
 
             let snapshot = getPlayerSnapshot();
+            refreshPlaylistPositionIndicator();
             let now = Date.now();
 
             if(typeof snapshot.currentTime === "number") {
@@ -574,6 +641,15 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
     <div id="playlist-name-flash" class="d-none"></div>
 
     <div id="player"></div>
+    <div id="playlist-position-indicator" class="d-none" role="group" aria-label="Playlist navigation">
+        <button type="button" class="playlist-position-arrow playlist-position-arrow-prev" onclick="openPreviousPlaylist();" aria-label="Previous playlist">
+            <i class="fa fa-chevron-left"></i>
+        </button>
+        <span class="playlist-position-label"></span>
+        <button type="button" class="playlist-position-arrow playlist-position-arrow-next" onclick="openNextPlaylist();" aria-label="Next playlist">
+            <i class="fa fa-chevron-right"></i>
+        </button>
+    </div>
     <div id="player-fallback" class="alert alert-warning d-none" style="margin: 10px auto 0 auto; max-width: 640px;">
         <span class="fallback-reason">Embedded playback hit a YouTube player restriction.</span>
         <button class="btn btn-warning btn-xs" onclick="openPlaylistOnYoutube();" style="margin-left:10px;">Open YouTube</button>
@@ -613,8 +689,7 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
                     <span class="info-loop-group">
                         <button class="btn btn-default-off btn-sm loop-btn control-btn control-btn-loop" onclick='handleLoopBtn($(this));'><i class="fa"></i></button>
                     </span>
-                    <button id="fit-video" class="btn btn-default-off btn-sm control-btn control-btn-fit-video" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();"><i class="fa fa-maximize"></i> Fit Video</button></br>
-                    <div style="width:1px; height:10px;"></div>
+                    <button id="fit-video" class="btn btn-default-off btn-sm control-btn control-btn-fit-video" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();"><i class="fa fa-maximize"></i> Fit Video</button>
                 </div>
             </div>
 
