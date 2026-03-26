@@ -557,6 +557,15 @@ body::before {
     right: 24px;
     bottom: 24px;
     z-index: 1200;
+    transition:
+        opacity 0.18s ease,
+        transform 0.18s ease;
+}
+
+.category-browser.category-browser-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
 }
 
 .category-browser-toggle {

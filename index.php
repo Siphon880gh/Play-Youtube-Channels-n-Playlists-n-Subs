@@ -827,6 +827,28 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
         $("#category-browser-toggle").attr("aria-expanded", "false");
     }
 
+    function updateCategoryBrowserVisibility() {
+        let $browser = $("#category-browser");
+        let player = document.getElementById("player");
+
+        if(!$browser.length || !player) {
+            return;
+        }
+
+        let rect = player.getBoundingClientRect();
+        let visibleWidth = Math.max(0, Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0));
+        let visibleHeight = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
+        let totalArea = Math.max(rect.width * rect.height, 1);
+        let visibleAreaRatio = (visibleWidth * visibleHeight) / totalArea;
+        let shouldHideBrowser = visibleAreaRatio > 0.5;
+
+        $browser.toggleClass("category-browser-hidden", shouldHideBrowser);
+
+        if(shouldHideBrowser) {
+            closeCategoryBrowser();
+        }
+    }
+
     function toggleCategoryBrowser(event) {
         if(event) {
             event.preventDefault();
@@ -903,6 +925,14 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
         if($(event.target).closest("#category-browser").length===0) {
             closeCategoryBrowser();
         }
+    });
+
+    $(window).on("scroll resize", function() {
+        updateCategoryBrowserVisibility();
+    });
+
+    $(function() {
+        updateCategoryBrowserVisibility();
     });
 
     function overridePlaylistId() {
