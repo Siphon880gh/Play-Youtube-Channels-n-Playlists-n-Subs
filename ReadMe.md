@@ -18,3 +18,8 @@ You can list the collections of playlists by clicking "Youtube uploads and playl
 A channel's entire uploads can be added as a playlist. Their channel's Home tab may have a uploads row where you can play all. If not, then at the Videos tab, see if you can click "Play all" under Uploads -> All Videos. The URL will have &list= that gives you the playlist ID you want to add to a .json file.
 
 Finally, some channels don't have "Play all" from both Home and Video tabs, so you can't get the uploads playlist normally. Open channel's home view source. Then look for `vnd`. Around vnd is the channel ID which starts with `UC`. Copy that code in the URL. Instead of starting with UC, change those two characters to `UU`. Copy the UU string to url parameter `&list=` on any of the channel's video. Then reload. It'll load the playlist. The UU is your uploads playlist ID you'll be adding to a .json file. This info on getting the uploads playlist from channels that don't have "Play All" is from https://webapps.stackexchange.com/questions/9702/is-there-a-way-to-play-all-youtube-videos-uploaded-by-a-particular-user.
+
+You could open in VS Code and regular expression search with:
+```
+vnd.*?UC
+```
