@@ -255,7 +255,61 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
         } // refitVideoPrn
         setInterval(refitVideoPrn, 1000);
 
+        initBrightnessControl();
+
     }); // on doc ready
+
+    const BRIGHTNESS_MIN = 20;
+    const BRIGHTNESS_MAX = 100;
+    const BRIGHTNESS_STORAGE_KEY = "YT__page-brightness";
+
+    function applyPageBrightness(percent) {
+        const clamped = Math.max(BRIGHTNESS_MIN, Math.min(BRIGHTNESS_MAX, percent));
+        const brightness = clamped / 100;
+        const $root = $("html");
+        const $control = $("#player-options");
+
+        if(brightness >= 1) {
+            $root.css("filter", "");
+            $control.css("filter", "");
+        } else {
+            $root.css("filter", "brightness(" + brightness + ")");
+            $control.css("filter", "brightness(" + (1 / brightness) + ")");
+        }
+
+        $("#brightness-slider").val(clamped).attr("aria-valuenow", clamped);
+        $("#brightness-control .brightness-value").text(clamped + "%");
+        localStorage.setItem(BRIGHTNESS_STORAGE_KEY, String(clamped));
+    }
+
+    function initBrightnessControl() {
+        const $slider = $("#brightness-slider");
+        if(!$slider.length) {
+            return;
+        }
+
+        let saved = parseInt(localStorage.getItem(BRIGHTNESS_STORAGE_KEY), 10);
+        if(isNaN(saved)) {
+            saved = BRIGHTNESS_MAX;
+        }
+
+        applyPageBrightness(saved);
+
+        $slider.on("input change", function() {
+            applyPageBrightness(parseInt(this.value, 10));
+        });
+
+        $(".brightness-track-wrap").on("click", function(event) {
+            if(event.target === $slider[0]) {
+                return;
+            }
+
+            const rect = this.getBoundingClientRect();
+            const ratio = (event.clientX - rect.left) / rect.width;
+            const percent = BRIGHTNESS_MIN + ratio * (BRIGHTNESS_MAX - BRIGHTNESS_MIN);
+            applyPageBrightness(Math.round(percent));
+        });
+    }
 
     function intern_skipOverNonLink($current) {
         $current = $current.closest("li")
@@ -1090,26 +1144,34 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
     <div id="playlist-name-flash" class="d-none"></div>
 
     <div id="player"></div>
-    <div id="playlist-position-indicator" class="d-none" role="group" aria-label="Playlist navigation">
-        <button type="button" class="playlist-position-arrow playlist-position-arrow-first" onclick="openFirstVideoInPlaylist();" aria-label="First video">
-            <span>1</span>
-        </button>
-        <button type="button" class="playlist-position-arrow playlist-position-arrow-prev" onclick="openPreviousVideoInPlaylist();" aria-label="Previous video">
-            <i class="fa fa-chevron-left"></i>
-        </button>
-        <span class="playlist-position-label"></span>
-        <button type="button" class="playlist-position-arrow playlist-position-arrow-next" onclick="openNextVideoInPlaylist();" aria-label="Next video">
-            <i class="fa fa-chevron-right"></i>
-        </button>
-    </div>
-    <div id="player-fallback" class="alert alert-warning d-none" style="margin: 10px auto 0 auto; max-width: 640px;">
-        <span class="fallback-reason">Embedded playback hit a YouTube player restriction.</span>
-        <button class="btn btn-warning btn-xs" onclick="openPlaylistOnYoutube();" style="margin-left:10px;">Open YouTube</button>
-    </div>
-    <div class="spacer-v"></div>
-
-    <div class="container-custom p-20">
-        <div id="app-meta">
+    <div id="player-options" class="player-options">
+        <div class="player-options-controls">
+            <div id="playlist-position-indicator" class="player-options-nav d-none" role="group" aria-label="Playlist navigation">
+                <button type="button" class="playlist-position-arrow playlist-position-arrow-first" onclick="openFirstVideoInPlaylist();" aria-label="First video">
+                    <span>1</span>
+                </button>
+                <button type="button" class="playlist-position-arrow playlist-position-arrow-prev" onclick="openPreviousVideoInPlaylist();" aria-label="Previous video">
+                    <i class="fa fa-chevron-left"></i>
+                </button>
+                <span class="playlist-position-label"></span>
+                <button type="button" class="playlist-position-arrow playlist-position-arrow-next" onclick="openNextVideoInPlaylist();" aria-label="Next video">
+                    <i class="fa fa-chevron-right"></i>
+                </button>
+            </div>
+            <div id="brightness-control" class="brightness-control" aria-label="Page brightness">
+                <label for="brightness-slider" class="brightness-label">
+                    <i class="fa fa-adjust" aria-hidden="true"></i>
+                    <span class="brightness-label-text">Brightness</span>
+                    <span class="brightness-value">100%</span>
+                </label>
+                <div class="brightness-track-wrap">
+                    <div class="brightness-min-zone" aria-hidden="true" title="Minimum brightness (20%)"></div>
+                    <div class="brightness-min-tick" aria-hidden="true"></div>
+                    <input type="range" id="brightness-slider" min="20" max="100" value="100" step="1" aria-valuemin="20" aria-valuemax="100" aria-valuenow="100">
+                </div>
+            </div>
+        </div>
+        <div id="app-meta" class="player-options-meta">
             <details id="app-desc" class="app-disclosure">
                 <summary>
                     <span class="app-disclosure-label">About this app</span>
@@ -1130,6 +1192,14 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
                 </div>
             </details>
         </div>
+    </div>
+    <div id="player-fallback" class="alert alert-warning d-none" style="margin: 10px auto 0 auto; max-width: 640px;">
+        <span class="fallback-reason">Embedded playback hit a YouTube player restriction.</span>
+        <button class="btn btn-warning btn-xs" onclick="openPlaylistOnYoutube();" style="margin-left:10px;">Open YouTube</button>
+    </div>
+    <div class="spacer-v"></div>
+
+    <div class="container-custom p-20">
         <div id="buttons">
             <div class="panel panel-warning control-card control-card-video"  style="border-color:rgba(200,0,0,.75);">
                 <div class="panel-heading" style="background-color:rgba(200,0,0,.35); border-color:rgba(200,0,0,.75);">
