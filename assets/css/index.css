@@ -285,6 +285,56 @@ h2 {
     line-height: 1.45;
 }
 
+.override-playlist-ui {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(31, 41, 55, 0.12);
+    background: rgba(255, 255, 255, 0.82);
+    box-shadow: 0 8px 20px rgba(70, 28, 33, 0.08);
+}
+
+.override-playlist-ui-label {
+    display: block;
+    margin: 0 0 10px;
+    color: var(--text-muted);
+    font-size: var(--type-meta);
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.override-playlist-ui-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.override-playlist-ui-input {
+    flex: 1 1 180px;
+    min-width: 0;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid rgba(31, 41, 55, 0.12);
+    border-radius: 14px;
+    font-size: var(--type-action);
+    line-height: 1.2;
+}
+
+.override-playlist-ui-input:focus {
+    outline: none;
+    border-color: rgba(188, 35, 46, 0.45);
+    box-shadow: 0 0 0 3px rgba(188, 35, 46, 0.12);
+}
+
+.override-playlist-ui-run {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 10px 18px;
+    border-radius: 14px;
+    font-weight: 600;
+}
+
 .playback-mode-badge {
     display: inline-flex;
     align-items: center;
@@ -494,8 +544,10 @@ body::before {
     #buttons .control-card-playlist .panel-body {
         grid-template-columns: repeat(3, minmax(0, 1fr));
         grid-template-areas:
+            "hint hint hint"
             "next prev random"
-            "open-youtube playlist-id scroll";
+            "open-youtube playlist-id scroll"
+            "override override override";
     }
 
     #buttons .control-card-video .panel-body .info-loop-group,
@@ -503,8 +555,8 @@ body::before {
         display: contents;
     }
 
-    #buttons .control-card-video .panel-body button,
-    #buttons .control-card-playlist .panel-body button {
+    #buttons .control-card-video .panel-body button.control-btn,
+    #buttons .control-card-playlist .panel-body button.control-btn {
         width: 100%;
         justify-content: center;
         text-align: center;
@@ -512,8 +564,10 @@ body::before {
         box-shadow: 0 8px 20px rgba(70, 28, 33, 0.08);
     }
 
-    #buttons .control-hint-video-start {
+    #buttons .control-hint-video-start,
+    #buttons .control-hint-playlist {
         grid-area: hint;
+        min-width: 0;
     }
 
     #buttons .control-btn-most-recent {
@@ -554,6 +608,10 @@ body::before {
 
     #buttons .control-btn-scroll {
         grid-area: scroll;
+    }
+
+    #buttons .override-playlist-ui {
+        grid-area: override;
     }
 }
 

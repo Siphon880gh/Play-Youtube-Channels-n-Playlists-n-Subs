@@ -1498,7 +1498,7 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
                     <i class="fa fa-video"></i> <span>Video</span>
                 </div>
                 <div class="panel-body">
-                    <p class="control-hint control-hint-video-start">Start the current playlist with the newest video, or jump to a random one.</p>
+                    <p class="control-hint control-hint-video-start">Start playlist with the newest video or play a random video; or loop a video, or make a video fuller screen.</p>
                     <button id="most-recent" class="btn btn-default btn-sm control-btn control-btn-most-recent" onclick="setShuffleMode(true); urlChange.start(1);" title="Play the newest video first, then continue in playlist order" aria-pressed="false"><i class="fa fa-sort-amount-desc"></i> Latest first</button>
                     <button id="next-random" class="btn btn-default-off btn-sm control-btn control-btn-next-random" onclick="setShuffleMode(false); urlChange.start('RANDOM');" title="Pick a random video and keep shuffling within this playlist" aria-pressed="false"><i class="fa fa-random"></i> Shuffle video</button>
                     <span class="info-loop-group">
@@ -1513,24 +1513,22 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
                     <span onclick="More.counter('Playlistheader')"><i class="fa fa-list"></i> <span>Playlist</span></span>
                 </div>
                 <div class="panel-body">
+                    <p class="control-hint control-hint-playlist">Step through your saved playlists, open a random playlist, open on Youtube, or load in a playlist ID.</p>
                     <button class="btn btn-default control-btn control-btn-next" onclick='openNextPlaylist()'><i id="random" class="fa fa-caret-right clickable"></i><span>&nbsp;Next</span></button>
                     <button class="btn btn-default control-btn control-btn-prev" onclick='openPreviousPlaylist()'><i id="random" class="fa fa-xs fa-undo clickable"></i><span>&nbsp;Prev</span></button>
                     <button class="btn btn-default control-btn control-btn-random" onclick='$("#favs-wrapper iframe").contents().find("#random").click();' title="Open a random playlist from your favorites"><i id="random" class="fa fa-random clickable"></i><span>&nbsp;Random playlist</span></button>
                     <button class="btn btn-default control-btn control-btn-open-youtube" onclick='openPlaylistOnYoutube();'><i class="fa fa-external-link-alt clickable"></i><span>&nbsp;Open YouTube</span></button>
                     <button class="btn btn-secondary control-btn control-btn-playlist-id" onclick='$("#override-playlist-ui").toggleClass("fade d-none"); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);'><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Playlist ID</span></button>
                     <button class="btn btn-secondary control-btn control-btn-scroll" onclick='jumpToActivePlaylist();'><i id="manual" class="fa fa-ruler-vertical clickable"></i><span>&nbsp;Scroll</span></button>
+                    <div id="override-playlist-ui" class="override-playlist-ui fade d-none">
+                        <label for="overridePlaylistId" class="override-playlist-ui-label">Override playlist ID</label>
+                        <div class="override-playlist-ui-row">
+                            <input id="overridePlaylistId" type="text" class="override-playlist-ui-input">
+                            <button type="button" class="btn btn-primary override-playlist-ui-run" onclick="overridePlaylistId()">Run</button>
+                        </div>
+                    </div>
                     <!-- Disabled Auth button: Reason for it was some music videos require sign in. But now disabled because "Age-restricted videos can’t be watched on most 3rd party websites" -->
                     <!-- <button class="btn btn-secondary" onclick='window.open("https://accounts.google.com/signin/v2/identifier?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=en&ec=65620&flowName=GlifWebSignIn&flowEntry=ServiceLogin");' style="margin-top:5px;"><i id="manual" class="fa fa-user clickable"></i><span>&nbsp;Auth</span></button> -->
-                </div>
-                <div id="override-playlist-ui" class="panel-body fade d-none" style="padding:7.5px; border-radius:5px; text-align:center; width:fit-content; margin:0 auto 10px auto; border:1px solid lightgray;">
-                    <div class="modal-header" style="padding:5px; border-bottom:0;">
-                        <h4 class="modal-title">Override playlist ID</h4>
-                    </div>
-                    <div class="modal-body" style="text-align:center; padding: 5px;">
-                        <input id="overridePlaylistId" type="text" style="margin-right:10px; margin-bottom:10px;"></input>
-                        <button type="button" class="btn btn-primary" onclick="overridePlaylistId()">Run</button>
-                        <span style="clear:both;"></span>
-                    </div>
                 </div>
             </div>
 
