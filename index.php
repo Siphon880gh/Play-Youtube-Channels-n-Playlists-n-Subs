@@ -19,7 +19,7 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="assets/js/favs.js?v=2"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/index.css">
+    <link rel="stylesheet" href="assets/css/index.css?v=5">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
     <style>
@@ -185,6 +185,13 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
     function resizeIframeFavs() {
         var iframe = $("#favs-wrapper iframe")[0];
         iframe.style.height = iframe.contentWindow.document.documentElement.scrollHeight + 'px';
+        
+        // Rebuild section nav after iframe resizes
+        if (typeof window.parentSectionNav !== 'undefined') {
+            setTimeout(function() {
+                window.parentSectionNav.buildSections();
+            }, 100);
+        }
     }
 
     function isShuffleMode() {
@@ -1244,7 +1251,46 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
         </div>
 
         <!-- </div> --> <!-- Extra div? -->
-        <div id="favs-wrapper">
+        <div id="favs-section">
+            <nav id="section-nav-parent" class="section-nav-parent" aria-label="Section navigation">
+                <div class="section-nav-parent-header">
+                    <a class="section-nav-parent-title" href="javascript:void(0);" onclick="$('#favs-wrapper iframe')[0].contentWindow.fetchPlaylist('Default'); More.counter('Favheader');">Youtube uploads and playlists:</a>
+                    <a class="section-nav-parent-clear" href="javascript:void(0)" onclick='localStorage.setItem("YT__last-opened", "[]"); $("#favs-wrapper iframe").contents().find(".crossed-out").removeClass("crossed-out");'>Clear history</a>
+                </div>
+                <div class="section-nav-parent-controls">
+                    <button class="section-nav-parent-btn section-nav-parent-prev" type="button" aria-label="Go to previous section" style="display:none;">
+                        <span class="section-nav-parent-arrow">&larr;</span>
+                        <span class="section-nav-parent-label"></span>
+                    </button>
+                    <span class="section-nav-parent-current" aria-live="polite"></span>
+                    <button class="section-nav-parent-btn section-nav-parent-next" type="button" aria-label="Go to next section" style="display:none;">
+                        <span class="section-nav-parent-label"></span>
+                        <span class="section-nav-parent-arrow">&rarr;</span>
+                    </button>
+                    <button class="section-nav-parent-toggle" type="button" aria-expanded="false" aria-controls="section-nav-parent-list">
+                        All topics
+                        <span class="section-nav-parent-toggle-icon">&#9662;</span>
+                    </button>
+                </div>
+                <div id="section-nav-parent-list" class="section-nav-parent-list" hidden>
+                    <div class="section-nav-parent-list-toolbar">
+                        <div class="section-nav-parent-list-tools">
+                            <button class="section-nav-parent-alpha-toggle" type="button" aria-expanded="false" aria-label="Show alphabet index" title="Jump by letter">
+                                <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                            </button>
+                            <div class="section-nav-parent-alpha-index" hidden></div>
+                            <button class="section-nav-parent-view-toggle" type="button" aria-label="Switch to alphabetical list view" title="Alphabetical list">
+                                <i class="fa fa-list" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="section-nav-parent-list-body">
+                        <div class="section-nav-parent-list-grid section-nav-parent-list-grid--mosaic"></div>
+                    </div>
+                </div>
+            </nav>
+            <div id="favs-wrapper">
+            </div>
         </div>
         <div id="discover-more">
             Discover new channels at: <a href="http://randomyt.com" target="_blank" rel="noopener noreferrer">RandomYt</a>.
@@ -1263,8 +1309,13 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
     </div>
 
     <script>
+    function stripHtmlFromLabel(labelText) {
+        return $("<div>").html(labelText).text();
+    }
+
     function extractCategoriesFromPlaylistLabel(labelText) {
-        let matches = String(labelText || "").match(/\[([^\]]+)\]/g) || [];
+        let cleanText = stripHtmlFromLabel(labelText);
+        let matches = String(cleanText || "").match(/\[([^\]]+)\]/g) || [];
         return matches
             .map((match)=>match.slice(1, -1).trim())
             .filter((category)=>category.length > 0);
@@ -1550,6 +1601,395 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
         let search = params.get("search");
         if(search)
             $("#playlist-filter").val(search).trigger("input")
+    });
+
+    // Parent-page sticky section nav
+    class ParentSectionNav {
+        constructor() {
+            this.sections = [];
+            this.currentIndex = 0;
+            this.suppressSpy = false;
+            this.rafPending = false;
+            this.navHeight = 60;
+            this.triggerBuffer = 24;
+            this.pinnedTolerance = 80;
+            this.listView = localStorage.getItem('YT__all-topics-view') === 'alphabetical' ? 'alphabetical' : 'mosaic';
+            this.alphaIndexExpanded = false;
+        }
+
+        init() {
+            this.$nav = $('#section-nav-parent');
+            this.$prevBtn = $('.section-nav-parent-prev');
+            this.$nextBtn = $('.section-nav-parent-next');
+            this.$current = $('.section-nav-parent-current');
+            this.$toggle = $('.section-nav-parent-toggle');
+            this.$list = $('#section-nav-parent-list');
+            this.$listToolbar = $('.section-nav-parent-list-toolbar');
+            this.$listBody = $('.section-nav-parent-list-body');
+            this.$listGrid = $('.section-nav-parent-list-grid');
+            this.$listTools = $('.section-nav-parent-list-tools');
+            this.$viewToggle = $('.section-nav-parent-view-toggle');
+            this.$alphaToggle = $('.section-nav-parent-alpha-toggle');
+            this.$alphaIndex = $('.section-nav-parent-alpha-index');
+
+            this.bindEvents();
+            this.updateViewToggleUi();
+        }
+
+        bindEvents() {
+            this.$toggle.on('click', () => this.toggleList());
+            this.$viewToggle.on('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.toggleListView();
+            });
+            this.$alphaToggle.on('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.toggleAlphaIndex();
+            });
+            this.$prevBtn.on('click', () => this.jumpToSection(this.currentIndex - 1));
+            this.$nextBtn.on('click', () => this.jumpToSection(this.currentIndex + 1));
+
+            $(window).on('scroll', () => this.onScroll());
+            $(window).on('resize', () => this.onResize());
+            this.updateStuckState();
+        }
+
+        updateStuckState() {
+            if (!this.$nav.length) return;
+            const sectionTop = $('#favs-section').offset().top;
+            const isStuck = window.scrollY > sectionTop + 2;
+            this.$nav.toggleClass('is-stuck', isStuck);
+        }
+
+        toggleList() {
+            const expanded = this.$toggle.attr('aria-expanded') === 'true';
+            this.$toggle.attr('aria-expanded', !expanded);
+            if (expanded) {
+                this.$list.attr('hidden', '');
+                this.collapseAlphaIndex();
+            } else {
+                this.$list.removeAttr('hidden');
+            }
+            this.measureNavHeight();
+        }
+
+        collapseList() {
+            this.$toggle.attr('aria-expanded', 'false');
+            this.$list.attr('hidden', '');
+            this.collapseAlphaIndex();
+        }
+
+        getFirstLetter(label) {
+            const trimmed = String(label || '').trim();
+            if (!trimmed.length) {
+                return '#';
+            }
+
+            const char = trimmed.charAt(0).toUpperCase();
+            return /[A-Z]/.test(char) ? char : '#';
+        }
+
+        collapseAlphaIndex() {
+            this.alphaIndexExpanded = false;
+            this.$alphaToggle.attr('aria-expanded', 'false');
+            this.$alphaToggle.removeClass('section-nav-parent-alpha-toggle--expanded');
+            this.$alphaIndex.attr('hidden', '');
+        }
+
+        toggleAlphaIndex() {
+            this.alphaIndexExpanded = !this.alphaIndexExpanded;
+            this.$alphaToggle.attr('aria-expanded', this.alphaIndexExpanded);
+            this.$alphaToggle.toggleClass('section-nav-parent-alpha-toggle--expanded', this.alphaIndexExpanded);
+
+            if (this.alphaIndexExpanded) {
+                this.renderAlphaIndex();
+                this.$alphaIndex.removeAttr('hidden');
+            } else {
+                this.$alphaIndex.attr('hidden', '');
+            }
+
+            this.measureNavHeight();
+        }
+
+        renderAlphaIndex() {
+            const letters = [];
+            const seenLetters = {};
+
+            this.$listGrid.find('.section-nav-parent-item').each((_, el) => {
+                const letter = $(el).attr('data-first-letter');
+                if (letter && !seenLetters[letter]) {
+                    seenLetters[letter] = true;
+                    letters.push(letter);
+                }
+            });
+
+            letters.sort((a, b) => a.localeCompare(b));
+
+            this.$alphaIndex.empty();
+            letters.forEach((letter) => {
+                const $btn = $('<button>')
+                    .addClass('section-nav-parent-alpha-item')
+                    .attr('type', 'button')
+                    .attr('data-letter', letter)
+                    .text(letter);
+                $btn.on('click', (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.scrollToLetter(letter);
+                });
+                this.$alphaIndex.append($btn);
+            });
+        }
+
+        scrollToLetter(letter) {
+            const $anchor = this.$listGrid.find(`[data-alpha-anchor="${letter}"]`).first();
+
+            if (!$anchor.length || !this.$listBody.length) {
+                return;
+            }
+
+            const bodyEl = this.$listBody[0];
+            const anchorEl = $anchor[0];
+            const bodyRect = bodyEl.getBoundingClientRect();
+            const anchorRect = anchorEl.getBoundingClientRect();
+            const delta = anchorRect.top - bodyRect.top - 4;
+            const scrollTop = bodyEl.scrollTop + delta;
+
+            this.$listBody.stop().animate({
+                scrollTop: Math.max(scrollTop, 0)
+            }, 200);
+        }
+
+        measureNavHeight() {
+            this.navHeight = this.$nav.outerHeight() || 60;
+        }
+
+        buildSections() {
+            this.sections = [];
+            const $iframe = $('#favs-wrapper iframe');
+            if (!$iframe.length) return;
+            
+            try {
+                const $iframeContents = $iframe.contents();
+                $iframeContents.find('[data-section-id]').each((i, el) => {
+                    const $el = $(el);
+                    const $parentLi = $el.closest('li');
+                    if ($parentLi.is(':visible')) {
+                        this.sections.push({
+                            id: $el.attr('data-section-id'),
+                            label: stripHtmlFromLabel($el.text().replace(/^\[|\]$/g, '')),
+                            el: el
+                        });
+                    }
+                });
+            } catch(e) {
+                console.log('Cannot access iframe contents yet');
+                return;
+            }
+
+            this.currentIndex = 0;
+            this.renderAllTopicsList();
+            this.measureNavHeight();
+            if (this.sections.length > 0) {
+                this.syncCurrentSection();
+            }
+            this.updateNav();
+        }
+
+        renderAllTopicsList() {
+            this.$listGrid.empty();
+            this.$listGrid
+                .removeClass('section-nav-parent-list-grid--list section-nav-parent-list-grid--mosaic')
+                .addClass(this.listView === 'alphabetical'
+                    ? 'section-nav-parent-list-grid--list'
+                    : 'section-nav-parent-list-grid--mosaic');
+
+            let items = this.sections.map((section, index) => ({ section, index }));
+            const seenAlphaAnchors = {};
+
+            if (this.listView === 'alphabetical') {
+                items = items.slice().sort((a, b) => {
+                    return a.section.label.localeCompare(b.section.label, undefined, { sensitivity: 'base' });
+                });
+            }
+
+            items.forEach(({ section, index }) => {
+                const $btn = $('<button>')
+                    .addClass('section-nav-parent-item')
+                    .attr('type', 'button')
+                    .attr('data-section-index', index)
+                    .text(section.label);
+
+                if (this.listView === 'alphabetical') {
+                    const firstLetter = this.getFirstLetter(section.label);
+                    $btn.attr('data-first-letter', firstLetter);
+
+                    if (!seenAlphaAnchors[firstLetter]) {
+                        seenAlphaAnchors[firstLetter] = true;
+                        $btn.attr('data-alpha-anchor', firstLetter);
+                    }
+                }
+
+                $btn.on('click', () => {
+                    this.jumpToSection(index);
+                });
+                this.$listGrid.append($btn);
+            });
+
+            if (this.listView === 'alphabetical' && this.alphaIndexExpanded) {
+                this.renderAlphaIndex();
+            }
+
+            this.updateNav();
+        }
+
+        toggleListView() {
+            this.listView = this.listView === 'alphabetical' ? 'mosaic' : 'alphabetical';
+            localStorage.setItem('YT__all-topics-view', this.listView);
+            this.collapseAlphaIndex();
+            this.updateViewToggleUi();
+            this.renderAllTopicsList();
+            this.measureNavHeight();
+        }
+
+        updateViewToggleUi() {
+            if (!this.$viewToggle || !this.$viewToggle.length) {
+                return;
+            }
+
+            const isListView = this.listView === 'alphabetical';
+            const $icon = this.$viewToggle.find('i');
+
+            this.$list.toggleClass('section-nav-parent-list--alphabetical', isListView);
+
+            if (!isListView) {
+                this.collapseAlphaIndex();
+            } else if (this.alphaIndexExpanded) {
+                this.$alphaIndex.removeAttr('hidden');
+            }
+
+            this.$viewToggle.attr(
+                'aria-label',
+                isListView ? 'Switch to mosaic view' : 'Switch to alphabetical list view'
+            );
+            this.$viewToggle.attr(
+                'title',
+                isListView ? 'Mosaic view' : 'Alphabetical list'
+            );
+            $icon.attr('class', isListView ? 'fa fa-th' : 'fa fa-list');
+        }
+
+        jumpToSection(index) {
+            if (index < 0 || index >= this.sections.length) return;
+
+            this.collapseList();
+            this.measureNavHeight();
+
+            this.suppressSpy = true;
+            this.currentIndex = index;
+            this.updateNav();
+
+            const section = this.sections[index];
+            const $iframe = $('#favs-wrapper iframe');
+            const iframeTop = $iframe.offset().top;
+            const elOffsetInIframe = $(section.el).offset().top - $iframe.contents().find('body').offset().top;
+            const scrollY = iframeTop + elOffsetInIframe - this.navHeight - this.triggerBuffer;
+
+            window.scrollTo({ top: scrollY, behavior: 'smooth' });
+
+            setTimeout(() => {
+                this.suppressSpy = false;
+                this.syncCurrentSection();
+            }, 250);
+        }
+
+        onScroll() {
+            if (this.suppressSpy || this.rafPending) return;
+            this.rafPending = true;
+            requestAnimationFrame(() => {
+                this.rafPending = false;
+                this.updateStuckState();
+                this.syncCurrentSection();
+            });
+        }
+
+        onResize() {
+            this.measureNavHeight();
+            this.updateStuckState();
+            this.syncCurrentSection();
+        }
+
+        syncCurrentSection() {
+            if (this.suppressSpy) return;
+            if (this.sections.length === 0) return;
+
+            const $iframe = $('#favs-wrapper iframe');
+            if (!$iframe.length) return;
+
+            const iframeTop = $iframe.offset().top;
+            const triggerY = this.navHeight + this.triggerBuffer;
+            let newIndex = 0;
+
+            try {
+                const iframeBodyTop = $iframe.contents().find('body').offset().top;
+                
+                for (let i = 0; i < this.sections.length; i++) {
+                    const elOffsetInIframe = $(this.sections[i].el).offset().top - iframeBodyTop;
+                    const elTop = iframeTop + elOffsetInIframe - window.scrollY;
+                    if (elTop <= triggerY) {
+                        newIndex = i;
+                    } else {
+                        break;
+                    }
+                }
+            } catch(e) {
+                return;
+            }
+
+            if (newIndex !== this.currentIndex) {
+                this.currentIndex = newIndex;
+                this.updateNav();
+            }
+        }
+
+        updateNav() {
+            const current = this.sections[this.currentIndex];
+            const prev = this.sections[this.currentIndex - 1];
+            const next = this.sections[this.currentIndex + 1];
+
+            this.$current.text(current ? current.label : '');
+
+            if (prev) {
+                this.$prevBtn.show().find('.section-nav-parent-label').text(prev.label);
+            } else {
+                this.$prevBtn.hide();
+            }
+
+            if (next) {
+                this.$nextBtn.show().find('.section-nav-parent-label').text(next.label);
+            } else {
+                this.$nextBtn.hide();
+            }
+
+            this.$listGrid.find('.section-nav-parent-item').each((_, el) => {
+                const $el = $(el);
+                const sectionIndex = parseInt($el.attr('data-section-index'), 10);
+                if (sectionIndex === this.currentIndex) {
+                    $el.addClass('section-nav-parent-item--active');
+                    $el.attr('aria-current', 'true');
+                } else {
+                    $el.removeClass('section-nav-parent-item--active');
+                    $el.removeAttr('aria-current');
+                }
+            });
+        }
+    }
+
+    window.parentSectionNav = new ParentSectionNav();
+    $(function() {
+        window.parentSectionNav.init();
     });
     </script>
 

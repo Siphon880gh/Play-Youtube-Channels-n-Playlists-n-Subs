@@ -25,16 +25,12 @@ window.renderCrossedOutPlaylists = function(arrLastOpened) {
     });
 }
 $(() => {
-    // Main: Render cross out for the last 10 opened playlists
-
-    // Sub: Get last 10
     let lastOpened = localStorage.getItem("YT__last-opened");
     let arrLastOpened = [];
     if (lastOpened) {
         arrLastOpened = JSON.parse(lastOpened);
     }
     
-    // Sub: Cross out the last 10
     setTimeout(()=>{
         renderCrossedOutPlaylists(arrLastOpened);
     }, 1000);

@@ -16,16 +16,16 @@ $a = removeElement("index.php", $a);
 $a = removeElement("index.html", $a);
 $a = removeElement("Default.json", $a);
 
-echo "
-<div class='fav-collections'>
-<b>More favs collections:</b><br/><br/>
-<a href=\"" . $prependPath . "favs.php\">[Default]</a>";
+echo '<div class="fav-collections-grid">';
+
+echo '<a class="fav-collections-link" href="' . htmlspecialchars($prependPath . 'favs.php', ENT_QUOTES, 'UTF-8') . '">Default</a>';
 
 foreach($a as $link) {
     $collection = str_replace(".json", "", $link);
-    echo "
-<a href=\"" . $prependPath . "favs.php?favs=$collection\">$collection</a>
-    ";
+    $href = htmlspecialchars($prependPath . 'favs.php?favs=' . rawurlencode($collection), ENT_QUOTES, 'UTF-8');
+    $label = htmlspecialchars($collection, ENT_QUOTES, 'UTF-8');
+    echo '<a class="fav-collections-link" href="' . $href . '">' . $label . '</a>';
 }
-echo "</div>";
+
+echo '</div>';
 ?>

@@ -26,14 +26,14 @@ var More = {
                             xhttp.onreadystatechange = function() {
                                 if (this.readyState == 4 && this.status == 200) {
                                     var responseText = this.responseText;
-                                    $("#favs").contents().find("#modal-more").html(responseText);
+                                    var $modal = $("#favs-wrapper iframe").contents().find("#modal-more");
+                                    $modal.find(".contents").html(responseText);
+                                    $modal.removeClass("fade").attr("aria-hidden", "false");
+                                    resizeIframeFavs();
                                 }
                             };
                             xhttp.open("GET", "list-favs.php?prependPath=" + prependPath, true);
                             xhttp.send();
-
-
-                            $("#favs").contents().find("#modal-more").removeClass("fade");
                         }
 
 

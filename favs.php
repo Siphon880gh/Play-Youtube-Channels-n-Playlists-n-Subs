@@ -2,34 +2,11 @@
 <?php $prependPath="./"; ?>
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<link href="<?php echo $prependPath; ?>assets/css/favs.css" rel="stylesheet"></link>
+<link href="<?php echo $prependPath; ?>assets/css/favs.css?v=5" rel="stylesheet"></link>
 <script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
-<?php include($prependPath."assets/templates/favs.php"); ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.min.css">
 <div id="favs">
-  <div class="header favs-header">
-    <?php
-    /**
-     * @events
-     *
-     * Secret gesture on "Watch videos from Youtube channels"
-     * and "Playlist" headers that open more Fav collections.
-     * In respective order, the combination is
-     * click x2, then click x2.
-     * 
-    */
-    ?>
-    <a class="favs-title-link" href="javascript:void(0);" onclick="fetchPlaylist('Default'); window.parent.More.counter('Favheader');">Youtube uploads and playlists:</a>
-    <div class="float-right float-right-buttons favs-header-tools" style="padding-right: 5px;">
-      <i id="random" class="fa fa-random clickable" onclick="RandomPlaylist.select();" style="margin-left:3px;"></i>
-      <div style="width:1px; height:10px;"></div>
-      <i id="manual" class="fa fa-cloud-upload-alt clickable" onclick="ManualPlaylist.prompt();"></i>
-    </div> <!-- /float-right -->
-
-    <div class="favs-history">
-      <a class="favs-history-link" href="javascript:void(0)" onclick='localStorage.setItem("YT__last-opened", "[]"); $(".crossed-out").removeClass("crossed-out");'>Clear history</a>
-    </div>
-  </div> <!-- /header -->
+  <?php include($prependPath."assets/templates/favs.php"); ?>
 
   <div class="favs-controls">
     <div class="quick-filters">
@@ -114,26 +91,35 @@ if(currentCollection==="favs") currentCollection = "Default";
 
 function filterListItems(userFilterText, listItems) {
   let $allListItems = listItems.find("li");
+  let $sectionHeaders = listItems.find("li.section-header");
+  let $playlistItems = listItems.find("li:not(.section-header)");
 
-  // Filtering vs reset to showing all list items
   if(userFilterText.length) {
-
     $allListItems.hide();
 
     var $filteredIn = null;
     var terms = userFilterText.split("OR").map(term => term.trim())
     terms.forEach(term=>{
-      if(term.length===0) return true; // eg. A OR
+      if(term.length===0) return true;
 
       if($filteredIn===null) {
-        $filteredIn = listItems.find(`li:contains('${term}')`);
+        $filteredIn = listItems.find(`li:not(.section-header):contains('${term}')`);
       } else {
-        $.merge($filteredIn, listItems.find(`li:contains('${term}')`));
+        $.merge($filteredIn, listItems.find(`li:not(.section-header):contains('${term}')`));
       }
-    }) // forEach
+    })
     if($filteredIn!==null) {
       $filteredIn.show();
     }
+
+    $sectionHeaders.each(function() {
+      var $header = $(this);
+      var $nextItems = $header.nextUntil('.section-header');
+      var hasVisibleItems = $nextItems.filter(':visible').length > 0;
+      if(hasVisibleItems) {
+        $header.show();
+      }
+    });
   } else {
     $allListItems.show();
   }
@@ -145,8 +131,13 @@ function saveFilteredForRefresh(userFilterText) {
   localStorage.setItem("YT__last-filtered", userFilterText);
 } // saveFilteredForRefresh
 
+function stripHtmlFromLabel(labelText) {
+  return $("<div>").html(labelText).text();
+}
+
 function extractCategoriesFromPlaylistLabel(labelText) {
-  var matches = String(labelText || "").match(/\[([^\]]+)\]/g) || [];
+  var cleanText = stripHtmlFromLabel(labelText);
+  var matches = String(cleanText || "").match(/\[([^\]]+)\]/g) || [];
   return matches
     .map(function(match) {
       return match.slice(1, -1).trim();
@@ -223,36 +214,49 @@ function fetchPlaylist(calledCollection) {
     var $playlistContainer = $(".playlists-target");
     $playlistContainer.html("");
 
+    var seenCategories = {};
+    var categoryOrder = [];
+
     for(var i =0; i<collection.length; i++) {
         var playlistObject = collection[i];
         var id = (typeof playlistObject.id!=="undefined")?playlistObject.id:-1;
         var name = playlistObject.name;
-        // console.log({id,name})
+
+        var categories = extractCategoriesFromPlaylistLabel(name);
+        var primaryCategory = categories.length > 0 ? categories[0] : null;
+        var sectionCategory = primaryCategory;
+
+        if(sectionCategory && !seenCategories[sectionCategory]) {
+          seenCategories[sectionCategory] = true;
+          categoryOrder.push(sectionCategory);
+
+          var sectionId = 'section-' + sectionCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          var $sectionHeader = $('<li class="section-header"></li>');
+          var $sectionLabel = $('<span class="section-label"></span>')
+            .attr('data-section-id', sectionId)
+            .attr('id', sectionId)
+            .text('[' + sectionCategory + ']');
+          $sectionHeader.append($sectionLabel);
+          $playlistContainer.append($sectionHeader);
+        }
 
         var li = $("<li></li>")
         var a = $("<a></a>");
 
-        // Add interactivity
         a.attr("href","javascript:void(0);");
         if(id===-1) {
-          a.addClass('not-link') // dependency out there
-          li.addClass('not-link') // dependency out there
+          a.addClass('not-link')
+          li.addClass('not-link')
         } else if(id) {
           a.attr("data-playlist-id",id);
           a.attr("onclick", "changeVideo(event)");
         } 
-        // Change text
         a.html(name);
 
-        // Append a into li
         li.append(a);
-
-        // Append to playlist list
         $playlistContainer.append(li);
-      } // for
+      }
 
-
-      // Continuing the filtered search input
       let lastFiltered = localStorage.getItem("YT__last-filtered");
       let $filterInput = $("#playlist-filter");
       if(lastFiltered && lastFiltered.length) {
@@ -267,6 +271,12 @@ function fetchPlaylist(calledCollection) {
 
   function resizeIframeNow() {
     window.parent.resizeIframeFavs();
+  }
+
+  function closeFavCollectionsPanel() {
+    var $panel = $("#modal-more");
+    $panel.addClass("fade").attr("aria-hidden", "true");
+    resizeIframeNow();
   }
 
 $(document).ready(function(){
