@@ -19,7 +19,7 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="assets/js/favs.js?v=2"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/index.css?v=5">
+    <link rel="stylesheet" href="assets/css/index.css?v=8">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
     <style>
@@ -263,8 +263,231 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
         setInterval(refitVideoPrn, 1000);
 
         initBrightnessControl();
+        initWatchTime();
 
     }); // on doc ready
+
+    const WATCH_TIME_STORAGE_KEY = "YT__watch-time-today";
+    const WATCH_TIME_TICK_MS = 1000;
+    const WATCH_TIME_MAX_PROGRESS_MS = 2500;
+
+    window.ytWatchTime = {
+        sessionMs: 0,
+        todayMs: 0,
+        todayKey: "",
+        intervalId: null,
+        lastCountedVideoTime: null,
+        lastCountedVideoId: null
+    };
+
+    function getWatchTimeTodayKey() {
+        let d = new Date();
+        let month = String(d.getMonth() + 1).padStart(2, "0");
+        let day = String(d.getDate()).padStart(2, "0");
+        return d.getFullYear() + "-" + month + "-" + day;
+    }
+
+    function formatWatchTime(ms) {
+        let totalSeconds = Math.max(0, Math.floor(ms / 1000));
+        let hours = Math.floor(totalSeconds / 3600);
+        let minutes = Math.floor((totalSeconds % 3600) / 60);
+        let seconds = totalSeconds % 60;
+
+        if(hours > 0) {
+            return hours + "h " + minutes + "m";
+        }
+        if(minutes > 0) {
+            return minutes + "m " + seconds + "s";
+        }
+        return seconds + "s";
+    }
+
+    function ensureWatchTimeTodayKey() {
+        let todayKey = getWatchTimeTodayKey();
+        if(window.ytWatchTime.todayKey !== todayKey) {
+            window.ytWatchTime.todayKey = todayKey;
+            window.ytWatchTime.todayMs = 0;
+        }
+    }
+
+    function loadTodayWatchTime() {
+        ensureWatchTimeTodayKey();
+        let saved = null;
+
+        try {
+            saved = JSON.parse(localStorage.getItem(WATCH_TIME_STORAGE_KEY) || "null");
+        } catch(e) {
+            saved = null;
+        }
+
+        if(saved && saved.date === window.ytWatchTime.todayKey && typeof saved.ms === "number" && isFinite(saved.ms)) {
+            window.ytWatchTime.todayMs = Math.max(0, saved.ms);
+        } else {
+            window.ytWatchTime.todayMs = 0;
+        }
+    }
+
+    function saveTodayWatchTime() {
+        ensureWatchTimeTodayKey();
+        localStorage.setItem(WATCH_TIME_STORAGE_KEY, JSON.stringify({
+            date: window.ytWatchTime.todayKey,
+            ms: Math.max(0, Math.round(window.ytWatchTime.todayMs))
+        }));
+    }
+
+    function renderWatchTimeDisplay() {
+        $("#watch-time-today-value").text(formatWatchTime(window.ytWatchTime.todayMs));
+        $("#watch-time-session-value").text(formatWatchTime(window.ytWatchTime.sessionMs));
+    }
+
+    function shouldCountWatchTime() {
+        if(!$("#player-fallback").hasClass("d-none")) {
+            return false;
+        }
+
+        if(typeof YT === "undefined" || !window.player1) {
+            return false;
+        }
+
+        let state;
+        try {
+            state = window.player1.getPlayerState();
+        } catch(e) {
+            return false;
+        }
+
+        if(state !== YT.PlayerState.PLAYING) {
+            return false;
+        }
+
+        let snapshot = getPlayerSnapshot();
+        if(hasFatalPlayerSnapshot(snapshot, Date.now())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function resetWatchTimeProgressMarkers() {
+        window.ytWatchTime.lastCountedVideoTime = null;
+        window.ytWatchTime.lastCountedVideoId = null;
+    }
+
+    function tickWatchTime() {
+        ensureWatchTimeTodayKey();
+
+        if(!shouldCountWatchTime()) {
+            resetWatchTimeProgressMarkers();
+            renderWatchTimeDisplay();
+            return;
+        }
+
+        let currentTime;
+        let videoId = "";
+
+        try {
+            currentTime = window.player1.getCurrentTime();
+            videoId = getVideoId();
+        } catch(e) {
+            resetWatchTimeProgressMarkers();
+            return;
+        }
+
+        if(typeof currentTime !== "number" || !isFinite(currentTime)) {
+            resetWatchTimeProgressMarkers();
+            return;
+        }
+
+        if(
+            window.ytWatchTime.lastCountedVideoId === videoId &&
+            window.ytWatchTime.lastCountedVideoTime !== null &&
+            currentTime > window.ytWatchTime.lastCountedVideoTime
+        ) {
+            let deltaMs = (currentTime - window.ytWatchTime.lastCountedVideoTime) * 1000;
+            if(deltaMs > 0 && deltaMs <= WATCH_TIME_MAX_PROGRESS_MS) {
+                window.ytWatchTime.sessionMs += deltaMs;
+                window.ytWatchTime.todayMs += deltaMs;
+                saveTodayWatchTime();
+            }
+        }
+
+        window.ytWatchTime.lastCountedVideoTime = currentTime;
+        window.ytWatchTime.lastCountedVideoId = videoId;
+        renderWatchTimeDisplay();
+    }
+
+    function resetTodayWatchTime() {
+        window.ytWatchTime.todayMs = 0;
+        resetWatchTimeProgressMarkers();
+        saveTodayWatchTime();
+        renderWatchTimeDisplay();
+    }
+
+    function resetSessionWatchTime() {
+        window.ytWatchTime.sessionMs = 0;
+        resetWatchTimeProgressMarkers();
+        renderWatchTimeDisplay();
+    }
+
+    function resetAllWatchTime() {
+        window.ytWatchTime.sessionMs = 0;
+        window.ytWatchTime.todayMs = 0;
+        resetWatchTimeProgressMarkers();
+        saveTodayWatchTime();
+        renderWatchTimeDisplay();
+    }
+
+    function handleWatchTimeClick(event, scope) {
+        if(event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        if(scope === "today") {
+            if(!window.confirm("Reset today's watch time?")) {
+                return;
+            }
+            resetTodayWatchTime();
+            return;
+        }
+
+        if(scope === "session") {
+            if(!window.confirm("Reset this session's watch time?")) {
+                return;
+            }
+            resetSessionWatchTime();
+            return;
+        }
+
+        if(scope === "both") {
+            if(!window.confirm("Reset watch time for today and this session?")) {
+                return;
+            }
+            resetAllWatchTime();
+        }
+    }
+
+    function initWatchTime() {
+        if(!$("#watch-time-display").length) {
+            return;
+        }
+
+        loadTodayWatchTime();
+        renderWatchTimeDisplay();
+
+        if(window.ytWatchTime.intervalId !== null) {
+            clearInterval(window.ytWatchTime.intervalId);
+        }
+
+        window.ytWatchTime.intervalId = setInterval(tickWatchTime, WATCH_TIME_TICK_MS);
+
+        $(".watch-time-stat").on("keydown", function(event) {
+            if(event.key === "Enter" || event.key === " ") {
+                let scope = $(this).hasClass("watch-time-stat--today") ? "today" : "session";
+                handleWatchTimeClick(event, scope);
+            }
+        });
+    }
 
     const BRIGHTNESS_MIN = 20;
     const BRIGHTNESS_MAX = 100;
@@ -287,6 +510,14 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
         $("#brightness-slider").val(clamped).attr("aria-valuenow", clamped);
         $("#brightness-control .brightness-value").text(clamped + "%");
         localStorage.setItem(BRIGHTNESS_STORAGE_KEY, String(clamped));
+        updateBrightnessPresetState(clamped);
+    }
+
+    function updateBrightnessPresetState(percent) {
+        $(".brightness-preset").each(function() {
+            let preset = parseInt($(this).data("brightness"), 10);
+            $(this).toggleClass("brightness-preset--active", preset === percent);
+        });
     }
 
     function initBrightnessControl() {
@@ -315,6 +546,10 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
             const ratio = (event.clientX - rect.left) / rect.width;
             const percent = BRIGHTNESS_MIN + ratio * (BRIGHTNESS_MAX - BRIGHTNESS_MIN);
             applyPageBrightness(Math.round(percent));
+        });
+
+        $(".brightness-preset").on("click", function() {
+            applyPageBrightness(parseInt($(this).data("brightness"), 10));
         });
     }
 
@@ -1153,28 +1388,56 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
     <div id="player"></div>
     <div id="player-options" class="player-options">
         <div class="player-options-controls">
-            <div id="playlist-position-indicator" class="player-options-nav d-none" role="group" aria-label="Playlist navigation">
-                <button type="button" class="playlist-position-arrow playlist-position-arrow-first" onclick="openFirstVideoInPlaylist();" aria-label="First video">
-                    <span>1</span>
-                </button>
-                <button type="button" class="playlist-position-arrow playlist-position-arrow-prev" onclick="openPreviousVideoInPlaylist();" aria-label="Previous video">
-                    <i class="fa fa-chevron-left"></i>
-                </button>
-                <span class="playlist-position-label"></span>
-                <button type="button" class="playlist-position-arrow playlist-position-arrow-next" onclick="openNextVideoInPlaylist();" aria-label="Next video">
-                    <i class="fa fa-chevron-right"></i>
-                </button>
+            <div class="player-options-row player-options-row-primary">
+                <div id="playlist-position-indicator" class="player-options-nav d-none" role="group" aria-label="Playlist navigation">
+                    <button type="button" class="playlist-position-arrow playlist-position-arrow-first" onclick="openFirstVideoInPlaylist();" aria-label="First video">
+                        <span>1</span>
+                    </button>
+                    <button type="button" class="playlist-position-arrow playlist-position-arrow-prev" onclick="openPreviousVideoInPlaylist();" aria-label="Previous video">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <span class="playlist-position-label"></span>
+                    <button type="button" class="playlist-position-arrow playlist-position-arrow-next" onclick="openNextVideoInPlaylist();" aria-label="Next video">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div id="watch-time-display" class="watch-time-display" aria-label="Watch time">
+                    <span class="watch-time-heading">
+                        <i class="fa fa-hourglass-half" aria-hidden="true"></i>
+                        <span class="watch-time-heading-text">Watch time</span>
+                    </span>
+                    <span class="watch-time-values">
+                        <button type="button" class="watch-time-stat watch-time-stat--today" title="Click to reset today's watch time" aria-label="Today watch time. Click to reset." onclick="handleWatchTimeClick(event, 'today');">
+                            Today <strong id="watch-time-today-value">0s</strong>
+                        </button>
+                        <span class="watch-time-divider" aria-hidden="true">·</span>
+                        <button type="button" class="watch-time-stat watch-time-stat--session" title="Click to reset session watch time" aria-label="Session watch time. Click to reset." onclick="handleWatchTimeClick(event, 'session');">
+                            Session <strong id="watch-time-session-value">0s</strong>
+                        </button>
+                        <button type="button" class="watch-time-reset-all" title="Reset today and session watch time" aria-label="Reset both today and session watch time" onclick="handleWatchTimeClick(event, 'both');">
+                            Reset both
+                        </button>
+                    </span>
+                </div>
             </div>
-            <div id="brightness-control" class="brightness-control" aria-label="Page brightness">
-                <label for="brightness-slider" class="brightness-label">
-                    <i class="fa fa-adjust" aria-hidden="true"></i>
-                    <span class="brightness-label-text">Brightness</span>
-                    <span class="brightness-value">100%</span>
-                </label>
-                <div class="brightness-track-wrap">
-                    <div class="brightness-min-zone" aria-hidden="true" title="Minimum brightness (20%)"></div>
-                    <div class="brightness-min-tick" aria-hidden="true"></div>
-                    <input type="range" id="brightness-slider" min="20" max="100" value="100" step="1" aria-valuemin="20" aria-valuemax="100" aria-valuenow="100">
+            <div class="player-options-row player-options-row-brightness">
+                <div id="brightness-control" class="brightness-control" aria-label="Page brightness">
+                    <label for="brightness-slider" class="brightness-label">
+                        <i class="fa fa-adjust" aria-hidden="true"></i>
+                        <span class="brightness-label-text">Brightness</span>
+                        <span class="brightness-value">100%</span>
+                    </label>
+                    <div class="brightness-track-wrap">
+                        <div class="brightness-min-zone" aria-hidden="true" title="Minimum brightness (20%)"></div>
+                        <div class="brightness-min-tick" aria-hidden="true"></div>
+                        <input type="range" id="brightness-slider" min="20" max="100" value="100" step="1" aria-valuemin="20" aria-valuemax="100" aria-valuenow="100">
+                    </div>
+                    <div class="brightness-presets" role="group" aria-label="Brightness presets">
+                        <button type="button" class="brightness-preset" data-brightness="33" aria-label="Set brightness to 33 percent">33%</button>
+                        <button type="button" class="brightness-preset" data-brightness="50" aria-label="Set brightness to 50 percent">50%</button>
+                        <button type="button" class="brightness-preset" data-brightness="75" aria-label="Set brightness to 75 percent">75%</button>
+                        <button type="button" class="brightness-preset" data-brightness="100" aria-label="Set brightness to 100 percent">100%</button>
+                    </div>
                 </div>
             </div>
         </div>

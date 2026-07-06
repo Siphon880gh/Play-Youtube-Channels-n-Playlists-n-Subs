@@ -59,24 +59,37 @@ h2 {
 
 .player-options-controls {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px 20px;
+    flex-direction: column;
+    gap: 12px;
     padding: 14px 18px;
     background:
         linear-gradient(135deg, rgba(188, 35, 46, 0.07), rgba(214, 97, 82, 0.04));
     border-bottom: 1px solid rgba(188, 35, 46, 0.1);
 }
 
+.player-options-row-primary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 16px;
+}
+
+.player-options-row-brightness {
+    width: 100%;
+}
+
+.player-options-row-brightness .brightness-control {
+    width: 100%;
+}
+
 .player-options-nav:not(.d-none) {
-    flex: 1 1 220px;
+    flex: 1 1 auto;
     justify-content: center;
 }
 
-.player-options-nav.d-none + .brightness-control {
+.player-options-nav.d-none ~ .watch-time-display {
     flex: 1 1 100%;
-    justify-content: center;
 }
 
 .player-options-meta {
@@ -118,7 +131,7 @@ h2 {
 }
 
 @media screen and (min-width: 640px) {
-    .player-options-controls {
+    .player-options-row-primary {
         flex-wrap: nowrap;
     }
 
@@ -126,9 +139,8 @@ h2 {
         flex: 0 1 auto;
     }
 
-    .player-options-nav:not(.d-none) + .brightness-control {
+    .player-options-nav.d-none ~ .watch-time-display {
         flex: 1 1 auto;
-        justify-content: flex-end;
     }
 }
 
@@ -571,10 +583,56 @@ body::before {
     flex: 1 1 280px;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 12px;
     margin: 0;
     padding: 0;
     min-width: 0;
+}
+
+.brightness-presets {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex: 0 0 auto;
+}
+
+.brightness-preset {
+    min-width: 42px;
+    padding: 5px 8px;
+    border: 1px solid rgba(188, 35, 46, 0.18);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #5a1a20;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.brightness-preset:hover {
+    background: rgba(188, 35, 46, 0.08);
+    border-color: rgba(188, 35, 46, 0.28);
+}
+
+.brightness-preset:focus-visible {
+    outline: 2px solid rgba(188, 35, 46, 0.5);
+    outline-offset: 2px;
+}
+
+.brightness-preset--active {
+    border-color: transparent;
+    background: linear-gradient(135deg, rgba(188, 35, 46, 0.95), rgba(214, 97, 82, 0.92));
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(188, 35, 46, 0.22);
+}
+
+.brightness-preset--active:hover {
+    background: linear-gradient(135deg, rgba(188, 35, 46, 0.98), rgba(214, 97, 82, 0.96));
+    border-color: transparent;
 }
 
 .brightness-label {
@@ -604,6 +662,108 @@ body::before {
     min-width: 3.2em;
     color: var(--text-muted);
     font-variant-numeric: tabular-nums;
+}
+
+.watch-time-display {
+    flex: 1 1 220px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin: 0;
+    padding: 8px 12px;
+    min-width: 0;
+    border: 1px solid rgba(188, 35, 46, 0.14);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--text-main);
+    user-select: none;
+}
+
+.watch-time-heading {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--red-main);
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.watch-time-heading i {
+    font-size: 0.95rem;
+    opacity: 0.85;
+}
+
+.watch-time-values {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex: 1 1 auto;
+    font-size: 0.84rem;
+    color: var(--text-muted);
+}
+
+.watch-time-reset-all {
+    margin-left: auto;
+    padding: 3px 8px;
+    border: 1px solid rgba(188, 35, 46, 0.1);
+    border-radius: 8px;
+    background: transparent;
+    font-size: 0.74rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    opacity: 0.72;
+    cursor: pointer;
+    transition: opacity 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.watch-time-reset-all:hover {
+    opacity: 1;
+    background: rgba(188, 35, 46, 0.04);
+    border-color: rgba(188, 35, 46, 0.16);
+}
+
+.watch-time-reset-all:focus-visible {
+    outline: 2px solid rgba(188, 35, 46, 0.35);
+    outline-offset: 1px;
+    opacity: 1;
+}
+
+.watch-time-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 4px 6px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    font: inherit;
+    font-size: 0.84rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.watch-time-stat:hover {
+    background: rgba(188, 35, 46, 0.08);
+}
+
+.watch-time-stat:focus-visible {
+    outline: 2px solid rgba(188, 35, 46, 0.5);
+    outline-offset: 1px;
+}
+
+.watch-time-stat strong {
+    color: var(--text-main);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+}
+
+.watch-time-divider {
+    opacity: 0.45;
 }
 
 .brightness-track-wrap {
@@ -951,10 +1111,13 @@ body::before {
     }
 
     .player-options-controls {
-        flex-direction: column;
-        align-items: stretch;
         padding: 10px 12px;
         gap: 10px;
+    }
+
+    .player-options-row-primary {
+        flex-direction: column;
+        align-items: stretch;
     }
 
     .player-options-nav:not(.d-none) {
@@ -968,17 +1131,23 @@ body::before {
         border-radius: 12px;
     }
 
-    .player-options-nav.d-none + .brightness-control {
-        justify-content: flex-start;
+    .watch-time-display {
+        width: 100%;
+        justify-content: space-between;
     }
 
     .brightness-control {
-        flex: 1 1 auto;
         width: 100%;
     }
 
     .brightness-track-wrap {
+        flex: 1 1 120px;
+        min-width: 0;
         max-width: none;
+    }
+
+    .brightness-presets {
+        margin-left: auto;
     }
 
     .player-options-meta .app-disclosure summary {
