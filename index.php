@@ -207,11 +207,7 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
     }
 
     $(()=>{
-        // Set visual shuffle mnode button
-        if(!isShuffleMode()) {
-            $("#most-recent").addClass("active");
-        }
-        // debugger;
+        syncVideoStartModeButtons();
     })
     
     // Pre-search
@@ -641,15 +637,38 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
             window.location.search = urlTrailing;
         }
     } // openPreviousPlaylist
-    function setShuffleMode(wantShuffled) {
-        var $mostRecent = $("#most-recent");
-        if(wantShuffled) {
-            $mostRecent.addClass("active"); // most recent
-            localStorage.setItem("YT__shuffle_mode", 0); // no shuffling
-        } else {
-            $mostRecent.removeClass("active"); // not most recent
-            localStorage.setItem("YT__shuffle_mode", 1); // shuffling
+    function syncVideoStartModeButtons() {
+        let isShuffling = isShuffleMode();
+        $("#most-recent")
+            .toggleClass("active", !isShuffling)
+            .attr("aria-pressed", !isShuffling ? "true" : "false");
+        $("#next-random")
+            .toggleClass("active", isShuffling)
+            .attr("aria-pressed", isShuffling ? "true" : "false");
+        updatePlaybackModeBadge();
+    }
+
+    function updatePlaybackModeBadge() {
+        let $badge = $("#playback-mode-badge");
+        if(!$badge.length) {
+            return;
         }
+
+        let isShuffling = isShuffleMode();
+        $badge
+            .toggleClass("playback-mode-badge--shuffle", isShuffling)
+            .toggleClass("playback-mode-badge--chronological", !isShuffling)
+            .find(".playback-mode-badge-text")
+            .text(isShuffling ? "Shuffle videos" : "Latest first");
+    }
+
+    function setShuffleMode(wantChronological) {
+        if(wantChronological) {
+            localStorage.setItem("YT__shuffle_mode", 0);
+        } else {
+            localStorage.setItem("YT__shuffle_mode", 1);
+        }
+        syncVideoStartModeButtons();
     }
     
     function handleLoopBtn($this) {
@@ -818,10 +837,8 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
             return;
         }
 
-        let label = "Playlist position " + (details.playlistIndex + 1) + " / " + details.playlist.length;
-        if(isShuffleMode()) {
-            label += " shuffled";
-        }
+        let modeLabel = isShuffleMode() ? "Shuffle" : "Latest first";
+        let label = modeLabel + " · " + (details.playlistIndex + 1) + " / " + details.playlist.length;
 
         setPlaylistPositionIndicator(label, true);
     }
@@ -1389,6 +1406,11 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
     <div id="player-options" class="player-options">
         <div class="player-options-controls">
             <div class="player-options-row player-options-row-primary">
+                <span id="playback-mode-badge" class="playback-mode-badge playback-mode-badge--chronological" aria-live="polite" title="How videos start in the current playlist">
+                    <i class="fa fa-sort-amount-desc playback-mode-badge-icon playback-mode-badge-icon--chronological" aria-hidden="true"></i>
+                    <i class="fa fa-random playback-mode-badge-icon playback-mode-badge-icon--shuffle" aria-hidden="true"></i>
+                    <span class="playback-mode-badge-text">Latest first</span>
+                </span>
                 <div id="playlist-position-indicator" class="player-options-nav d-none" role="group" aria-label="Playlist navigation">
                     <button type="button" class="playlist-position-arrow playlist-position-arrow-first" onclick="openFirstVideoInPlaylist();" aria-label="First video">
                         <span>1</span>
@@ -1476,8 +1498,9 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
                     <i class="fa fa-video"></i> <span>Video</span>
                 </div>
                 <div class="panel-body">
-                    <button id="most-recent" class="btn btn-default btn-sm control-btn control-btn-most-recent" onclick="setShuffleMode(true); urlChange.start(1); $(this).addClass('active');"><i class="fa"></i> Most recent</button>
-                    <button class="btn btn-default-off btn-sm control-btn control-btn-next-random" onclick="setShuffleMode(false); urlChange.start('RANDOM');"><i class="fa fa-random"></i> Next random</button>
+                    <p class="control-hint control-hint-video-start">Start the current playlist with the newest video, or jump to a random one.</p>
+                    <button id="most-recent" class="btn btn-default btn-sm control-btn control-btn-most-recent" onclick="setShuffleMode(true); urlChange.start(1);" title="Play the newest video first, then continue in playlist order" aria-pressed="false"><i class="fa fa-sort-amount-desc"></i> Latest first</button>
+                    <button id="next-random" class="btn btn-default-off btn-sm control-btn control-btn-next-random" onclick="setShuffleMode(false); urlChange.start('RANDOM');" title="Pick a random video and keep shuffling within this playlist" aria-pressed="false"><i class="fa fa-random"></i> Shuffle video</button>
                     <span class="info-loop-group">
                         <button class="btn btn-default-off btn-sm loop-btn control-btn control-btn-loop" onclick='handleLoopBtn($(this));'><i class="fa"></i></button>
                     </span>
@@ -1492,7 +1515,7 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
                 <div class="panel-body">
                     <button class="btn btn-default control-btn control-btn-next" onclick='openNextPlaylist()'><i id="random" class="fa fa-caret-right clickable"></i><span>&nbsp;Next</span></button>
                     <button class="btn btn-default control-btn control-btn-prev" onclick='openPreviousPlaylist()'><i id="random" class="fa fa-xs fa-undo clickable"></i><span>&nbsp;Prev</span></button>
-                    <button class="btn btn-default control-btn control-btn-random" onclick='$("#favs-wrapper iframe").contents().find("#random").click();'><i id="random" class="fa fa-random clickable"></i><span>&nbsp;Random</span></button>
+                    <button class="btn btn-default control-btn control-btn-random" onclick='$("#favs-wrapper iframe").contents().find("#random").click();' title="Open a random playlist from your favorites"><i id="random" class="fa fa-random clickable"></i><span>&nbsp;Random playlist</span></button>
                     <button class="btn btn-default control-btn control-btn-open-youtube" onclick='openPlaylistOnYoutube();'><i class="fa fa-external-link-alt clickable"></i><span>&nbsp;Open YouTube</span></button>
                     <button class="btn btn-secondary control-btn control-btn-playlist-id" onclick='$("#override-playlist-ui").toggleClass("fade d-none"); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);'><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Playlist ID</span></button>
                     <button class="btn btn-secondary control-btn control-btn-scroll" onclick='jumpToActivePlaylist();'><i id="manual" class="fa fa-ruler-vertical clickable"></i><span>&nbsp;Scroll</span></button>

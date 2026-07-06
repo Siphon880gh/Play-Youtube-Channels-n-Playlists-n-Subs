@@ -270,11 +270,50 @@ h2 {
     text-decoration: none;
 }
 
-#most-recent.active {
+#most-recent.active,
+#next-random.active {
     border: 1px solid rgba(188, 35, 46, 0.35) !important;
     background: linear-gradient(135deg, rgba(255, 238, 239, 1), rgba(255, 246, 241, 1)) !important;
     color: var(--red-main) !important;
     box-shadow: 0 10px 24px rgba(188, 35, 46, 0.14);
+}
+
+.control-hint {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: var(--type-meta);
+    line-height: 1.45;
+}
+
+.playback-mode-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(188, 35, 46, 0.14);
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--red-main);
+    font-size: 0.92rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.playback-mode-badge-icon--shuffle {
+    display: none;
+}
+
+.playback-mode-badge--shuffle .playback-mode-badge-icon--chronological {
+    display: none;
+}
+
+.playback-mode-badge--shuffle .playback-mode-badge-icon--shuffle {
+    display: inline-block;
+}
+
+.playback-mode-badge--shuffle {
+    border-color: rgba(198, 116, 145, 0.22);
+    background: rgba(255, 247, 250, 0.92);
 }
 
 #favs-wrapper iframe {
@@ -447,6 +486,7 @@ body::before {
     #buttons .control-card-video .panel-body {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         grid-template-areas:
+            "hint hint"
             "most-recent next-random"
             "loop fit-video";
     }
@@ -470,6 +510,10 @@ body::before {
         text-align: center;
         white-space: normal;
         box-shadow: 0 8px 20px rgba(70, 28, 33, 0.08);
+    }
+
+    #buttons .control-hint-video-start {
+        grid-area: hint;
     }
 
     #buttons .control-btn-most-recent {
