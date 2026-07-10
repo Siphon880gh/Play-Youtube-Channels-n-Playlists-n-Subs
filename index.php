@@ -6,10 +6,13 @@
 // $defaultPlaylistId = "UU-J-KZfRV8c13fOCkhXdLiQ"; // // Dua Lipa docs and music
 // $defaultPlaylistId = "PLzg85AHZsA6Z0dmqF0A8LxVf1ojZZwfUm"; // Keep the beat going
 $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
+// YouTube embeds require a usable Referer (Error 153 otherwise, especially on iOS Safari).
+header("Referrer-Policy: strict-origin-when-cross-origin");
 ?>
 <html>
 <head>
     <title>Youtube Viewer and Shuffler by Weng</title>
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta property="fb:app_id" content="685633705547844" />
     <meta property="og:image" content="https://www.publicdomainpictures.net/pictures/250000/nahled/youtube-1515875370Xwr.jpg" />
     
@@ -895,7 +898,8 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
         lastRecoveryTime: null,
         iframeReloadInFlight: false,
         playerRebuildInFlight: false,
-        pendingRestore: null
+        pendingRestore: null,
+        referrerObserverStarted: false
     };
 
     function getPlayerStateName(stateCode) {
@@ -974,7 +978,31 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
             return;
         }
 
-        playerIframe.referrerPolicy = "origin-when-cross-origin";
+        // YouTube requires embedder identity via Referer; this is their recommended policy.
+        playerIframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+        playerIframe.referrerPolicy = "strict-origin-when-cross-origin";
+    }
+
+    function watchPlayerIframeReferrer() {
+        let playerHost = document.getElementById("player");
+        if(!playerHost || typeof MutationObserver === "undefined") {
+            return;
+        }
+
+        if(window.ytDiagnostics && window.ytDiagnostics.referrerObserverStarted) {
+            configurePlayerIframe();
+            return;
+        }
+
+        if(window.ytDiagnostics) {
+            window.ytDiagnostics.referrerObserverStarted = true;
+        }
+
+        let observer = new MutationObserver(function() {
+            configurePlayerIframe();
+        });
+        observer.observe(playerHost, { childList: true, subtree: true });
+        configurePlayerIframe();
     }
 
     function clearRecoveryMemory() {
@@ -1766,6 +1794,7 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
 
     var ytVideoLooper = `
     function onYouTubeIframeAPIReady() {
+    watchPlayerIframeReferrer();
     window.player1 = new YT.Player("player", {
         height: '390',
         width: '640',
@@ -1809,6 +1838,7 @@ $defaultPlaylistId = "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda";
 
     var ytPlaylist = `
     function onYouTubeIframeAPIReady() {
+        watchPlayerIframeReferrer();
         // var shuffling = window.playlistStartIndex.length?true:false;
             window.player1 = new YT.Player("player", {
             height: '390',
