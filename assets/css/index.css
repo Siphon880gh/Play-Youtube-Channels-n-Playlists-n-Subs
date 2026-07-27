@@ -339,14 +339,35 @@ h2 {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    border: 1px solid rgba(188, 35, 46, 0.14);
-    background: rgba(255, 255, 255, 0.82);
-    color: var(--red-main);
-    font-size: 0.92rem;
-    font-weight: 700;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.84rem;
+    font-weight: 500;
     white-space: nowrap;
+    user-select: none;
+}
+
+.playback-mode-badge-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--red-main);
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.playback-mode-badge-label i {
+    font-size: 0.95rem;
+    opacity: 0.85;
+}
+
+.playback-mode-badge-text {
+    color: var(--text-main);
+    font-weight: 600;
 }
 
 .playback-mode-badge-icon--shuffle {
@@ -359,11 +380,6 @@ h2 {
 
 .playback-mode-badge--shuffle .playback-mode-badge-icon--shuffle {
     display: inline-block;
-}
-
-.playback-mode-badge--shuffle {
-    border-color: rgba(198, 116, 145, 0.22);
-    background: rgba(255, 247, 250, 0.92);
 }
 
 #favs-wrapper iframe {

@@ -662,7 +662,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             .toggleClass("playback-mode-badge--shuffle", isShuffling)
             .toggleClass("playback-mode-badge--chronological", !isShuffling)
             .find(".playback-mode-badge-text")
-            .text(isShuffling ? "Shuffle videos" : "Latest first");
+            .text(isShuffling ? "Shuffle" : "Latest first");
     }
 
     function setShuffleMode(wantChronological) {
@@ -1435,8 +1435,11 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         <div class="player-options-controls">
             <div class="player-options-row player-options-row-primary">
                 <span id="playback-mode-badge" class="playback-mode-badge playback-mode-badge--chronological" aria-live="polite" title="How videos start in the current playlist">
-                    <i class="fa fa-sort-amount-desc playback-mode-badge-icon playback-mode-badge-icon--chronological" aria-hidden="true"></i>
-                    <i class="fa fa-random playback-mode-badge-icon playback-mode-badge-icon--shuffle" aria-hidden="true"></i>
+                    <span class="playback-mode-badge-label">
+                        <i class="fa fa-sort-amount-desc playback-mode-badge-icon playback-mode-badge-icon--chronological" aria-hidden="true"></i>
+                        <i class="fa fa-random playback-mode-badge-icon playback-mode-badge-icon--shuffle" aria-hidden="true"></i>
+                        <span class="playback-mode-badge-label-text">Mode</span>
+                    </span>
                     <span class="playback-mode-badge-text">Latest first</span>
                 </span>
                 <div id="playlist-position-indicator" class="player-options-nav d-none" role="group" aria-label="Playlist navigation">
