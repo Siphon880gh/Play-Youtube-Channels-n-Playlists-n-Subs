@@ -53,10 +53,10 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         // Calculate scroll position
         let scrollPosA = $iframe[0].offsetTop;
         let scrollPosB = $playlistLink[0].offsetTop;
-        let scrollPos = scrollPosA + scrollPosB;
+        let scrollPos = scrollPosA + scrollPosB - 135;
 
         // Jump to active playlist link and flash the link
-        window.scrollTo(0, scrollPos);
+        window.scrollTo(0, Math.max(scrollPos, 0));
         $playlistLink.animate({"font-weight": "900"}, 1000).delay(500).animate({"font-weight":"300"}, 2000)
         // debugger;
     }
