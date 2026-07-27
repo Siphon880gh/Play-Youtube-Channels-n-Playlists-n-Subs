@@ -22,7 +22,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="assets/js/favs.js?v=2"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/index.css?v=8">
+    <link rel="stylesheet" href="assets/css/index.css?v=12">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
     <style>
@@ -263,6 +263,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
         initBrightnessControl();
         initWatchTime();
+        initPlayerVideoActionTooltips();
 
     }); // on doc ready
 
@@ -641,28 +642,20 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         }
     } // openPreviousPlaylist
     function syncVideoStartModeButtons() {
-        let isShuffling = isShuffleMode();
-        $("#most-recent")
-            .toggleClass("active", !isShuffling)
-            .attr("aria-pressed", !isShuffling ? "true" : "false");
-        $("#next-random")
-            .toggleClass("active", isShuffling)
-            .attr("aria-pressed", isShuffling ? "true" : "false");
-        updatePlaybackModeBadge();
+        updatePlaybackModeSelect();
     }
 
-    function updatePlaybackModeBadge() {
-        let $badge = $("#playback-mode-badge");
-        if(!$badge.length) {
+    function updatePlaybackModeSelect() {
+        let $select = $("#playback-mode-select");
+        if(!$select.length) {
             return;
         }
 
         let isShuffling = isShuffleMode();
-        $badge
-            .toggleClass("playback-mode-badge--shuffle", isShuffling)
-            .toggleClass("playback-mode-badge--chronological", !isShuffling)
-            .find(".playback-mode-badge-text")
-            .text(isShuffling ? "Shuffle" : "Latest first");
+        $select.val(isShuffling ? "shuffle" : "latest");
+        $("#playback-mode-control")
+            .toggleClass("playback-mode-control--shuffle", isShuffling)
+            .toggleClass("playback-mode-control--chronological", !isShuffling);
     }
 
     function setShuffleMode(wantChronological) {
@@ -673,13 +666,54 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         }
         syncVideoStartModeButtons();
     }
+
+    function handlePlaybackModeChange() {
+        let mode = $("#playback-mode-select").val();
+        if(mode === "shuffle") {
+            setShuffleMode(false);
+            urlChange.start("RANDOM");
+        } else {
+            setShuffleMode(true);
+            urlChange.start(1);
+        }
+    }
     
+    function syncLoopBtnState($btn) {
+        let $target = $btn && $btn.length ? $btn : $(".loop-btn");
+        let isActive = $target.hasClass("active");
+        let label = isActive ? "Exit loop" : "Loop video";
+        let tip = isActive ? "Stop looping this video" : "Loop the current video";
+        $target
+            .attr("aria-pressed", isActive ? "true" : "false")
+            .attr("aria-label", label)
+            .attr("title", tip)
+            .attr("data-original-title", tip)
+            .find(".player-video-action-label")
+            .text(label);
+    }
+
+    function initPlayerVideoActionTooltips() {
+        let $actions = $(".player-video-action");
+        if(!$actions.length || typeof $actions.tooltip !== "function") {
+            return;
+        }
+
+        $actions.tooltip({
+            container: "body",
+            placement: "top",
+            trigger: "hover focus",
+            delay: { show: 120, hide: 80 }
+        });
+    }
+
     function handleLoopBtn($this) {
         if($this.hasClass("active")) {
             $this.removeClass("active");
+            syncLoopBtnState($this);
             window.history.back();
         } else {
             $this.addClass("active");
+            syncLoopBtnState($this);
             window.location.href = window.location.search + "&loop-video-id=" + getVideoId();
         }
     }
@@ -840,8 +874,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             return;
         }
 
-        let modeLabel = isShuffleMode() ? "Shuffle" : "Latest first";
-        let label = modeLabel + " · " + (details.playlistIndex + 1) + " / " + details.playlist.length;
+        let label = (details.playlistIndex + 1) + " / " + details.playlist.length;
 
         setPlaylistPositionIndicator(label, true);
     }
@@ -849,6 +882,153 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     function queuePlaylistPositionIndicatorRefresh() {
         [0, 250, 1000].forEach((delay)=>{
             setTimeout(refreshPlaylistPositionIndicator, delay);
+        });
+    }
+
+    window.ytUploadDate = {
+        enabled: null,
+        cache: {},
+        requestId: 0,
+        lastVideoId: ""
+    };
+
+    function clearVideoUploadDate() {
+        let $el = $("#video-upload-date");
+        if(!$el.length) {
+            return;
+        }
+        $el.addClass("d-none").text("").removeAttr("datetime");
+    }
+
+    function formatVideoUploadDate(publishedAt) {
+        let date = new Date(publishedAt);
+        if(Number.isNaN(date.getTime())) {
+            return "";
+        }
+
+        try {
+            return date.toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "short",
+                day: "numeric"
+            });
+        } catch(e) {
+            return date.toISOString().slice(0, 10);
+        }
+    }
+
+    function setVideoUploadDate(publishedAt) {
+        let $el = $("#video-upload-date");
+        if(!$el.length) {
+            return;
+        }
+
+        let label = formatVideoUploadDate(publishedAt);
+        if(!label) {
+            clearVideoUploadDate();
+            return;
+        }
+
+        $el
+            .attr("datetime", publishedAt)
+            .text("Uploaded " + label)
+            .removeClass("d-none");
+    }
+
+    function refreshVideoUploadDate(videoId) {
+        if(window.ytUploadDate.enabled === false) {
+            clearVideoUploadDate();
+            return;
+        }
+
+        if(!videoId || typeof videoId !== "string") {
+            clearVideoUploadDate();
+            return;
+        }
+
+        if(window.ytUploadDate.lastVideoId === videoId && !$("#video-upload-date").hasClass("d-none")) {
+            return;
+        }
+
+        window.ytUploadDate.lastVideoId = videoId;
+
+        if(Object.prototype.hasOwnProperty.call(window.ytUploadDate.cache, videoId)) {
+            let cached = window.ytUploadDate.cache[videoId];
+            if(cached) {
+                setVideoUploadDate(cached);
+            } else {
+                clearVideoUploadDate();
+            }
+            return;
+        }
+
+        let requestId = ++window.ytUploadDate.requestId;
+        clearVideoUploadDate();
+
+        $.ajax({
+            url: "video-meta.php",
+            data: { id: videoId },
+            dataType: "json",
+            timeout: 9000
+        }).done(function(data) {
+            if(requestId !== window.ytUploadDate.requestId) {
+                return;
+            }
+
+            if(!data || data.enabled === false) {
+                window.ytUploadDate.enabled = false;
+                clearVideoUploadDate();
+                return;
+            }
+
+            window.ytUploadDate.enabled = true;
+            let publishedAt = data.publishedAt || null;
+            window.ytUploadDate.cache[videoId] = publishedAt;
+
+            if(window.ytUploadDate.lastVideoId !== videoId) {
+                return;
+            }
+
+            if(publishedAt) {
+                setVideoUploadDate(publishedAt);
+            } else {
+                clearVideoUploadDate();
+            }
+        }).fail(function() {
+            if(requestId !== window.ytUploadDate.requestId) {
+                return;
+            }
+            // Keep trying for later videos if the key exists but a single request failed.
+            clearVideoUploadDate();
+        });
+    }
+
+    function queueVideoUploadDateRefresh(videoId) {
+        if(window.ytUploadDate.enabled === false) {
+            return;
+        }
+
+        let id = videoId;
+        if(!id) {
+            try {
+                id = getVideoId();
+            } catch(e) {
+                id = "";
+            }
+        }
+
+        [0, 250, 1000].forEach((delay)=>{
+            setTimeout(function() {
+                let nextId = id;
+                if(!nextId) {
+                    try {
+                        nextId = getVideoId();
+                    } catch(e) {
+                        nextId = "";
+                    }
+                }
+                refreshVideoUploadDate(nextId);
+            }, delay);
         });
     }
 
@@ -1329,6 +1509,16 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         });
 
         queuePlaylistPositionIndicatorRefresh();
+        if(
+            snapshot.videoId &&
+            (
+                stateCode === YT.PlayerState.CUED ||
+                stateCode === YT.PlayerState.PLAYING ||
+                stateCode === YT.PlayerState.BUFFERING
+            )
+        ) {
+            queueVideoUploadDateRefresh(snapshot.videoId);
+        }
     }
 
     function startPlayerWatchdog() {
@@ -1411,19 +1601,15 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <style>
     .loop-btn:not(.active) i::before {
         content: "\f1b8";
-    } 
-    .loop-btn:not(.active)::after {
-        content: " Loop Video";
-    } 
+    }
     .loop-btn.active i::before {
         content: "\f2f6";
-    } 
-    .loop-btn.active::after {
-        content: " Exit Loop";
-    } 
+    }
     .loop-btn.active {
-        color:rgba(255,100,100,.6)
-    } 
+        color: #bc232e;
+        border-color: rgba(188, 35, 46, 0.35);
+        background: rgba(188, 35, 46, 0.1);
+    }
     </style>
 
 </head>
@@ -1434,14 +1620,18 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <div id="player-options" class="player-options">
         <div class="player-options-controls">
             <div class="player-options-row player-options-row-primary">
-                <span id="playback-mode-badge" class="playback-mode-badge playback-mode-badge--chronological" aria-live="polite" title="How videos start in the current playlist">
-                    <span class="playback-mode-badge-label">
-                        <i class="fa fa-sort-amount-desc playback-mode-badge-icon playback-mode-badge-icon--chronological" aria-hidden="true"></i>
-                        <i class="fa fa-random playback-mode-badge-icon playback-mode-badge-icon--shuffle" aria-hidden="true"></i>
-                        <span class="playback-mode-badge-label-text">Mode</span>
-                    </span>
-                    <span class="playback-mode-badge-text">Latest first</span>
-                </span>
+                <div id="playback-mode-control" class="playback-mode-control playback-mode-control--chronological">
+                    <label class="playback-mode-label" for="playback-mode-select">
+                        <i class="fa fa-sort-amount-desc playback-mode-icon playback-mode-icon--chronological" aria-hidden="true"></i>
+                        <i class="fa fa-random playback-mode-icon playback-mode-icon--shuffle" aria-hidden="true"></i>
+                        <span class="playback-mode-label-text">Mode</span>
+                    </label>
+                    <select id="playback-mode-select" class="playback-mode-select" title="How videos start in the current playlist" aria-label="Playback mode" onchange="handlePlaybackModeChange();">
+                        <option value="latest">Latest first</option>
+                        <option value="shuffle">Shuffle</option>
+                    </select>
+                    <time id="video-upload-date" class="video-upload-date d-none" aria-live="polite" title="Video upload date"></time>
+                </div>
                 <div id="playlist-position-indicator" class="player-options-nav d-none" role="group" aria-label="Playlist navigation">
                     <button type="button" class="playlist-position-arrow playlist-position-arrow-first" onclick="openFirstVideoInPlaylist();" aria-label="First video">
                         <span>1</span>
@@ -1491,6 +1681,11 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                         <button type="button" class="brightness-preset" data-brightness="75" aria-label="Set brightness to 75 percent">75%</button>
                         <button type="button" class="brightness-preset" data-brightness="100" aria-label="Set brightness to 100 percent">100%</button>
                     </div>
+                    <span class="player-video-actions-divider" aria-hidden="true"></span>
+                    <div class="player-video-actions" role="group" aria-label="Video actions">
+                        <button type="button" class="player-video-action loop-btn" onclick="handleLoopBtn($(this));" aria-pressed="false" aria-label="Loop video" title="Loop the current video" data-toggle="tooltip"><i class="fa" aria-hidden="true"></i><span class="player-video-action-label">Loop video</span></button>
+                        <button type="button" id="fit-video" class="player-video-action" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();" aria-label="Fit video" title="Fit the video to the window" data-toggle="tooltip"><i class="fa fa-expand" aria-hidden="true"></i><span class="player-video-action-label">Fit video</span></button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1524,21 +1719,6 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
     <div class="container-custom p-20">
         <div id="buttons">
-            <div class="panel panel-warning control-card control-card-video"  style="border-color:rgba(200,0,0,.75);">
-                <div class="panel-heading" style="background-color:rgba(200,0,0,.35); border-color:rgba(200,0,0,.75);">
-                    <i class="fa fa-video"></i> <span>Video</span>
-                </div>
-                <div class="panel-body">
-                    <p class="control-hint control-hint-video-start">Start playlist with the newest video or play a random video; or loop a video, or make a video fuller screen.</p>
-                    <button id="most-recent" class="btn btn-default btn-sm control-btn control-btn-most-recent" onclick="setShuffleMode(true); urlChange.start(1);" title="Play the newest video first, then continue in playlist order" aria-pressed="false"><i class="fa fa-sort-amount-desc"></i> Latest first</button>
-                    <button id="next-random" class="btn btn-default-off btn-sm control-btn control-btn-next-random" onclick="setShuffleMode(false); urlChange.start('RANDOM');" title="Pick a random video and keep shuffling within this playlist" aria-pressed="false"><i class="fa fa-random"></i> Shuffle video</button>
-                    <span class="info-loop-group">
-                        <button class="btn btn-default-off btn-sm loop-btn control-btn control-btn-loop" onclick='handleLoopBtn($(this));'><i class="fa"></i></button>
-                    </span>
-                    <button id="fit-video" class="btn btn-default-off btn-sm control-btn control-btn-fit-video" onclick="$('html, body').scrollTop(0); $('#player').toggleClass('maximized'); event.stopPropagation();"><i class="fa fa-maximize"></i> Fit Video</button>
-                </div>
-            </div>
-
             <div class="panel panel-warning control-card control-card-playlist" style="border-color:rgba(196,125,123,.75);">
                 <div class="panel-heading" style="background-color:rgba(230,125,123,.75); color:rgba(255,255,255,0.75);">
                     <span onclick="More.counter('Playlistheader')"><i class="fa fa-list"></i> <span>Playlist</span></span>
@@ -1899,9 +2079,11 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
     if(loopVideoId===null) {
         $(".loop-btn").removeClass("active");
+        syncLoopBtnState($(".loop-btn"));
         eval(ytPlaylist);
     } else {
         $(".loop-btn").addClass("active");
+        syncLoopBtnState($(".loop-btn"));
         eval(ytVideoLooper);
     }
 
