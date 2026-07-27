@@ -175,16 +175,30 @@ if (isset($data['error'])) {
     exit;
 }
 
+$snippet = [];
+if (isset($data['items'][0]['snippet']) && is_array($data['items'][0]['snippet'])) {
+    $snippet = $data['items'][0]['snippet'];
+}
+
 $publishedAt = null;
-if (
-    isset($data['items'][0]['snippet']['publishedAt'])
-    && is_string($data['items'][0]['snippet']['publishedAt'])
-) {
-    $publishedAt = $data['items'][0]['snippet']['publishedAt'];
+if (isset($snippet['publishedAt']) && is_string($snippet['publishedAt'])) {
+    $publishedAt = $snippet['publishedAt'];
+}
+
+$title = null;
+if (isset($snippet['title']) && is_string($snippet['title'])) {
+    $title = $snippet['title'];
+}
+
+$channelTitle = null;
+if (isset($snippet['channelTitle']) && is_string($snippet['channelTitle'])) {
+    $channelTitle = $snippet['channelTitle'];
 }
 
 echo json_encode([
     'enabled' => true,
     'videoId' => $videoId,
     'publishedAt' => $publishedAt,
+    'title' => $title,
+    'channelTitle' => $channelTitle,
 ]);

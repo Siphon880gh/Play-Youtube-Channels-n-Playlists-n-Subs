@@ -43,7 +43,7 @@ Yes, the YouTube Data API v3 is free to use. You get a daily limit of **10,000 q
 | Search requests | 100 units per call | ~100 searches/day |
 | Write requests (e.g. upload a video) | 1,600 units | limited |
 
-This app only uses a **read** call (`videos.list`) for the current video's upload date, so each date lookup costs **1 unit**. Results are cached in the browser for the session, so switching back to a video you already loaded does not spend another unit.
+This app only uses a **read** call (`videos.list`) for the current video's upload date, so each date lookup costs **1 unit**. Results are cached in the browser under `localStorage` keyed by channel name + video title (up to 2,000 entries), so revisiting the same video later does not spend another unit.
 
 If you go over 10,000 units, the API returns a **403** until the next daily reset. In that case the shuffler still works; the upload date is simply hidden until quota is available again.
 

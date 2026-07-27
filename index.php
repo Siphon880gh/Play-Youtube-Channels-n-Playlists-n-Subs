@@ -885,11 +885,17 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         });
     }
 
+    const UPLOAD_DATE_STORAGE_KEY = "YT__upload-date-cache";
+    const UPLOAD_DATE_CACHE_MAX_ENTRIES = 2000;
+
     window.ytUploadDate = {
         enabled: null,
-        cache: {},
+        memory: {},
+        storage: null,
         requestId: 0,
-        lastVideoId: ""
+        lastVideoId: "",
+        lastCacheKey: "",
+        inFlightVideoId: ""
     };
 
     function clearVideoUploadDate() {
@@ -935,66 +941,234 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             .removeClass("d-none");
     }
 
+    function normalizeUploadDateIdentityPart(value) {
+        return String(value || "")
+            .normalize("NFKC")
+            .replace(/\s+/g, " ")
+            .trim()
+            .toLowerCase();
+    }
+
+    function buildUploadDateCacheKey(channelTitle, title) {
+        let channel = normalizeUploadDateIdentityPart(channelTitle);
+        let videoTitle = normalizeUploadDateIdentityPart(title);
+        if(!channel || !videoTitle) {
+            return "";
+        }
+        return channel + "\u0001" + videoTitle;
+    }
+
+    function getPlayerVideoIdentity(videoId) {
+        let identity = {
+            videoId: videoId || "",
+            title: "",
+            channelTitle: "",
+            cacheKey: ""
+        };
+
+        try {
+            if(window.player1 && typeof window.player1.getVideoData === "function") {
+                let data = window.player1.getVideoData() || {};
+                if(!identity.videoId && data.video_id) {
+                    identity.videoId = data.video_id;
+                }
+                if(typeof data.title === "string") {
+                    identity.title = data.title;
+                }
+                if(typeof data.author === "string") {
+                    identity.channelTitle = data.author;
+                }
+            }
+        } catch(e) {
+        }
+
+        identity.cacheKey = buildUploadDateCacheKey(identity.channelTitle, identity.title);
+        return identity;
+    }
+
+    function loadUploadDateStorage() {
+        if(window.ytUploadDate.storage) {
+            return window.ytUploadDate.storage;
+        }
+
+        let storage = { v: 1, entries: {} };
+
+        try {
+            let raw = localStorage.getItem(UPLOAD_DATE_STORAGE_KEY);
+            if(raw) {
+                let parsed = JSON.parse(raw);
+                if(parsed && typeof parsed === "object" && parsed.entries && typeof parsed.entries === "object") {
+                    storage.entries = parsed.entries;
+                }
+            }
+        } catch(e) {
+            storage = { v: 1, entries: {} };
+        }
+
+        window.ytUploadDate.storage = storage;
+        return storage;
+    }
+
+    function persistUploadDateStorage() {
+        let storage = loadUploadDateStorage();
+        let keys = Object.keys(storage.entries);
+
+        if(keys.length > UPLOAD_DATE_CACHE_MAX_ENTRIES) {
+            keys
+                .map(function(key) {
+                    let entry = storage.entries[key] || {};
+                    return {
+                        key: key,
+                        savedAt: typeof entry.savedAt === "number" ? entry.savedAt : 0
+                    };
+                })
+                .sort(function(a, b) {
+                    return a.savedAt - b.savedAt;
+                })
+                .slice(0, keys.length - UPLOAD_DATE_CACHE_MAX_ENTRIES)
+                .forEach(function(item) {
+                    delete storage.entries[item.key];
+                });
+        }
+
+        try {
+            localStorage.setItem(UPLOAD_DATE_STORAGE_KEY, JSON.stringify(storage));
+        } catch(e) {
+            // Quota exceeded or private mode: keep the in-memory cache only.
+        }
+    }
+
+    function readCachedUploadDate(cacheKey) {
+        if(!cacheKey) {
+            return undefined;
+        }
+
+        if(Object.prototype.hasOwnProperty.call(window.ytUploadDate.memory, cacheKey)) {
+            return window.ytUploadDate.memory[cacheKey];
+        }
+
+        let storage = loadUploadDateStorage();
+        if(!Object.prototype.hasOwnProperty.call(storage.entries, cacheKey)) {
+            return undefined;
+        }
+
+        let entry = storage.entries[cacheKey];
+        let publishedAt = entry && typeof entry.publishedAt === "string" ? entry.publishedAt : null;
+        window.ytUploadDate.memory[cacheKey] = publishedAt;
+        return publishedAt;
+    }
+
+    function writeCachedUploadDate(cacheKey, publishedAt, videoId) {
+        if(!cacheKey) {
+            return;
+        }
+
+        let value = publishedAt || null;
+        window.ytUploadDate.memory[cacheKey] = value;
+
+        let storage = loadUploadDateStorage();
+        storage.entries[cacheKey] = {
+            publishedAt: value,
+            videoId: videoId || "",
+            savedAt: Date.now()
+        };
+        persistUploadDateStorage();
+    }
+
+    function applyCachedUploadDate(publishedAt) {
+        if(publishedAt) {
+            setVideoUploadDate(publishedAt);
+        } else {
+            clearVideoUploadDate();
+        }
+    }
+
     function refreshVideoUploadDate(videoId) {
         if(window.ytUploadDate.enabled === false) {
             clearVideoUploadDate();
             return;
         }
 
-        if(!videoId || typeof videoId !== "string") {
+        let identity = getPlayerVideoIdentity(videoId);
+        if(!identity.videoId || typeof identity.videoId !== "string") {
             clearVideoUploadDate();
             return;
         }
 
-        if(window.ytUploadDate.lastVideoId === videoId && !$("#video-upload-date").hasClass("d-none")) {
+        let sameVideoShowing =
+            window.ytUploadDate.lastVideoId === identity.videoId &&
+            window.ytUploadDate.lastCacheKey === identity.cacheKey &&
+            !$("#video-upload-date").hasClass("d-none");
+
+        if(sameVideoShowing) {
             return;
         }
 
-        window.ytUploadDate.lastVideoId = videoId;
+        window.ytUploadDate.lastVideoId = identity.videoId;
+        window.ytUploadDate.lastCacheKey = identity.cacheKey;
 
-        if(Object.prototype.hasOwnProperty.call(window.ytUploadDate.cache, videoId)) {
-            let cached = window.ytUploadDate.cache[videoId];
-            if(cached) {
-                setVideoUploadDate(cached);
-            } else {
-                clearVideoUploadDate();
+        if(identity.cacheKey) {
+            let cached = readCachedUploadDate(identity.cacheKey);
+            if(typeof cached !== "undefined") {
+                applyCachedUploadDate(cached);
+                return;
             }
+        }
+
+        if(window.ytUploadDate.inFlightVideoId === identity.videoId) {
             return;
         }
 
         let requestId = ++window.ytUploadDate.requestId;
+        window.ytUploadDate.inFlightVideoId = identity.videoId;
         clearVideoUploadDate();
 
         $.ajax({
             url: "video-meta.php",
-            data: { id: videoId },
+            data: { id: identity.videoId },
             dataType: "json",
             timeout: 9000
         }).done(function(data) {
-            if(requestId !== window.ytUploadDate.requestId) {
-                return;
+            if(window.ytUploadDate.inFlightVideoId === identity.videoId) {
+                window.ytUploadDate.inFlightVideoId = "";
             }
 
             if(!data || data.enabled === false) {
-                window.ytUploadDate.enabled = false;
-                clearVideoUploadDate();
+                if(requestId === window.ytUploadDate.requestId) {
+                    window.ytUploadDate.enabled = false;
+                    clearVideoUploadDate();
+                }
                 return;
             }
 
             window.ytUploadDate.enabled = true;
             let publishedAt = data.publishedAt || null;
-            window.ytUploadDate.cache[videoId] = publishedAt;
+            let cacheKey = buildUploadDateCacheKey(
+                data.channelTitle || identity.channelTitle,
+                data.title || identity.title
+            );
 
-            if(window.ytUploadDate.lastVideoId !== videoId) {
+            if(cacheKey) {
+                writeCachedUploadDate(cacheKey, publishedAt, identity.videoId);
+            }
+
+            if(
+                requestId !== window.ytUploadDate.requestId ||
+                window.ytUploadDate.lastVideoId !== identity.videoId
+            ) {
                 return;
             }
 
-            if(publishedAt) {
-                setVideoUploadDate(publishedAt);
-            } else {
-                clearVideoUploadDate();
+            if(cacheKey) {
+                window.ytUploadDate.lastCacheKey = cacheKey;
             }
+
+            applyCachedUploadDate(publishedAt);
         }).fail(function() {
+            if(window.ytUploadDate.inFlightVideoId === identity.videoId) {
+                window.ytUploadDate.inFlightVideoId = "";
+            }
+
             if(requestId !== window.ytUploadDate.requestId) {
                 return;
             }
