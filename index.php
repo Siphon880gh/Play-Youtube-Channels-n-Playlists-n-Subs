@@ -22,7 +22,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="assets/js/favs.js?v=2"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/index.css?v=12">
+    <link rel="stylesheet" href="assets/css/index.css?v=14">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
     <style>
@@ -760,7 +760,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
     function setPlaylistPositionIndicator(text, isVisible) {
         let $indicator = $("#playlist-position-indicator");
-        let $label = $indicator.find(".playlist-position-label");
+        let $label = $indicator.find(".playlist-position-label-text");
         if(!$indicator.length || !$label.length) {
             return;
         }
@@ -769,6 +769,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             $label.text(text);
             $indicator.removeClass("d-none");
         } else {
+            closePlaylistVideosPanel();
             $indicator.addClass("d-none");
             $label.text("");
         }
@@ -867,6 +868,338 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         queuePlaylistPositionIndicatorRefresh();
     }
 
+    // Optional YouTube Data API titles for the playlist list (same YOUTUBE_API_KEY as upload date).
+    // When the key is missing/invalid, the list still opens with "Video N" placeholders.
+    window.ytPlaylistVideos = {
+        requestId: 0,
+        titlesById: {},
+        enabled: null,
+        loading: false
+    };
+
+    function disablePlaylistVideoTitles(statusText) {
+        window.ytPlaylistVideos.enabled = false;
+        window.ytPlaylistVideos.loading = false;
+        setPlaylistVideosStatus(
+            statusText || "Titles unavailable without a valid YouTube API key",
+            true
+        );
+    }
+
+    function closePlaylistVideosPanel() {
+        let $panel = $("#playlist-videos-panel");
+        if(!$panel.length) {
+            return;
+        }
+
+        $panel.attr("hidden", true);
+        $("#playlist-position-label-btn").attr("aria-expanded", "false");
+    }
+
+    function isPlaylistVideosPanelOpen() {
+        let $panel = $("#playlist-videos-panel");
+        return $panel.length > 0 && !$panel.is("[hidden]");
+    }
+
+    function setPlaylistVideosStatus(text, isVisible) {
+        let $status = $("#playlist-videos-status");
+        if(!$status.length) {
+            return;
+        }
+
+        if(isVisible && text) {
+            $status.text(text).removeClass("d-none");
+        } else {
+            $status.text("").addClass("d-none");
+        }
+    }
+
+    function getCachedPlaylistVideoTitle(videoId) {
+        if(!videoId) {
+            return "";
+        }
+
+        let cached = window.ytPlaylistVideos.titlesById[videoId];
+        return typeof cached === "string" ? cached : "";
+    }
+
+    function rememberPlaylistVideoTitle(videoId, title) {
+        if(!videoId || typeof title !== "string" || title === "") {
+            return;
+        }
+
+        window.ytPlaylistVideos.titlesById[videoId] = title;
+    }
+
+    function seedCurrentPlaylistVideoTitle(details) {
+        if(!details || !details.videoId || !window.player1) {
+            return;
+        }
+
+        try {
+            let data = window.player1.getVideoData();
+            if(data && typeof data.title === "string" && data.title !== "") {
+                rememberPlaylistVideoTitle(details.videoId, data.title);
+            }
+        } catch(e) {
+            // Player may not expose title yet.
+        }
+    }
+
+    function scrollPlaylistVideosCurrentIntoView() {
+        let $list = $("#playlist-videos-list");
+        let $current = $list.find(".playlist-videos-item.is-current").first();
+        if(!$list.length || !$current.length) {
+            return;
+        }
+
+        let listEl = $list[0];
+        let currentEl = $current[0];
+        let top = currentEl.offsetTop - (listEl.clientHeight / 2) + (currentEl.clientHeight / 2);
+        listEl.scrollTop = Math.max(top, 0);
+    }
+
+    function highlightPlaylistVideosCurrent(playlistIndex) {
+        let $items = $("#playlist-videos-list .playlist-videos-item");
+        if(!$items.length) {
+            return;
+        }
+
+        $items.each(function() {
+            let index = parseInt($(this).attr("data-index"), 10);
+            let isCurrent = index === playlistIndex;
+            $(this).toggleClass("is-current", isCurrent);
+            if(isCurrent) {
+                $(this).attr("aria-current", "true");
+            } else {
+                $(this).removeAttr("aria-current");
+            }
+        });
+    }
+
+    function renderPlaylistVideosList(details) {
+        let $list = $("#playlist-videos-list");
+        if(!$list.length || !details) {
+            return;
+        }
+
+        $list.empty();
+
+        details.playlist.forEach(function(videoId, index) {
+            let title = getCachedPlaylistVideoTitle(videoId);
+            if(title === "") {
+                title = "Video " + (index + 1);
+            }
+
+            let $btn = $("<button/>", {
+                type: "button",
+                class: "playlist-videos-item" + (index === details.playlistIndex ? " is-current" : ""),
+                "data-index": String(index),
+                "data-video-id": videoId
+            });
+            if(index === details.playlistIndex) {
+                $btn.attr("aria-current", "true");
+            }
+
+            $btn.append($("<span/>", {
+                class: "playlist-videos-item-index",
+                text: String(index + 1)
+            }));
+            $btn.append($("<span/>", {
+                class: "playlist-videos-item-title",
+                text: title
+            }));
+            $btn.on("click", function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                playPlaylistVideoAt(index);
+            });
+
+            $list.append($btn);
+        });
+
+        scrollPlaylistVideosCurrentIntoView();
+    }
+
+    function applyPlaylistVideoTitles(titlesById) {
+        if(!titlesById || typeof titlesById !== "object") {
+            return;
+        }
+
+        Object.keys(titlesById).forEach(function(videoId) {
+            rememberPlaylistVideoTitle(videoId, titlesById[videoId]);
+        });
+
+        $("#playlist-videos-list .playlist-videos-item").each(function() {
+            let videoId = $(this).attr("data-video-id");
+            let title = getCachedPlaylistVideoTitle(videoId);
+            if(title !== "") {
+                $(this).find(".playlist-videos-item-title").text(title);
+            }
+        });
+    }
+
+    function fetchPlaylistVideoTitleChunk(videoIds) {
+        return $.ajax({
+            url: "video-meta.php",
+            data: { ids: videoIds.join(",") },
+            dataType: "json",
+            timeout: 12000
+        }).then(function(data) {
+            if(!data || data.enabled === false) {
+                disablePlaylistVideoTitles();
+                return {};
+            }
+
+            if(data.error) {
+                // Invalid/restricted key or upstream rejection: keep the list usable without titles.
+                disablePlaylistVideoTitles();
+                return {};
+            }
+
+            window.ytPlaylistVideos.enabled = true;
+            let titlesById = {};
+            let videos = Array.isArray(data.videos) ? data.videos : [];
+            videos.forEach(function(video) {
+                if(
+                    video &&
+                    typeof video.videoId === "string" &&
+                    typeof video.title === "string" &&
+                    video.title !== ""
+                ) {
+                    titlesById[video.videoId] = video.title;
+                }
+            });
+            return titlesById;
+        }, function(xhr) {
+            let data = xhr && xhr.responseJSON ? xhr.responseJSON : null;
+            if(
+                (data && (data.enabled === false || data.error)) ||
+                (xhr && (xhr.status === 401 || xhr.status === 403))
+            ) {
+                disablePlaylistVideoTitles();
+            }
+            // Transient failures: leave enabled unknown so a later open can retry.
+            return {};
+        });
+    }
+
+    function loadPlaylistVideoTitles(details) {
+        if(!details) {
+            return;
+        }
+
+        seedCurrentPlaylistVideoTitle(details);
+
+        if(
+            window.ytPlaylistVideos.enabled === false ||
+            (window.ytUploadDate && window.ytUploadDate.enabled === false)
+        ) {
+            disablePlaylistVideoTitles();
+            return;
+        }
+
+        let missingIds = details.playlist.filter(function(videoId) {
+            return getCachedPlaylistVideoTitle(videoId) === "";
+        });
+
+        if(missingIds.length === 0) {
+            applyPlaylistVideoTitles({});
+            setPlaylistVideosStatus("", false);
+            return;
+        }
+
+        let requestId = ++window.ytPlaylistVideos.requestId;
+        window.ytPlaylistVideos.loading = true;
+        setPlaylistVideosStatus("Loading titles…", true);
+
+        let chunks = [];
+        for(let i = 0; i < missingIds.length; i += 50) {
+            chunks.push(missingIds.slice(i, i + 50));
+        }
+
+        let chain = $.Deferred().resolve({}).promise();
+        chunks.forEach(function(chunk) {
+            chain = chain.then(function(allTitles) {
+                if(
+                    requestId !== window.ytPlaylistVideos.requestId ||
+                    window.ytPlaylistVideos.enabled === false
+                ) {
+                    return allTitles;
+                }
+
+                return fetchPlaylistVideoTitleChunk(chunk).then(function(chunkTitles) {
+                    Object.keys(chunkTitles).forEach(function(videoId) {
+                        allTitles[videoId] = chunkTitles[videoId];
+                    });
+
+                    if(
+                        requestId === window.ytPlaylistVideos.requestId &&
+                        window.ytPlaylistVideos.enabled !== false
+                    ) {
+                        applyPlaylistVideoTitles(chunkTitles);
+                    }
+
+                    return allTitles;
+                });
+            });
+        });
+
+        chain.always(function() {
+            if(requestId !== window.ytPlaylistVideos.requestId) {
+                return;
+            }
+
+            window.ytPlaylistVideos.loading = false;
+            if(window.ytPlaylistVideos.enabled === false) {
+                disablePlaylistVideoTitles();
+            } else {
+                setPlaylistVideosStatus("", false);
+            }
+        });
+    }
+
+    function playPlaylistVideoAt(index) {
+        if(typeof index !== "number" || index < 0 || !window.player1) {
+            return;
+        }
+
+        try {
+            window.player1.playVideoAt(index);
+        } catch(e) {
+            console.log("Unable to open playlist video at index", index, e);
+        }
+
+        highlightPlaylistVideosCurrent(index);
+        queuePlaylistPositionIndicatorRefresh();
+    }
+
+    function openPlaylistVideosPanel() {
+        let details = getPlaylistPositionDetails();
+        let $panel = $("#playlist-videos-panel");
+        if(!details || !$panel.length) {
+            return;
+        }
+
+        renderPlaylistVideosList(details);
+        $panel.removeAttr("hidden");
+        $("#playlist-position-label-btn").attr("aria-expanded", "true");
+        loadPlaylistVideoTitles(details);
+    }
+
+    function togglePlaylistVideosPanel(event) {
+        if(event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        if(isPlaylistVideosPanelOpen()) {
+            closePlaylistVideosPanel();
+        } else {
+            openPlaylistVideosPanel();
+        }
+    }
+
     function refreshPlaylistPositionIndicator() {
         let details = getPlaylistPositionDetails();
         if(!details) {
@@ -877,6 +1210,16 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         let label = (details.playlistIndex + 1) + " / " + details.playlist.length;
 
         setPlaylistPositionIndicator(label, true);
+        seedCurrentPlaylistVideoTitle(details);
+
+        if(isPlaylistVideosPanelOpen()) {
+            highlightPlaylistVideosCurrent(details.playlistIndex);
+            let $items = $("#playlist-videos-list .playlist-videos-item");
+            if($items.length !== details.playlist.length) {
+                renderPlaylistVideosList(details);
+                loadPlaylistVideoTitles(details);
+            }
+        }
     }
 
     function queuePlaylistPositionIndicatorRefresh() {
@@ -885,6 +1228,14 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         });
     }
 
+    $(document).on("click.playlistVideosPanel", function(event) {
+        if($(event.target).closest("#playlist-position-indicator").length === 0) {
+            closePlaylistVideosPanel();
+        }
+    });
+
+    // Optional via YOUTUBE_API_KEY in .env (shared with playlist video titles).
+    // Missing/invalid key: upload date stays hidden; playback is unaffected.
     const UPLOAD_DATE_STORAGE_KEY = "YT__upload-date-cache";
     const UPLOAD_DATE_CACHE_MAX_ENTRIES = 2000;
 
@@ -1813,10 +2164,18 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     <button type="button" class="playlist-position-arrow playlist-position-arrow-prev" onclick="openPreviousVideoInPlaylist();" aria-label="Previous video">
                         <i class="fa fa-chevron-left"></i>
                     </button>
-                    <span class="playlist-position-label"></span>
+                    <button type="button" id="playlist-position-label-btn" class="playlist-position-label" onclick="togglePlaylistVideosPanel(event);" aria-expanded="false" aria-controls="playlist-videos-panel" title="Show all playlist videos (titles need a YouTube API key)">
+                        <span class="playlist-position-label-text"></span>
+                        <i class="fa fa-caret-down" aria-hidden="true"></i>
+                    </button>
                     <button type="button" class="playlist-position-arrow playlist-position-arrow-next" onclick="openNextVideoInPlaylist();" aria-label="Next video">
                         <i class="fa fa-chevron-right"></i>
                     </button>
+                    <div id="playlist-videos-panel" class="playlist-videos-panel" hidden>
+                        <div class="playlist-videos-heading">Playlist videos</div>
+                        <div id="playlist-videos-list" class="playlist-videos-list" role="listbox" aria-label="Videos in this playlist"></div>
+                        <div id="playlist-videos-status" class="playlist-videos-status d-none" aria-live="polite"></div>
+                    </div>
                 </div>
                 <div id="watch-time-display" class="watch-time-display" aria-label="Watch time">
                     <span class="watch-time-heading">

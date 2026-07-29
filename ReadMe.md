@@ -13,11 +13,19 @@ You can add playlists at /favs. Each .json file is a collection. The Default.jso
 
 You can list the collections of playlists by clicking "Youtube uploads and playlists" three times.
 
-## Optional: Video upload date
+## Optional: YouTube API features (upload date + playlist titles)
 
-Showing the current video's upload date is optional. Without a YouTube Data API key, the app works as usual and the upload date is simply hidden.
+A YouTube Data API key is optional. Without a key (or with an invalid/restricted key), the shuffler still works as usual:
 
-To enable it:
+- The current video's **upload date** stays hidden.
+- The playlist list (click the `N / total` control next to Mode) still opens and you can jump to videos, but rows show placeholders like `Video 1` instead of real titles.
+
+With a valid key, you get:
+
+- Upload date under the Mode dropdown while a video is playing.
+- Real titles in the playlist list.
+
+To enable these:
 
 1. Create a project in [Google Cloud Console](https://console.cloud.google.com/).
 2. Open **APIs & Services → Library**, search for **YouTube Data API v3**, and enable it.
@@ -27,11 +35,11 @@ To enable it:
 6. Put your API key in `.env`:
 
 ```env
-# Optional: adds the current video's upload date in the player UI.
+# Optional: upload date + playlist video titles in the player UI.
 YOUTUBE_API_KEY=YOUR_API_KEY_HERE
 ```
 
-`.env` is gitignored. After that, reload the shuffler; the upload date appears under the Mode dropdown when a video is playing.
+`.env` is gitignored. After that, reload the shuffler.
 
 ### YouTube Data API v3 quota (free)
 
@@ -43,9 +51,12 @@ Yes, the YouTube Data API v3 is free to use. You get a daily limit of **10,000 q
 | Search requests | 100 units per call | ~100 searches/day |
 | Write requests (e.g. upload a video) | 1,600 units | limited |
 
-This app only uses a **read** call (`videos.list`) for the current video's upload date, so each date lookup costs **1 unit**. Results are cached in the browser under `localStorage` keyed by channel name + video title (up to 2,000 entries), so revisiting the same video later does not spend another unit.
+This app only uses **read** calls (`videos.list`):
 
-If you go over 10,000 units, the API returns a **403** until the next daily reset. In that case the shuffler still works; the upload date is simply hidden until quota is available again.
+- **Upload date:** 1 unit per current-video lookup. Cached in the browser under `localStorage` keyed by channel name + video title (up to 2,000 entries), so revisiting the same video later does not spend another unit.
+- **Playlist titles:** 1 unit per batch of up to 50 video IDs when you open the playlist list. Titles are cached in memory for the session.
+
+If you go over 10,000 units, the API returns a **403** until the next daily reset. In that case the shuffler still works; the upload date stays hidden and playlist rows fall back to `Video N` placeholders until quota is available again.
 
 ## Channel Uploads as a Playlist
 
