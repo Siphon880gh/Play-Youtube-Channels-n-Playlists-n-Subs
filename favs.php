@@ -2,9 +2,10 @@
 <?php $prependPath="./"; ?>
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<link href="<?php echo $prependPath; ?>assets/css/favs.css?v=5" rel="stylesheet"></link>
+<link href="<?php echo $prependPath; ?>assets/css/favs.css?v=6" rel="stylesheet"></link>
 <script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.min.css">
+<script src="<?php echo $prependPath; ?>env/playlist-icons.js?v=2"></script>
+<?php include __DIR__ . "/env/icon-fonts.php"; ?>
 <div id="favs">
   <?php include($prependPath."assets/templates/favs.php"); ?>
 
@@ -235,7 +236,10 @@ function fetchPlaylist(calledCollection) {
           var $sectionLabel = $('<span class="section-label"></span>')
             .attr('data-section-id', sectionId)
             .attr('id', sectionId)
-            .text('[' + sectionCategory + ']');
+            .attr('data-section-label', sectionCategory);
+          var sectionIcon = (typeof window.playlistIconHtml === "function") ? window.playlistIconHtml(sectionCategory) : "";
+          if (sectionIcon) $sectionLabel.append(sectionIcon);
+          $sectionLabel.append(document.createTextNode('[' + sectionCategory + ']'));
           $sectionHeader.append($sectionLabel);
           $playlistContainer.append($sectionHeader);
         }
@@ -251,7 +255,8 @@ function fetchPlaylist(calledCollection) {
           a.attr("data-playlist-id",id);
           a.attr("onclick", "changeVideo(event)");
         } 
-        a.html(name);
+        var playlistIcon = (typeof window.playlistIconHtml === "function") ? window.playlistIconHtml(name) : "";
+        a.html(playlistIcon + name);
 
         li.append(a);
         $playlistContainer.append(li);

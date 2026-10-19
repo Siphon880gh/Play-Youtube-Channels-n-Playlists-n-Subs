@@ -1335,9 +1335,34 @@ body::before {
     padding: 10px 16px 14px 16px;
 }
 
+.playlist-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.15em;
+    height: 1.15em;
+    margin-right: 0.35em;
+    flex: 0 0 auto;
+    line-height: 1;
+}
+
+.playlist-icon svg,
+.playlist-icon img {
+    width: 1.05em;
+    height: 1.05em;
+    display: block;
+    object-fit: contain;
+}
+
+.playlist-icon i {
+    font-size: 0.95em;
+    line-height: 1;
+}
+
 .category-browser-item {
     width: 100%;
-    display: block;
+    display: flex;
+    align-items: center;
     padding: 8px 0;
     border: 0;
     border-bottom: 1px solid rgba(188, 35, 46, 0.08);
@@ -1671,8 +1696,19 @@ body::before {
 }
 
 .section-nav-parent-label {
+    display: inline-flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.section-nav-parent-label .playlist-icon-label,
+.section-nav-parent-current .playlist-icon-label {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .section-nav-parent-arrow {
@@ -1681,7 +1717,12 @@ body::before {
 }
 
 .section-nav-parent-current {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35em;
     flex: 1;
+    min-width: 0;
     text-align: center;
     font-weight: 600;
     color: #5a1a20;

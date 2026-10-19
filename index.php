@@ -21,8 +21,9 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="assets/js/favs.js?v=2"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/index.css?v=14">
+    <?php include __DIR__ . "/env/icon-fonts.php"; ?>
+    <script src="env/playlist-icons.js?v=2"></script>
+    <link rel="stylesheet" href="assets/css/index.css?v=16">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
     <style>
@@ -2445,7 +2446,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         $browser.removeClass("d-none");
         $list.html(
             categories.map((category)=>{
-                return '<button type="button" class="category-browser-item" data-category="' + escapeHtml(category) + '" onclick="scrollToPlaylistCategory(this.getAttribute(\'data-category\'))">[' + escapeHtml(category) + ']</button>';
+                var icon = (typeof window.playlistIconHtml === "function") ? window.playlistIconHtml(category) : "";
+                return '<button type="button" class="category-browser-item" data-category="' + escapeHtml(category) + '" onclick="scrollToPlaylistCategory(this.getAttribute(\'data-category\'))">' + icon + '[' + escapeHtml(category) + ']</button>';
             }).join("")
         );
 
@@ -2811,7 +2813,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     if ($parentLi.is(':visible')) {
                         this.sections.push({
                             id: $el.attr('data-section-id'),
-                            label: stripHtmlFromLabel($el.text().replace(/^\[|\]$/g, '')),
+                            label: $el.attr('data-section-label') || stripHtmlFromLabel($el.text().replace(/^\[|\]$/g, '')),
                             el: el
                         });
                     }
@@ -2851,8 +2853,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 const $btn = $('<button>')
                     .addClass('section-nav-parent-item')
                     .attr('type', 'button')
-                    .attr('data-section-index', index)
-                    .text(section.label);
+                    .attr('data-section-index', index);
+                this.fillLabeled($btn, section.label);
 
                 if (this.listView === 'alphabetical') {
                     const firstLetter = this.getFirstLetter(section.label);
@@ -2986,21 +2988,31 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             }
         }
 
+        fillLabeled($el, label) {
+            $el.empty();
+            if (!label) return;
+            const iconHtml = (typeof window.playlistIconHtml === "function") ? window.playlistIconHtml(label) : "";
+            if (iconHtml) $el.append(iconHtml);
+            $el.append($('<span class="playlist-icon-label"></span>').text(label));
+        }
+
         updateNav() {
             const current = this.sections[this.currentIndex];
             const prev = this.sections[this.currentIndex - 1];
             const next = this.sections[this.currentIndex + 1];
 
-            this.$current.text(current ? current.label : '');
+            this.fillLabeled(this.$current, current ? current.label : '');
 
             if (prev) {
-                this.$prevBtn.show().find('.section-nav-parent-label').text(prev.label);
+                this.$prevBtn.show();
+                this.fillLabeled(this.$prevBtn.find('.section-nav-parent-label'), prev.label);
             } else {
                 this.$prevBtn.hide();
             }
 
             if (next) {
-                this.$nextBtn.show().find('.section-nav-parent-label').text(next.label);
+                this.$nextBtn.show();
+                this.fillLabeled(this.$nextBtn.find('.section-nav-parent-label'), next.label);
             } else {
                 this.$nextBtn.hide();
             }

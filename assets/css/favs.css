@@ -383,8 +383,34 @@ a.not-link {
     padding: 0;
 }
 
-.section-label {
+.playlist-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.15em;
+    height: 1.15em;
+    margin-right: 0.4em;
+    flex: 0 0 auto;
+    line-height: 1;
+    vertical-align: -0.12em;
+}
+
+.playlist-icon svg,
+.playlist-icon img {
+    width: 1.05em;
+    height: 1.05em;
     display: block;
+    object-fit: contain;
+}
+
+.playlist-icon i {
+    font-size: 0.95em;
+    line-height: 1;
+}
+
+.section-label {
+    display: flex;
+    align-items: center;
     padding: 16px 4px 8px 4px;
     font-weight: 700;
     font-size: var(--type-label);
