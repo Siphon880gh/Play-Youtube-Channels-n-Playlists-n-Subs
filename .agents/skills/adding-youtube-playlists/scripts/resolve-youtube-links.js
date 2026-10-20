@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 "use strict";
 
-// Resolves YouTube links, finds playlist ids already stored in favs/*.json,
-// and checks env/playlist-icons.js. Does not edit those files.
+// Resolves YouTube links and social or video profile links, finds playlist
+// ids and profile URLs already stored in favs/*.json, and checks
+// env/playlist-icons.js. Does not edit those files.
 
 const fs = require("fs");
 const path = require("path");
@@ -41,7 +42,15 @@ function decodeHtml(value) {
     .replace(/&quot;/g, '"')
     .replace(/&#39;|&apos;/g, "'")
     .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">");
+    .replace(/&gt;/g, ">")
+    .replace(/&#x([0-9a-f]+);/gi, function (_, hex) {
+      const code = parseInt(hex, 16);
+      return code ? String.fromCodePoint(code) : _;
+    })
+    .replace(/&#(\d+);/g, function (_, num) {
+      const code = parseInt(num, 10);
+      return code ? String.fromCodePoint(code) : _;
+    });
 }
 
 function plainLabel(label) {
@@ -139,6 +148,30 @@ function classify(input) {
     return { kind: "channel", slug: parts[1], slugKind: parts[0] };
   }
 
+  // youtube.com/Name and youtube.com/Name/videos are custom channel URLs.
+  const reserved = {
+    account: true,
+    attribution_link: true,
+    feed: true,
+    feeds: true,
+    gaming: true,
+    hashtag: true,
+    history: true,
+    howyoutubeworks: true,
+    iframe_api: true,
+    library: true,
+    playlist: true,
+    premium: true,
+    results: true,
+    shorts: true,
+    subscriptions: true,
+    trending: true,
+    upload: true
+  };
+  if (parts[0] && !reserved[parts[0].toLowerCase()] && /^[A-Za-z0-9._-]+$/.test(parts[0])) {
+    return { kind: "channel", slug: parts[0], slugKind: "" };
+  }
+
   throw new Error("Unsupported YouTube link");
 }
 
@@ -165,20 +198,31 @@ function loadApiKey(root) {
   return "";
 }
 
-function fetchText(url) {
+const BROWSER_UA =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
+const CRAWLER_UA = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
+
+function fetchPage(url, userAgent) {
   return fetch(url, {
     redirect: "follow",
     signal: AbortSignal.timeout(20000),
     headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "User-Agent": userAgent || BROWSER_UA,
       "Accept-Language": "en-US,en;q=0.9",
       Accept: "text/html,application/xhtml+xml",
       Cookie: "SOCS=CAISNQgDEitib3FfaWRlbnRpdHlmcm9udGVuZHVpc2VydmVyXzIwMjQwOTI1LjA4X3AxGgJlbiACGgYIgL3vrgY"
     }
   }).then(function (res) {
     if (!res.ok) throw new Error("HTTP " + res.status);
-    return res.text();
+    return res.text().then(function (html) {
+      return { finalUrl: res.url || url, html: html };
+    });
+  });
+}
+
+function fetchText(url) {
+  return fetchPage(url).then(function (page) {
+    return page.html;
   });
 }
 
@@ -323,10 +367,15 @@ async function resolveChannel(root, classified) {
     return { channelId: classified.channelId, title: title, via: via };
   }
 
-  const label = classified.handle ? "@" + classified.handle : classified.slugKind + "/" + classified.slug;
+  const label = classified.handle
+    ? "@" + classified.handle
+    : (classified.slugKind ? classified.slugKind + "/" : "") + classified.slug;
   const pageUrl = classified.handle
     ? "https://www.youtube.com/@" + encodeURIComponent(classified.handle) + "?hl=en"
-    : "https://www.youtube.com/" + classified.slugKind + "/" + encodeURIComponent(classified.slug) + "?hl=en";
+    : "https://www.youtube.com/" +
+      (classified.slugKind ? classified.slugKind + "/" : "") +
+      encodeURIComponent(classified.slug) +
+      "?hl=en";
 
   let pageError = null;
   try {
@@ -444,7 +493,427 @@ function matchIcon(rules, label) {
   return { label: label, matched: false, blocked: false };
 }
 
+const SOCIAL_PLATFORMS = {
+  "instagram.com": ["Instagram", "(Instagram)"],
+  "tiktok.com": ["TikTok", "(Tiktok)"],
+  "vm.tiktok.com": ["TikTok", "(Tiktok)"],
+  "vt.tiktok.com": ["TikTok", "(Tiktok)"],
+  "twitter.com": ["X", "(X)"],
+  "x.com": ["X", "(X)"],
+  "facebook.com": ["Facebook", "(Facebook)"],
+  "fb.com": ["Facebook", "(Facebook)"],
+  "fb.watch": ["Facebook", "(Facebook)"],
+  "threads.net": ["Threads", "(Threads)"],
+  "twitch.tv": ["Twitch", "(Twitch)"],
+  "vimeo.com": ["Vimeo", "(Vimeo)"],
+  "rumble.com": ["Rumble", "(Rumble)"],
+  "reddit.com": ["Reddit", "(Reddit)"],
+  "old.reddit.com": ["Reddit", "(Reddit)"]
+};
+
+const IG_RESERVED = {
+  p: true,
+  reel: true,
+  reels: true,
+  stories: true,
+  explore: true,
+  accounts: true,
+  direct: true,
+  about: true,
+  legal: true,
+  tv: true,
+  share: true,
+  directory: true,
+  emails: true,
+  privacy: true,
+  safety: true
+};
+
+const X_RESERVED = {
+  home: true,
+  explore: true,
+  search: true,
+  i: true,
+  intent: true,
+  share: true,
+  settings: true,
+  compose: true,
+  messages: true,
+  notifications: true,
+  tos: true,
+  privacy: true,
+  login: true,
+  signup: true,
+  hashtag: true
+};
+
+function socialHost(hostname) {
+  const host = String(hostname || "")
+    .toLowerCase()
+    .replace(/\.$/, "")
+    .replace(/^(www|m|mobile)\./, "");
+  return SOCIAL_PLATFORMS[host] ? host : "";
+}
+
+function parseHttpUrl(input) {
+  let raw = String(input || "").trim();
+  if (!raw) throw new Error("Empty link");
+  if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(raw)) raw = "https://" + raw;
+  return new URL(raw);
+}
+
+function profileKey(url) {
+  let raw = String(url || "").trim();
+  if (raw.indexOf("//") === 0) raw = "https:" + raw;
+  const found = raw.match(/https?:\/\/[^\s"'<>]+/i);
+  if (found) raw = found[0];
+  let parsed;
+  try {
+    parsed = new URL(raw);
+  } catch (err) {
+    return "";
+  }
+  const host = parsed.hostname.toLowerCase().replace(/^(www|m|mobile)\./, "");
+  let path = parsed.pathname.replace(/\/+$/, "");
+  try {
+    path = decodeURIComponent(path);
+  } catch (err) {
+    path = parsed.pathname.replace(/\/+$/, "");
+  }
+  if ((host === "facebook.com" || host === "fb.com") && /profile\.php$/i.test(path)) {
+    return host.replace(/^fb\.com$/, "facebook.com") + path.toLowerCase() + "?id=" + (parsed.searchParams.get("id") || "");
+  }
+  return host + path.toLowerCase();
+}
+
+function protocolRelative(url) {
+  const parsed = new URL(url);
+  let path = parsed.pathname || "/";
+  if (parsed.hostname.replace(/^www\./, "") === "instagram.com" && path.length > 1 && path.charAt(path.length - 1) !== "/") {
+    path += "/";
+  }
+  const search = parsed.search && parsed.search !== "?" ? parsed.search : "";
+  return "//" + parsed.host + path + search;
+}
+
+function absoluteProfileUrl(url) {
+  const parsed = new URL(url);
+  let path = parsed.pathname || "/";
+  if (parsed.hostname.replace(/^www\./, "") === "instagram.com" && path.length > 1 && path.charAt(path.length - 1) !== "/") {
+    path += "/";
+  }
+  const search = parsed.search && parsed.search !== "?" ? parsed.search : "";
+  return parsed.protocol + "//" + parsed.host + path + search;
+}
+
+function cleanSocialTitle(title) {
+  let text = decodeHtml(String(title || "")).replace(/\s+/g, " ").trim();
+  if (!text) return "";
+  text = text.replace(/\s+[•|]\s+.*$/, "");
+  text = text.replace(/\s+\(@[^)]+\)/g, "");
+  text = text.replace(
+    /\s+[-–—|]\s+(Instagram|TikTok|Facebook|Twitter|X|Threads|Twitch|Vimeo|Rumble|Reddit)(\s.*)?$/i,
+    ""
+  );
+  text = text.replace(/\s+on Instagram$/i, "");
+  text = text.replace(/\s+photos and videos$/i, "");
+  text = text.replace(/\s+profile$/i, "");
+  return text.trim();
+}
+
+function isGenericTitle(title) {
+  const text = cleanSocialTitle(title).toLowerCase();
+  if (!text) return true;
+  if (text === "instagram" || text === "tiktok" || text === "tiktok - make your day") return true;
+  if (text.indexOf("visit tiktok") === 0) return true;
+  if (text === "facebook" || text === "x" || text === "twitter" || text === "threads") return true;
+  if (text === "reddit" || text === "twitch" || text === "vimeo" || text === "rumble") return true;
+  return false;
+}
+
+function titleFromHtml(html) {
+  const og = html.match(/property="og:title" content="([^"]*)"/);
+  if (og && !isGenericTitle(decodeHtml(og[1]))) return cleanSocialTitle(decodeHtml(og[1]));
+  const tag = html.match(/<title>([\s\S]*?)<\/title>/i);
+  if (tag && !isGenericTitle(decodeHtml(tag[1]))) return cleanSocialTitle(decodeHtml(tag[1]));
+  return "";
+}
+
+function instagramOwnerFromHtml(html) {
+  const patterns = [
+    /"username":"([A-Za-z0-9._]{1,30})"/,
+    /property="og:url" content="https?:\/\/www\.instagram\.com\/([A-Za-z0-9._]{1,30})\/?"/,
+    /instagram\.com\/([A-Za-z0-9._]{1,30})\/(?:reels?|p|tv)\//
+  ];
+  for (let i = 0; i < patterns.length; i++) {
+    const match = html.match(patterns[i]);
+    if (match && !IG_RESERVED[match[1].toLowerCase()]) return match[1];
+  }
+  return "";
+}
+
+function profileFromUrl(input) {
+  let parsed;
+  try {
+    parsed = parseHttpUrl(input);
+  } catch (err) {
+    return null;
+  }
+  const host = socialHost(parsed.hostname);
+  if (!host) return null;
+  const platform = SOCIAL_PLATFORMS[host];
+  const parts = parsed.pathname.split("/").filter(Boolean).map(function (part) {
+    try {
+      return decodeURIComponent(part);
+    } catch (err) {
+      return part;
+    }
+  });
+  const base = {
+    platform: platform[0],
+    label: platform[1],
+    needsPage: false,
+    handle: "",
+    url: ""
+  };
+
+  if (host === "instagram.com") {
+    if (parts[0] === "stories" && parts[1] && !IG_RESERVED[parts[1].toLowerCase()]) {
+      base.handle = parts[1];
+      base.url = "https://www.instagram.com/" + parts[1] + "/";
+      return base;
+    }
+    if (!parts[0] || IG_RESERVED[parts[0].toLowerCase()] || !/^[A-Za-z0-9._]{1,30}$/.test(parts[0])) {
+      base.needsPage = true;
+      return base;
+    }
+    base.handle = parts[0];
+    base.url = "https://www.instagram.com/" + parts[0] + "/";
+    return base;
+  }
+
+  if (host === "tiktok.com" || host === "vm.tiktok.com" || host === "vt.tiktok.com") {
+    if (host !== "tiktok.com" || parts[0] === "t") {
+      base.needsPage = true;
+      return base;
+    }
+    const at = parts.filter(function (part) {
+      return part.charAt(0) === "@";
+    })[0];
+    if (!at || at.length < 3) {
+      base.needsPage = true;
+      return base;
+    }
+    base.handle = at.slice(1);
+    base.url = "https://www.tiktok.com/" + at;
+    return base;
+  }
+
+  if (host === "x.com" || host === "twitter.com") {
+    if (!parts[0] || X_RESERVED[parts[0].toLowerCase()]) {
+      base.needsPage = true;
+      return base;
+    }
+    base.handle = parts[0].replace(/^@/, "");
+    base.url = "https://x.com/" + base.handle;
+    return base;
+  }
+
+  if (host === "threads.net") {
+    const at = parts.filter(function (part) {
+      return part.charAt(0) === "@";
+    })[0];
+    if (!at) {
+      base.needsPage = true;
+      return base;
+    }
+    base.handle = at.slice(1);
+    base.url = "https://www.threads.net/" + at;
+    return base;
+  }
+
+  if (host === "facebook.com" || host === "fb.com" || host === "fb.watch") {
+    if (host === "fb.watch" || !parts[0] || /^(watch|reel|share|stories|groups)$/i.test(parts[0])) {
+      base.needsPage = true;
+      return base;
+    }
+    if (parts[0] === "profile.php") {
+      const id = parsed.searchParams.get("id") || "";
+      if (!id) {
+        base.needsPage = true;
+        return base;
+      }
+      base.handle = id;
+      base.url = "https://www.facebook.com/profile.php?id=" + encodeURIComponent(id);
+      return base;
+    }
+    base.handle = parts[0];
+    base.url = "https://www.facebook.com/" + parts[0];
+    return base;
+  }
+
+  if (host === "twitch.tv") {
+    if (!parts[0] || /^(videos|directory|settings|downloads|search)$/i.test(parts[0])) {
+      base.needsPage = true;
+      return base;
+    }
+    base.handle = parts[0];
+    base.url = "https://www.twitch.tv/" + parts[0];
+    return base;
+  }
+
+  if (host === "vimeo.com") {
+    if (parts[0] === "channels" && parts[1]) {
+      base.handle = parts[1];
+      base.url = "https://vimeo.com/channels/" + parts[1];
+      return base;
+    }
+    if (parts[0] === "user" && parts[1]) {
+      base.handle = parts[1];
+      base.url = "https://vimeo.com/" + parts[1];
+      return base;
+    }
+    if (!parts[0] || /^\d+$/.test(parts[0])) {
+      base.needsPage = true;
+      return base;
+    }
+    base.handle = parts[0];
+    base.url = "https://vimeo.com/" + parts[0];
+    return base;
+  }
+
+  if (host === "rumble.com") {
+    if ((parts[0] === "c" || parts[0] === "user") && parts[1]) {
+      base.handle = parts[1];
+      base.url = "https://rumble.com/" + parts[0] + "/" + parts[1];
+      return base;
+    }
+    base.needsPage = true;
+    return base;
+  }
+
+  if (host === "reddit.com" || host === "old.reddit.com") {
+    if ((parts[0] === "user" || parts[0] === "u") && parts[1]) {
+      base.handle = parts[1];
+      base.url = "https://www.reddit.com/user/" + parts[1];
+      return base;
+    }
+    if (parts[0] === "r" && parts[1]) {
+      base.handle = parts[1];
+      base.url = "https://www.reddit.com/r/" + parts[1];
+      return base;
+    }
+    base.needsPage = true;
+    return base;
+  }
+
+  base.needsPage = true;
+  return base;
+}
+
+function findExistingProfile(root, profileUrl) {
+  const key = profileKey(profileUrl);
+  if (!key) return [];
+  const dir = path.join(root, "favs");
+  const files = fs.readdirSync(dir).filter(function (file) {
+    return file.endsWith(".json");
+  });
+  const hits = [];
+  files.forEach(function (file) {
+    let data;
+    try {
+      data = JSON.parse(fs.readFileSync(path.join(dir, file), "utf8"));
+    } catch (err) {
+      hits.push({ collection: file.replace(/\.json$/, ""), error: "Could not parse " + file });
+      return;
+    }
+    if (!Array.isArray(data)) return;
+    data.forEach(function (entry) {
+      if (!entry) return;
+      const blob = String(entry.name || "") + " " + String(entry.open || "");
+      const hrefs = blob.match(/(?:https?:)?\/\/[^\s"'<>]+/g) || [];
+      const found = hrefs.some(function (href) {
+        return profileKey(href) === key;
+      });
+      if (!found) return;
+      hits.push({
+        collection: file.replace(/\.json$/, ""),
+        category: primaryCategory(entry.name || ""),
+        name: plainLabel(entry.name || ""),
+        url: profileUrl
+      });
+    });
+  });
+  return hits;
+}
+
+async function pageTitle(url) {
+  const agents = [BROWSER_UA, CRAWLER_UA];
+  let lastHtml = "";
+  let lastUrl = url;
+  for (let i = 0; i < agents.length; i++) {
+    try {
+      const page = await fetchPage(url, agents[i]);
+      lastHtml = page.html;
+      lastUrl = page.finalUrl || url;
+      const title = titleFromHtml(page.html);
+      if (title) return { title: title, finalUrl: lastUrl, html: lastHtml };
+    } catch (err) {
+      lastHtml = "";
+    }
+  }
+  return { title: "", finalUrl: lastUrl, html: lastHtml };
+}
+
+async function resolveProfile(root, input) {
+  let found = profileFromUrl(input);
+  if (!found) throw new Error("Not a YouTube link");
+
+  if (found.needsPage || !found.url) {
+    const page = await pageTitle(input);
+    const fromFinal = profileFromUrl(page.finalUrl);
+    if (fromFinal && fromFinal.url && !fromFinal.needsPage) {
+      found = Object.assign({}, found, fromFinal);
+    } else if (found.platform === "Instagram") {
+      const owner = instagramOwnerFromHtml(page.html);
+      if (!owner) throw new Error("Could not find a profile for this link");
+      found.handle = owner;
+      found.url = "https://www.instagram.com/" + owner + "/";
+    } else {
+      throw new Error("Could not find a profile for this link");
+    }
+  }
+
+  if (!found.url) throw new Error("Could not find a profile for this link");
+
+  const profilePage = await pageTitle(found.url);
+  let title = profilePage.title || "";
+  if (!title || isGenericTitle(title)) title = found.handle || "";
+
+  const url = absoluteProfileUrl(found.url);
+  return {
+    input: input,
+    kind: "profile",
+    resolution: "profile link",
+    platform: found.platform,
+    label: found.label,
+    url: url,
+    href: protocolRelative(url),
+    title: title,
+    existing: findExistingProfile(root, url)
+  };
+}
+
 async function resolveOne(root, input) {
+  const profile = profileFromUrl(input);
+  if (profile) {
+    try {
+      return await resolveProfile(root, input);
+    } catch (err) {
+      return { input: input, kind: "profile", error: err.message };
+    }
+  }
+
   let classified;
   try {
     classified = classify(input);
@@ -528,6 +997,9 @@ function selfTest(root) {
   const handle = classify("https://www.youtube.com/@WayneTeachesCode/videos");
   assert(handle.kind === "channel" && handle.handle === "WayneTeachesCode", "handle link");
 
+  const custom = classify("https://www.youtube.com/screencrush/videos");
+  assert(custom.kind === "channel" && custom.slug === "screencrush" && custom.slugKind === "", "custom channel url");
+
   assert(primaryCategory("<b>[Fitness]</b> ~Bodybuilding") === "Fitness", "primary category strips HTML");
   assert(primaryCategory("[Mood/<b>Relaxed</b>] Nature") === "Mood/Relaxed", "primary category keeps slash text");
   assert(primaryCategory("Call of Duty WW2") === null, "unbracketed name has no category");
@@ -543,6 +1015,32 @@ function selfTest(root) {
   assert(zelda.matched && zelda.icon === "svg", "Zelda icon");
   const missing = matchIcon(rules, "Zzqx-no-such-category-99");
   assert(!missing.matched && !missing.blocked, "unknown label has no icon");
+
+  const ig = profileFromUrl("https://www.instagram.com/cancel.ian.carroll/");
+  assert(
+    ig && ig.url === "https://www.instagram.com/cancel.ian.carroll/" && ig.label === "(Instagram)",
+    "instagram profile"
+  );
+  const igReel = profileFromUrl("https://www.instagram.com/reel/ABC123/");
+  assert(igReel && igReel.needsPage && !igReel.url, "instagram reel needs the profile");
+  const tiktok = profileFromUrl("https://www.tiktok.com/@booksbehindborders/video/123");
+  assert(
+    tiktok && tiktok.url === "https://www.tiktok.com/@booksbehindborders" && tiktok.label === "(Tiktok)",
+    "tiktok video becomes the profile"
+  );
+  assert(profileFromUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ") === null, "youtube is not a social profile");
+  assert(
+    cleanSocialTitle("Ian Carroll (@cancel.ian.carroll) • Instagram photos and videos") === "Ian Carroll",
+    "instagram title"
+  );
+  assert(
+    cleanSocialTitle("Ian Carroll (&#064;cancel.ian.carroll) &#x2022; Instagram photos and videos") === "Ian Carroll",
+    "instagram title entities"
+  );
+  assert(
+    profileKey("//www.instagram.com/cancel.ian.carroll/") === profileKey("https://instagram.com/cancel.ian.carroll"),
+    "profile key ignores www and slash"
+  );
 
   const hits = findExisting(root, "UU9avFXTdbSo5ATvzTRnAVFg");
   assert(
@@ -581,7 +1079,7 @@ async function main() {
   }
 
   if (!args.length) {
-    throw new Error("Pass YouTube links, --icon-check, --pattern, or --self-test");
+    throw new Error("Pass links, --icon-check, --pattern, or --self-test");
   }
 
   const results = [];
