@@ -23,7 +23,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="assets/js/favs.js?v=2"></script>
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
     <script src="env/playlist-icons.js?v=7"></script>
-    <link rel="stylesheet" href="assets/css/index.css?v=23">
+    <link rel="stylesheet" href="assets/css/index.css?v=24">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
     <style>
@@ -997,7 +997,16 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             closeWatchHistoryPanel();
         });
         $("#watch-history-advanced").on("change", function() {
-            $("#watch-history-table").toggleClass("is-advanced", this.checked);
+            $("#watch-history-table, #watch-history-footer").toggleClass("is-advanced", this.checked);
+        });
+        $("#watch-history-clear-all").on("click", function() {
+            if(!$("#watch-history-footer").hasClass("is-advanced")) {
+                return;
+            }
+            if(!window.confirm("Clear all recently watched?")) {
+                return;
+            }
+            clearWatchHistory();
         });
         $("#watch-history-table").on("click", ".watch-history-sort", function() {
             let key = $(this).attr("data-sort");
@@ -3743,7 +3752,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     <tbody id="watch-history-rows"></tbody>
                 </table>
             </div>
-            <div class="watch-history-footer">
+            <div class="watch-history-footer" id="watch-history-footer">
+                <button type="button" class="watch-history-clear-all" id="watch-history-clear-all">Clear all</button>
                 <label class="watch-history-advanced">
                     <input type="checkbox" id="watch-history-advanced">
                     <span class="watch-history-advanced-track" aria-hidden="true"></span>

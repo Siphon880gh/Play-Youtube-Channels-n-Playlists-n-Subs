@@ -1703,7 +1703,8 @@ body::before {
 .watch-history-close:focus-visible,
 .watch-history-playlist:focus-visible,
 .watch-history-sort:focus-visible,
-.watch-history-delete:focus-visible {
+.watch-history-delete:focus-visible,
+.watch-history-clear-all:focus-visible {
     outline: 2px solid rgba(188, 35, 46, 0.5);
     outline-offset: -2px;
 }
@@ -1831,8 +1832,32 @@ body::before {
 .watch-history-footer {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+    gap: 14px;
     flex: 0 0 auto;
     padding: 8px 16px 14px;
+}
+
+.watch-history-clear-all {
+    display: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: rgba(142, 24, 35, 0.55);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+}
+
+.watch-history-footer.is-advanced .watch-history-clear-all {
+    display: inline;
+}
+
+.watch-history-clear-all:hover,
+.watch-history-clear-all:focus-visible {
+    color: #8e1823;
 }
 
 .watch-history-advanced {
