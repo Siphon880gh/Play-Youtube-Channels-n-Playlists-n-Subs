@@ -22,7 +22,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="assets/js/favs.js?v=2"></script>
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
-    <script src="env/playlist-icons.js?v=2"></script>
+    <script src="env/playlist-icons.js?v=5"></script>
     <link rel="stylesheet" href="assets/css/index.css?v=16">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 

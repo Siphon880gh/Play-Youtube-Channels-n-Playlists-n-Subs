@@ -4,7 +4,7 @@
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <link href="<?php echo $prependPath; ?>assets/css/favs.css?v=6" rel="stylesheet"></link>
 <script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
-<script src="<?php echo $prependPath; ?>env/playlist-icons.js?v=2"></script>
+<script src="<?php echo $prependPath; ?>env/playlist-icons.js?v=5"></script>
 <?php include __DIR__ . "/env/icon-fonts.php"; ?>
 <div id="favs">
   <?php include($prependPath."assets/templates/favs.php"); ?>

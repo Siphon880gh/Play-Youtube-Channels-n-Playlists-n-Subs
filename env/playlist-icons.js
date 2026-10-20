@@ -1,6 +1,8 @@
 // Playlist icons for the jump menu and the playlist list.
 //
-// Rules run in order. The first pattern that matches wins.
+// Rules run in order. The first pattern that matches wins, and later rules are not tried.
+// A rule can set reject to a pattern. If pattern and reject both match, that rule
+// does not apply and later rules are not tried.
 // The same rule is tested against:
 //   - the playlist name in the playlist list (HTML tags are ignored)
 //   - the section name in the jump menu (the text inside the first [brackets])
@@ -22,21 +24,24 @@ var playlistIconRules = [
   { pattern: "\\bDriving\\b|Car-buying|Car-shows", font: "fas fa-car" },
   { pattern: "Cooking|Restaurants|\\bFood\\b|\\bMeals\\b|Nutrition|Holistic", font: "fas fa-utensils" },
 
-  { pattern: "Yoga|Medit|\\bHealing\\b", font: "fas fa-spa" },
+  { pattern: "Sleepy Cat", emoji: "😴" },
+  { pattern: "Yoga|Medit|\\bHealing\\b", reject: "Sleepy Cat", font: "fas fa-spa" },
   { pattern: "Physical\\.Therapy|\\bmedical\\b|nursing|\\bICU\\b", font: "fas fa-notes-medical" },
   { pattern: "Nootropics", font: "fas fa-capsules" },
   { pattern: "Workout|Fitness|Flexibility", font: "fas fa-dumbbell" },
   { pattern: "Mewing", font: "fas fa-smile" },
 
+  { pattern: "Studying music|Coding music|\\bIntense\\b|Keep the beat going|Coffee Shop Chill Playlist", font: "fas fa-music" },
+  { pattern: "Music", font: "fas fa-music" },
+  { pattern: "Mood/Music|\\bMusic\\b|Concerts", font: "fas fa-music" },
   { pattern: "Mood/Sleep|\\bYawning\\b", emoji: "😴" },
-  { pattern: "Concentration|Coffee Shop", emoji: "🎧" },
+  { pattern: "Concentration|Coffee Shop", reject: "Studying music|Coding music|\\bIntense\\b|Keep the beat going|Coffee Shop Chill Playlist|\\bMusic\\b", emoji: "🎧" },
   { pattern: "Medieval", font: "fas fa-hat-wizard" },
   { pattern: "Nostalgia|\\bOldies\\b", font: "fas fa-history" },
   { pattern: "\\bRelaxed\\b|Nature Relaxation", font: "fas fa-leaf" },
   { pattern: "Scenic/Animals|\\bAnimals\\b|\\bPets\\b", font: "fas fa-paw" },
   { pattern: "Scenic|Adventures", font: "fas fa-mountain" },
   { pattern: "Motivation", font: "fas fa-fire" },
-  { pattern: "Mood/Music|\\bMusic\\b|Concerts", font: "fas fa-music" },
 
   { pattern: "\\bSins\\b|deliverance|\\bprayers\\b|\\bLOA\\b", font: "fas fa-praying-hands" },
   { pattern: "Warfare", font: "fas fa-shield-alt" },
@@ -93,10 +98,12 @@ var playlistIconRules = [
     return escapeText(value).replace(/"/g, "&quot;");
   }
 
-  function compilePattern(rule) {
-    if (Object.prototype.hasOwnProperty.call(rule, "_re")) return rule._re;
+  function compilePattern(rule, field) {
+    var key = field || "pattern";
+    var cacheKey = key === "pattern" ? "_re" : "_re_" + key;
+    if (Object.prototype.hasOwnProperty.call(rule, cacheKey)) return rule[cacheKey];
 
-    var source = String(rule.pattern || "");
+    var source = String(rule[key] || "");
     var flags = rule.flags != null ? String(rule.flags) : "i";
     var wrapped = source.match(/^\/([\s\S]*)\/([a-z]*)$/);
     if (wrapped) {
@@ -106,11 +113,19 @@ var playlistIconRules = [
     flags = flags.replace(/g/g, "");
 
     try {
-      rule._re = source ? new RegExp(source, flags) : null;
+      rule[cacheKey] = source ? new RegExp(source, flags) : null;
     } catch (err) {
-      rule._re = null;
+      rule[cacheKey] = null;
     }
-    return rule._re;
+    return rule[cacheKey];
+  }
+
+  function patternHits(rule, field, label) {
+    if (!rule || rule[field] == null || String(rule[field]) === "") return false;
+    var re = compilePattern(rule, field);
+    if (!re) return false;
+    if (re.global) re.lastIndex = 0;
+    return re.test(label);
   }
 
   function safeSrc(src) {
@@ -144,10 +159,10 @@ var playlistIconRules = [
     for (var i = 0; i < list.length; i++) {
       var rule = list[i];
       if (!rule || !rule.pattern) continue;
-      var re = compilePattern(rule);
-      if (!re) continue;
-      if (re.global) re.lastIndex = 0;
-      if (re.test(label)) return innerFromRule(rule);
+      if (!patternHits(rule, "pattern", label)) continue;
+      // A reject match ends the search. Later rules must not replace it.
+      if (patternHits(rule, "reject", label)) return "";
+      return innerFromRule(rule);
     }
     return "";
   }
