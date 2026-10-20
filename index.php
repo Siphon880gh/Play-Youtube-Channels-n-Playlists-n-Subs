@@ -23,7 +23,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="assets/js/favs.js?v=2"></script>
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
     <script src="env/playlist-icons.js?v=7"></script>
-    <link rel="stylesheet" href="assets/css/index.css?v=21">
+    <link rel="stylesheet" href="assets/css/index.css?v=23">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
     <style>
@@ -483,6 +483,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
     const WATCH_HISTORY_STORAGE_KEY = "YT__watch-history";
     const WATCH_HISTORY_MAX_ENTRIES = 1000;
+    let watchHistorySort = { key: "", dir: "desc" };
 
     function loadWatchHistory() {
         try {
@@ -642,11 +643,13 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         if(parts.length !== 3) {
             return dateKey;
         }
-        let date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-        if(isNaN(date.getTime())) {
+        let year = parts[0];
+        let month = parts[1].padStart(2, "0");
+        let day = parts[2].padStart(2, "0");
+        if(!/^\d{4}$/.test(year) || !/^\d{2}$/.test(month) || !/^\d{2}$/.test(day)) {
             return dateKey;
         }
-        return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+        return year + "." + month + "." + day;
     }
 
     function formatHistoryMinutes(ms, dateKey) {
@@ -685,6 +688,84 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         });
     }
 
+    function sortWatchHistoryEntries(entries) {
+        if(watchHistorySort.key !== "date" && watchHistorySort.key !== "minutes") {
+            return entries;
+        }
+        let dir = watchHistorySort.dir === "asc" ? 1 : -1;
+        return entries.slice().sort(function(a, b) {
+            if(watchHistorySort.key === "date") {
+                let ad = a.date || "";
+                let bd = b.date || "";
+                if(ad !== bd) {
+                    return ad < bd ? -dir : dir;
+                }
+            } else {
+                let am = Number(a.ms) || 0;
+                let bm = Number(b.ms) || 0;
+                if(am !== bm) {
+                    return am < bm ? -dir : dir;
+                }
+            }
+            return 0;
+        });
+    }
+
+    function syncWatchHistorySortHeaders() {
+        $(".watch-history-sort").each(function() {
+            let key = $(this).attr("data-sort");
+            let active = watchHistorySort.key === key;
+            let $th = $(this).closest("th");
+            $th.attr("aria-sort", active ? (watchHistorySort.dir === "asc" ? "ascending" : "descending") : "none");
+            let icon = "fa-sort";
+            if(active) {
+                icon = watchHistorySort.dir === "asc" ? "fa-sort-up" : "fa-sort-down";
+            }
+            $(this).find("i").attr("class", "fa " + icon);
+        });
+    }
+
+    function reorderWatchHistoryRows() {
+        if(watchHistorySort.key !== "date" && watchHistorySort.key !== "minutes") {
+            return;
+        }
+        let $rows = $("#watch-history-rows");
+        let dir = watchHistorySort.dir === "asc" ? 1 : -1;
+        let rows = $rows.children(".watch-history-row").get();
+        rows.sort(function(a, b) {
+            if(watchHistorySort.key === "date") {
+                let ad = a.getAttribute("data-date") || "";
+                let bd = b.getAttribute("data-date") || "";
+                if(ad !== bd) {
+                    return ad < bd ? -dir : dir;
+                }
+            } else {
+                let am = Number(a.getAttribute("data-ms")) || 0;
+                let bm = Number(b.getAttribute("data-ms")) || 0;
+                if(am !== bm) {
+                    return am < bm ? -dir : dir;
+                }
+            }
+            return 0;
+        });
+        rows.forEach(function(row) {
+            $rows.append(row);
+        });
+    }
+
+    function deleteWatchHistoryEntry(playlistId, dateKey) {
+        let removed = false;
+        let entries = loadWatchHistory().filter(function(entry) {
+            if(!removed && entry.playlistId === playlistId && (entry.date || "") === (dateKey || "")) {
+                removed = true;
+                return false;
+            }
+            return true;
+        });
+        saveWatchHistory(entries);
+        renderWatchHistory();
+    }
+
     function renderWatchHistory() {
         let entries = loadWatchHistory();
         let titlesChanged = false;
@@ -709,7 +790,9 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             return;
         }
 
+        entries = sortWatchHistoryEntries(entries);
         $rows.empty();
+        syncWatchHistorySortHeaders();
         if(!entries.length) {
             $empty.removeAttr("hidden");
             $table.attr("hidden", true);
@@ -723,7 +806,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             let $tr = $("<tr>")
                 .addClass("watch-history-row")
                 .attr("data-playlist-id", entry.playlistId)
-                .attr("data-date", entry.date || "");
+                .attr("data-date", entry.date || "")
+                .attr("data-ms", String(Number(entry.ms) || 0));
             if(entry.favs) {
                 $tr.attr("data-favs", entry.favs);
             }
@@ -745,6 +829,15 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             $("<td>").addClass("watch-history-minutes-cell").append(
                 $("<span>", { class: "watch-history-meta watch-history-minutes" }).text(formatHistoryMinutes(entry.ms, entry.date))
             ).appendTo($tr);
+
+            $("<td>").addClass("watch-history-delete-cell").append(
+                $("<button>", {
+                    type: "button",
+                    class: "watch-history-delete",
+                    title: "Delete this entry",
+                    "aria-label": "Delete " + title
+                }).append($("<i>", { class: "fa fa-trash-alt", "aria-hidden": "true" }))
+            ).appendTo($tr);
             $rows.append($tr);
         });
     }
@@ -753,7 +846,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         if(!result || !isWatchHistoryOpen()) {
             return;
         }
-        if(result.moved) {
+        if(!watchHistorySort.key && result.moved) {
             renderWatchHistory();
             return;
         }
@@ -766,9 +859,13 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             renderWatchHistory();
             return;
         }
+        $row.attr("data-ms", String(Number(entry.ms) || 0));
         $row.find(".watch-history-minutes").text(formatHistoryMinutes(entry.ms, entry.date));
         if(entry.title) {
             appendWrappableText($row.find(".watch-history-playlist"), entry.title);
+        }
+        if(watchHistorySort.key === "minutes") {
+            reorderWatchHistoryRows();
         }
     }
 
@@ -899,9 +996,41 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         $("#watch-history-backdrop, #watch-history-close").on("click", function() {
             closeWatchHistoryPanel();
         });
+        $("#watch-history-advanced").on("change", function() {
+            $("#watch-history-table").toggleClass("is-advanced", this.checked);
+        });
+        $("#watch-history-table").on("click", ".watch-history-sort", function() {
+            let key = $(this).attr("data-sort");
+            if(watchHistorySort.key === key) {
+                watchHistorySort.dir = watchHistorySort.dir === "desc" ? "asc" : "desc";
+            } else {
+                watchHistorySort.key = key;
+                watchHistorySort.dir = "desc";
+            }
+            renderWatchHistory();
+        });
         $("#watch-history-rows").on("click", ".watch-history-playlist", function() {
             let $row = $(this).closest("tr");
             openPlaylistFromHistory($row.attr("data-playlist-id"), $row.attr("data-favs") || "");
+        });
+        $("#watch-history-rows").on("click", ".watch-history-delete", function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            if(!$("#watch-history-table").hasClass("is-advanced")) {
+                return;
+            }
+            let $row = $(this).closest("tr");
+            let title = $row.find(".watch-history-playlist").text().replace(/\s+/g, " ").trim();
+            let dateLabel = $row.find(".watch-history-date").text().trim();
+            let message = "Delete " + (title ? "\"" + title + "\"" : "this entry");
+            if(dateLabel && dateLabel !== "—") {
+                message += " from " + dateLabel;
+            }
+            message += "?";
+            if(!window.confirm(message)) {
+                return;
+            }
+            deleteWatchHistoryEntry($row.attr("data-playlist-id"), $row.attr("data-date") || "");
         });
         $(document).on("click", function(event) {
             if(!$(event.target).closest(".watch-history-split").length) {
@@ -3596,12 +3725,30 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     <thead>
                         <tr>
                             <th scope="col">Playlist</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Minutes</th>
+                            <th scope="col" aria-sort="none">
+                                <button type="button" class="watch-history-sort" data-sort="date">
+                                    Date
+                                    <i class="fa fa-sort" aria-hidden="true"></i>
+                                </button>
+                            </th>
+                            <th scope="col" aria-sort="none">
+                                <button type="button" class="watch-history-sort" data-sort="minutes">
+                                    Minutes
+                                    <i class="fa fa-sort" aria-hidden="true"></i>
+                                </button>
+                            </th>
+                            <th scope="col" class="watch-history-delete-col"><span class="sr-only">Delete</span></th>
                         </tr>
                     </thead>
                     <tbody id="watch-history-rows"></tbody>
                 </table>
+            </div>
+            <div class="watch-history-footer">
+                <label class="watch-history-advanced">
+                    <input type="checkbox" id="watch-history-advanced">
+                    <span class="watch-history-advanced-track" aria-hidden="true"></span>
+                    <span class="watch-history-advanced-label">Advanced</span>
+                </label>
             </div>
         </aside>
     </div>

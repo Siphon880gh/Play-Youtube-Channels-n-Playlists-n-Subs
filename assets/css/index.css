@@ -1701,7 +1701,9 @@ body::before {
 .watch-history-menu-toggle:focus-visible,
 .watch-history-menu-item:focus-visible,
 .watch-history-close:focus-visible,
-.watch-history-playlist:focus-visible {
+.watch-history-playlist:focus-visible,
+.watch-history-sort:focus-visible,
+.watch-history-delete:focus-visible {
     outline: 2px solid rgba(188, 35, 46, 0.5);
     outline-offset: -2px;
 }
@@ -1826,6 +1828,74 @@ body::before {
     border-bottom: 1px solid rgba(188, 35, 46, 0.1);
 }
 
+.watch-history-footer {
+    display: flex;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+    padding: 8px 16px 14px;
+}
+
+.watch-history-advanced {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: rgba(75, 58, 77, 0.45);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    user-select: none;
+}
+
+.watch-history-advanced input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+}
+
+.watch-history-advanced-track {
+    position: relative;
+    width: 26px;
+    height: 15px;
+    border-radius: 999px;
+    background: rgba(75, 58, 77, 0.16);
+    transition: background-color 0.22s ease;
+}
+
+.watch-history-advanced-track::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(70, 28, 33, 0.18);
+    transition: transform 0.22s ease;
+}
+
+.watch-history-advanced input:checked + .watch-history-advanced-track {
+    background: rgba(142, 24, 35, 0.45);
+}
+
+.watch-history-advanced input:checked + .watch-history-advanced-track::after {
+    transform: translateX(11px);
+}
+
+.watch-history-advanced:hover {
+    color: rgba(75, 58, 77, 0.7);
+}
+
+.watch-history-advanced input:focus-visible + .watch-history-advanced-track {
+    outline: 2px solid rgba(188, 35, 46, 0.5);
+    outline-offset: 2px;
+}
+
 .watch-history-title {
     margin: 0;
     color: #8e1823;
@@ -1883,12 +1953,73 @@ body::before {
 
 .watch-history-table th:nth-child(2),
 .watch-history-table td:nth-child(2) {
-    width: 34%;
+    width: 7.5rem;
 }
 
 .watch-history-table th:nth-child(3),
 .watch-history-table td:nth-child(3) {
-    width: 18%;
+    width: 6.75rem;
+}
+
+.watch-history-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    cursor: pointer;
+}
+
+.watch-history-sort i {
+    font-size: 0.68rem;
+    opacity: 0.45;
+    transition: opacity 0.2s ease;
+}
+
+.watch-history-table th[aria-sort="ascending"] .watch-history-sort i,
+.watch-history-table th[aria-sort="descending"] .watch-history-sort i,
+.watch-history-sort:hover i {
+    opacity: 1;
+}
+
+.watch-history-delete-col,
+.watch-history-delete-cell {
+    display: none;
+    width: 2.75rem;
+    padding-right: 4px;
+    padding-left: 0;
+    text-align: center;
+}
+
+.watch-history-table.is-advanced .watch-history-delete-col,
+.watch-history-table.is-advanced .watch-history-delete-cell {
+    display: table-cell;
+}
+
+.watch-history-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #8e1823;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: background-color 0.22s ease, opacity 0.22s ease;
+}
+
+.watch-history-delete:hover,
+.watch-history-delete:focus-visible {
+    background: rgba(188, 35, 46, 0.12);
+    opacity: 1;
 }
 
 .watch-history-table th:nth-child(2),
@@ -1904,13 +2035,16 @@ body::before {
 
 .watch-history-table td {
     border-top: 1px solid rgba(188, 35, 46, 0.08);
+    background-color: transparent;
     color: #4b3a4d;
     font-size: 0.88rem;
     vertical-align: middle;
+    transition: background-color 0.45s ease;
 }
 
-.watch-history-row:hover {
-    background: rgba(188, 35, 46, 0.05);
+.watch-history-row:hover td,
+.watch-history-row:focus-within td {
+    background-color: rgba(188, 35, 46, 0.1);
 }
 
 .watch-history-playlist,
