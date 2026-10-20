@@ -26,8 +26,6 @@
       <a target="_blank" href="https://docs.google.com/spreadsheets/d/12kDsyiiyeEgl7t87sRy1TkOd4XH4cRa-/edit?gid=409693151#gid=409693151">[[Motiv]]</a>
 
       <div style="width:1px; height:5px;"></div>
-      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Loopable") { $("#playlist-filter").val("Loopable") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[LL]</a>
-      <span>|</span>
       <a target="_blank" href="//www.youtube.com/watch?v=q1YVvndNyqM">[EMDR]</a>
       <span>|</span>
       <a target="_blank" href="//www.youtube.com/watch?v=nMfPqeZjc2c">[White Noise Background]</a>
