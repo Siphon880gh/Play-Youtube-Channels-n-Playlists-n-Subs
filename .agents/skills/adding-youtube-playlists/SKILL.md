@@ -35,12 +35,12 @@ An uploads playlist id is the channel id with the leading `UC` replaced by `UU`.
 
 Read `favs/*.json` in this run. Do not rely on a remembered category list.
 
-A collection is one JSON file. `Default.json` is the collection the shuffler loads. A category is the first `[bracket]` in an entry name after HTML tags are removed. The app turns that bracket into the section header. A row with no `id` is a separator, not a playlist. `Playthroughs.json` usually has no brackets; those names are the rows themselves.
+A collection is one JSON file. `Default.json` is the collection the shuffler loads. A category is the first `[bracket]` in an entry name after HTML tags are removed. The app turns that bracket into the section header. A row with no `id` and no `open` is a separator, not a playlist. A row `{ "group": "Shelf" }` starts a shelf. Later rows stay in that shelf until the next group row, and All topics groups categories under that shelf. `Default.json` shelves are Mood, Practice, Comedy, Lifestyle, Curiosity, Films, Videogames, Videogame Playthroughs, Opinion, Reviews, Travel, One-offs, Cars, Fitness, Self, and Skills. Put a new category in the shelf where that kind of channel already sits. A row `{ "section": "Label" }` starts a category for rows that have no `[brackets]`. A row with `open` and `instructions` is a guide: clicking it opens that URL and shows the instructions, and it is not a playlist id. Game playthroughs go in the Videogame Playthroughs shelf. Their names have no `[brackets]`, and the shelf starts with `{ "section": "Videogame Playthroughs" }`.
 
 1. Use the collection and category the user named. Copy an existing category string exactly, including capitals and slashes.
 2. Otherwise pick the existing category whose label fits the channel or playlist, in the collection where that category already appears.
 3. If that category exists in more than one collection, use the collection whose neighboring rows are the same kind of channel.
-4. Use `Playthroughs.json` for a game playthrough, and match that file's unbracketed names.
+4. Use the Videogame Playthroughs shelf for a game playthrough, and match that shelf's unbracketed names.
 5. Add a new `[Category]` only when no existing category fits. Put it in `Default.json` unless the user named another collection. Do not create a new collection file unless the user asks.
 
 Display name, matching the neighbors in that category:
@@ -55,9 +55,9 @@ Use the resolver's `title` (the channel name, or the playlist title when the lin
 
 The resolver's `existing` array lists every saved copy of that playlist id.
 
-Drop the link when the chosen collection already has that id in the chosen category. For an unbracketed collection, the file is the category: drop the id when it already appears anywhere in that file. Tell the user which entry was already there.
+Drop the link when the chosen collection already has that id in any category. Tell the user which entry was already there.
 
-The same id in a different category is not a duplicate. Two input links that resolve to the same id and the same category are one add.
+Two input links that resolve to the same id are one add.
 
 ## Icon
 
@@ -90,7 +90,7 @@ Run `--icon-check` again on the section label and the full playlist name. Both m
 
 ## Write the row
 
-Insert one object beside the last row of that category, before the separator that follows the group. Match the surrounding spacing. Do not reformat the rest of the file.
+Insert one object beside the last row of that category, before the next category, section, or group row. Match the surrounding spacing. Do not reformat the rest of the file.
 
 ```json
 { "id": "UUxxxx", "name": "[Category] Channel or playlist title" }

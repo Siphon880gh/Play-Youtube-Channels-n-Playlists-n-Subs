@@ -68,3 +68,43 @@ You could open in VS Code and regular expression search with:
 ```
 vnd.*?UC
 ```
+
+## Collection entries
+
+Each file in `favs/` is a JSON array of objects. An object has one of these two shapes.
+
+A playlist plays in the video player:
+
+```json
+{ "id": "UUxxxx", "name": "[Category] Channel or playlist title" }
+```
+
+`id` is a YouTube playlist id. `name` is the label in the list. The first `[brackets]` in `name` become the section header.
+
+A guide opens a page and shows instructions. Paste the page you want into `open`, and the words for the modal into `instructions`:
+
+```json
+{
+  "name": "[Films/Recaps/Trailers/Movies] Rotten Tomatoes Current Month (Manual)",
+  "open": "https://www.youtube.com/@RottenTomatoesTRAILERS/playlists",
+  "instructions": "Click the playlist for the current month. Copy its URL, then paste it into Playlist ID."
+}
+```
+
+Clicking a guide opens `open` in a new tab and shows `instructions` on this app. It has no playlist id, so nothing is added to the JSON file from that click.
+
+Playlist ID, in the Playlist controls, accepts a playlist id, a playlist URL, or a channel URL. A channel URL plays that channel’s uploads playlist. Run loads it in the video player for this visit and leaves the JSON file unchanged.
+
+An object with only `name` is a divider line.
+
+A shelf row has `group` and no playlist id. The categories after it belong to that shelf until the next shelf row. All topics shows those shelves.
+
+```json
+{ "group": "Mood" }
+```
+
+A section row has `section` and no playlist id. It starts a category for entries that have no `[brackets]`.
+
+```json
+{ "section": "NLP" }
+```

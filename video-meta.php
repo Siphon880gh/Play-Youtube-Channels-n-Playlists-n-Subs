@@ -243,6 +243,166 @@ function parseRequestedVideoIds() {
     return array_keys($unique);
 }
 
+function isSafeChannelToken($value) {
+    return is_string($value) && preg_match('/^[A-Za-z0-9._-]{1,80}$/', $value) === 1;
+}
+
+function fetchRemoteHtml($url) {
+    if (!function_exists('curl_init')) {
+        return '';
+    }
+
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_TIMEOUT => 15,
+        CURLOPT_CONNECTTIMEOUT => 5,
+        CURLOPT_HTTPHEADER => [
+            'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+            'Accept-Language: en-US,en;q=0.9',
+            'Accept: text/html',
+            'Cookie: SOCS=CAISNQgDEitib3FfaWRlbnRpdHlmcm9udGVuZHVpc2VydmVyXzIwMjQwOTI1LjA4X3AxGgJlbiACGgYIgL3vrgY',
+        ],
+    ]);
+    $raw = curl_exec($ch);
+    $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($raw === false || $httpCode < 200 || $httpCode >= 300) {
+        return '';
+    }
+
+    return (string) $raw;
+}
+
+function channelIdFromHtml($html) {
+    if (!is_string($html) || $html === '') {
+        return '';
+    }
+
+    if (preg_match('/"externalId":"(UC[A-Za-z0-9_-]{22})"/', $html, $match) === 1) {
+        return $match[1];
+    }
+
+    if (preg_match('/<link rel="canonical" href="https:\/\/www\.youtube\.com\/channel\/(UC[A-Za-z0-9_-]{22})"/', $html, $match) === 1) {
+        return $match[1];
+    }
+
+    return '';
+}
+
+function uploadsPlaylistIdFromChannelId($channelId) {
+    if (!is_string($channelId) || preg_match('/^UC[A-Za-z0-9_-]{22}$/', $channelId) !== 1) {
+        return '';
+    }
+
+    return 'UU' . substr($channelId, 2);
+}
+
+function channelIdFromApi($apiKey, $query) {
+    if ($apiKey === '' || $query === '') {
+        return '';
+    }
+
+    $url = 'https://www.googleapis.com/youtube/v3/channels?part=id&' . $query . '&key=' . rawurlencode($apiKey);
+    $referer = getRequestReferer();
+    $raw = false;
+    $httpCode = 0;
+
+    if (!function_exists('curl_init')) {
+        return '';
+    }
+
+    $headers = [];
+    if ($referer !== '') {
+        $headers[] = 'Referer: ' . $referer;
+    }
+
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 8,
+        CURLOPT_CONNECTTIMEOUT => 4,
+        CURLOPT_HTTPHEADER => $headers,
+    ]);
+    $raw = curl_exec($ch);
+    $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($raw === false || $httpCode < 200 || $httpCode >= 300) {
+        return '';
+    }
+
+    $data = json_decode($raw, true);
+    if (!is_array($data) || !isset($data['items'][0]['id']) || !is_string($data['items'][0]['id'])) {
+        return '';
+    }
+
+    return $data['items'][0]['id'];
+}
+
+function respondChannelPlaylist($pageUrl, $apiQuery) {
+    $channelId = channelIdFromHtml(fetchRemoteHtml($pageUrl));
+    if ($channelId === '') {
+        $channelId = channelIdFromApi(getYoutubeApiKey(), $apiQuery);
+    }
+
+    $playlistId = uploadsPlaylistIdFromChannelId($channelId);
+    if ($playlistId === '') {
+        echo json_encode([
+            'ok' => false,
+            'error' => 'Could not turn that channel into a playlist.',
+        ]);
+        exit;
+    }
+
+    echo json_encode([
+        'ok' => true,
+        'playlistId' => $playlistId,
+    ]);
+    exit;
+}
+
+if (isset($_GET['channelHandle']) || isset($_GET['channelKind']) || isset($_GET['channelSlug'])) {
+    $handle = isset($_GET['channelHandle']) ? trim((string) $_GET['channelHandle']) : '';
+    $kind = isset($_GET['channelKind']) ? trim((string) $_GET['channelKind']) : '';
+    $slug = isset($_GET['channelSlug']) ? trim((string) $_GET['channelSlug']) : '';
+
+    if ($handle !== '') {
+        if (!isSafeChannelToken($handle)) {
+            http_response_code(400);
+            echo json_encode([
+                'ok' => false,
+                'error' => 'Paste a playlist ID, a playlist URL, or a channel URL.',
+            ]);
+            exit;
+        }
+
+        respondChannelPlaylist(
+            'https://www.youtube.com/@' . rawurlencode($handle) . '?hl=en',
+            'forHandle=' . rawurlencode($handle)
+        );
+    }
+
+    if (($kind === 'c' || $kind === 'user') && isSafeChannelToken($slug)) {
+        $apiQuery = $kind === 'user'
+            ? 'forUsername=' . rawurlencode($slug)
+            : 'forHandle=' . rawurlencode($slug);
+        respondChannelPlaylist(
+            'https://www.youtube.com/' . $kind . '/' . rawurlencode($slug) . '?hl=en',
+            $apiQuery
+        );
+    }
+
+    http_response_code(400);
+    echo json_encode([
+        'ok' => false,
+        'error' => 'Paste a playlist ID, a playlist URL, or a channel URL.',
+    ]);
+    exit;
+}
+
 $apiKey = getYoutubeApiKey();
 
 if ($apiKey === '') {

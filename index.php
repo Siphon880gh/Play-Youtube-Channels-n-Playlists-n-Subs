@@ -22,8 +22,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="assets/js/favs.js?v=2"></script>
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
-    <script src="env/playlist-icons.js?v=5"></script>
-    <link rel="stylesheet" href="assets/css/index.css?v=16">
+    <script src="env/playlist-icons.js?v=7"></script>
+    <link rel="stylesheet" href="assets/css/index.css?v=18">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
     <style>
@@ -554,28 +554,27 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         });
     }
 
-    function intern_skipOverNonLink($current) {
-        $current = $current.closest("li")
-                .next("li")
-                .find("a:nth-child(1)");
+    function adjacentPlaylistAnchor($fromLink, direction) {
+        var $doc = $("#favs-wrapper iframe").contents();
+        var $lis = $doc.find(".playlists-target > li");
+        var start = $lis.index($fromLink.closest("li"));
+        var step = direction < 0 ? -1 : 1;
 
-        if($current.hasClass("not-link")) {
-            $current = intern_skipOverNonLink($current)
+        function linkAt(index) {
+            return $lis.eq(index).children("a[data-playlist-id], a[data-open]").first();
         }
 
-        return $current;
-    }
-
-    function intern_backTrackOverNonLink($current) {
-        $current = $current.closest("li")
-                .prev("li")
-                .find("a:nth-child(1)");
-
-        if($current.hasClass("not-link")) {
-            $current = intern_backTrackOverNonLink($current)
+        for (var i = start + step; i >= 0 && i < $lis.length; i += step) {
+            var $link = linkAt(i);
+            if ($link.length) return $link;
         }
 
-        return $current;
+        for (var j = step > 0 ? 0 : $lis.length - 1; j >= 0 && j < $lis.length; j += step) {
+            var $wrap = linkAt(j);
+            if ($wrap.length) return $wrap;
+        }
+
+        return $();
     }
 
     function openNextPlaylist() {
@@ -584,21 +583,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
         if(nextPlaylistId!==null) {
             var $a = $("#favs-wrapper iframe").contents().find(`[data-playlist-id='${nextPlaylistId}']`);
-            var $b = $a.closest("li")
-                .next("li")
-                .find("a:nth-child(1)");
-
-            // Check if already at last item
-            if($b.length===0) {
-                $b = $("#favs-wrapper iframe").contents().find(".playlists-target li:not(.not-link)").eq(0);
-                $b = $b.find("a:nth-child(1)");
-
-            }
-
-            // Check if on a separator, or basically on a non-link element
-            if($b.hasClass("not-link")) {
-                $b = intern_skipOverNonLink($b)
-            }
+            var $b = adjacentPlaylistAnchor($a, 1);
 
             $b.trigger("click");
             // debugger;
@@ -617,21 +602,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
         if(nextPlaylistId!==null) {
             var $a = $("#favs-wrapper iframe").contents().find(`[data-playlist-id='${nextPlaylistId}']`);
-            $b = $a.closest("li")
-                .prev("li")
-                .find("a:nth-child(1)");
-
-            // Check if already at first item
-            if($b.length===0) {
-                $b = $("#favs-wrapper iframe").contents().find(".playlists-target li:not(.not-link)").last();
-                $b = $b.find("a:nth-child(1)");
-
-            }
-
-            // Check if on a separator, or basically on a non-link element
-            if($b.hasClass("not-link")) {
-                $b = intern_backTrackOverNonLink($b)
-            }
+            var $b = adjacentPlaylistAnchor($a, -1);
 
             $b.click();
             // debugger;
@@ -2258,7 +2229,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     <span onclick="More.counter('Playlistheader')"><i class="fa fa-list"></i> <span>Playlist</span></span>
                 </div>
                 <div class="panel-body">
-                    <p class="control-hint control-hint-playlist">Step through your saved playlists, open a random playlist, open on Youtube, or load in a playlist ID.</p>
+                    <p class="control-hint control-hint-playlist">Step through your saved playlists, open a random playlist, open on Youtube, or load a playlist ID, playlist URL, or channel.</p>
                     <button class="btn btn-default control-btn control-btn-next" onclick='openNextPlaylist()'><i id="random" class="fa fa-caret-right clickable"></i><span>&nbsp;Next</span></button>
                     <button class="btn btn-default control-btn control-btn-prev" onclick='openPreviousPlaylist()'><i id="random" class="fa fa-xs fa-undo clickable"></i><span>&nbsp;Prev</span></button>
                     <button class="btn btn-default control-btn control-btn-random" onclick='$("#favs-wrapper iframe").contents().find("#random").click();' title="Open a random playlist from your favorites"><i id="random" class="fa fa-random clickable"></i><span>&nbsp;Random playlist</span></button>
@@ -2266,11 +2237,12 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     <button class="btn btn-secondary control-btn control-btn-playlist-id" onclick='$("#override-playlist-ui").toggleClass("fade d-none"); setTimeout(()=>{ $("#overridePlaylistId").focus(); }, 200);'><i id="manual" class="fa fa-cloud-upload-alt clickable"></i><span>&nbsp;Playlist ID</span></button>
                     <button class="btn btn-secondary control-btn control-btn-scroll" onclick='jumpToActivePlaylist();'><i id="manual" class="fa fa-ruler-vertical clickable"></i><span>&nbsp;Scroll</span></button>
                     <div id="override-playlist-ui" class="override-playlist-ui fade d-none">
-                        <label for="overridePlaylistId" class="override-playlist-ui-label">Override playlist ID</label>
+                        <label for="overridePlaylistId" class="override-playlist-ui-label">Playlist ID, playlist URL, or channel</label>
                         <div class="override-playlist-ui-row">
-                            <input id="overridePlaylistId" type="text" class="override-playlist-ui-input">
+                            <input id="overridePlaylistId" type="text" class="override-playlist-ui-input" onkeydown="if(event.key==='Enter'){ event.preventDefault(); overridePlaylistId(); }">
                             <button type="button" class="btn btn-primary override-playlist-ui-run" onclick="overridePlaylistId()">Run</button>
                         </div>
+                        <div id="override-playlist-error" class="override-playlist-ui-error" role="alert"></div>
                     </div>
                     <!-- Disabled Auth button: Reason for it was some music videos require sign in. But now disabled because "Age-restricted videos can’t be watched on most 3rd party websites" -->
                     <!-- <button class="btn btn-secondary" onclick='window.open("https://accounts.google.com/signin/v2/identifier?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&hl=en&ec=65620&flowName=GlifWebSignIn&flowEntry=ServiceLogin");' style="margin-top:5px;"><i id="manual" class="fa fa-user clickable"></i><span>&nbsp;Auth</span></button> -->
@@ -2468,9 +2440,106 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         updateCategoryBrowserVisibility();
     });
 
+    function showPlaylistGuide(instructions) {
+        var text = String(instructions || "").trim();
+        if(!text) {
+            text = "Copy a playlist URL from the new tab, then paste it into Playlist ID.";
+        }
+        $("#playlist-guide-body").text(text);
+        $("#playlist-guide-modal").modal("show");
+    }
+
+    function openPlaylistIdFromGuide() {
+        $("#playlist-guide-modal").modal("hide");
+        $("#override-playlist-ui").removeClass("fade d-none");
+        setTimeout(function() {
+            $("#overridePlaylistId").trigger("focus");
+        }, 200);
+    }
+
+    function classifyPlaylistInput(raw) {
+        var text = String(raw || "").trim();
+        var playlistIdRe = /^[A-Za-z0-9_-]{10,}$/;
+        var channelIdRe = /^UC[A-Za-z0-9_-]{22}$/;
+        var tokenRe = /^[A-Za-z0-9._-]{1,80}$/;
+        var reject = "Paste a playlist ID, a playlist URL, or a channel URL.";
+
+        if(!text) return { error: reject };
+
+        if(channelIdRe.test(text)) return { playlistId: "UU" + text.slice(2) };
+
+        if(text.charAt(0)==="@") {
+            var typedHandle = text.slice(1).split("/")[0];
+            if(!tokenRe.test(typedHandle)) return { error: reject };
+            return { lookup: { channelHandle: typedHandle } };
+        }
+
+        if(playlistIdRe.test(text)) return { playlistId: text };
+
+        var withScheme = /^[a-z][a-z0-9+.-]*:\/\//i.test(text) ? text : "https://" + text;
+        var url;
+        try {
+            url = new URL(withScheme);
+        } catch (err) {
+            return { error: reject };
+        }
+
+        var host = url.hostname.toLowerCase().replace(/\.$/, "").replace(/^(www|m|music)\./, "");
+        if(host==="youtube-nocookie.com") host = "youtube.com";
+        if(host!=="youtube.com" && host!=="youtu.be") return { error: reject };
+
+        var parts = url.pathname.split("/").filter(Boolean).map(function(part) {
+            try { return decodeURIComponent(part); } catch (err) { return part; }
+        });
+        var list = url.searchParams.get("list");
+
+        if(parts[0]==="playlist") {
+            if(list && playlistIdRe.test(list)) return { playlistId: list };
+            return { error: "That playlist URL has no list id." };
+        }
+
+        if(parts[0]==="channel" && channelIdRe.test(parts[1] || "")) {
+            return { playlistId: "UU" + parts[1].slice(2) };
+        }
+
+        if(parts[0] && parts[0].charAt(0)==="@") {
+            var handle = parts[0].slice(1);
+            if(!tokenRe.test(handle)) return { error: reject };
+            return { lookup: { channelHandle: handle } };
+        }
+
+        if((parts[0]==="c" || parts[0]==="user") && parts[1]) {
+            if(!tokenRe.test(parts[1])) return { error: reject };
+            return { lookup: { channelKind: parts[0], channelSlug: parts[1] } };
+        }
+
+        if(list && playlistIdRe.test(list)) return { playlistId: list };
+
+        return { error: reject };
+    }
+
     function overridePlaylistId() {
-        var newPlaylistId = $('#overridePlaylistId').val();
-        if(newPlaylistId.length) window.parent.urlChange.playlist(null, newPlaylistId);
+        var parsed = classifyPlaylistInput($("#overridePlaylistId").val());
+        var $error = $("#override-playlist-error");
+        $error.text("");
+        if(parsed.error) {
+            $error.text(parsed.error);
+            return;
+        }
+        if(parsed.playlistId) {
+            window.parent.urlChange.playlist(null, parsed.playlistId);
+            return;
+        }
+        $error.text("Looking up that channel…");
+        $.getJSON("video-meta.php", parsed.lookup).done(function(data) {
+            if(data && data.playlistId) {
+                window.parent.urlChange.playlist(null, data.playlistId);
+                return;
+            }
+            $error.text((data && data.error) || "Could not turn that channel into a playlist.");
+        }).fail(function() {
+            $error.text("Could not turn that channel into a playlist.");
+        });
     }
     </script>
 
@@ -2814,6 +2883,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                         this.sections.push({
                             id: $el.attr('data-section-id'),
                             label: $el.attr('data-section-label') || stripHtmlFromLabel($el.text().replace(/^\[|\]$/g, '')),
+                            group: $el.attr('data-section-group') || '',
                             el: el
                         });
                     }
@@ -2832,31 +2902,56 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             this.updateNav();
         }
 
+        categoryLabelInGroup(label, group) {
+            const prefix = group ? group + '/' : '';
+            if (prefix && String(label).indexOf(prefix) === 0) {
+                const rest = String(label).slice(prefix.length).trim();
+                if (rest) return rest;
+            }
+            return label;
+        }
+
         renderAllTopicsList() {
             this.$listGrid.empty();
+            const isListView = this.listView === 'alphabetical';
+            const grouped = !isListView && this.sections.some((section) => section.group);
             this.$listGrid
-                .removeClass('section-nav-parent-list-grid--list section-nav-parent-list-grid--mosaic')
-                .addClass(this.listView === 'alphabetical'
+                .removeClass('section-nav-parent-list-grid--list section-nav-parent-list-grid--mosaic section-nav-parent-list-grid--grouped')
+                .addClass(isListView
                     ? 'section-nav-parent-list-grid--list'
-                    : 'section-nav-parent-list-grid--mosaic');
+                    : 'section-nav-parent-list-grid--mosaic')
+                .toggleClass('section-nav-parent-list-grid--grouped', grouped);
 
             let items = this.sections.map((section, index) => ({ section, index }));
             const seenAlphaAnchors = {};
 
-            if (this.listView === 'alphabetical') {
+            if (isListView) {
                 items = items.slice().sort((a, b) => {
                     return a.section.label.localeCompare(b.section.label, undefined, { sensitivity: 'base' });
                 });
             }
 
+            let currentGroup = null;
             items.forEach(({ section, index }) => {
+                if (grouped && section.group !== currentGroup) {
+                    currentGroup = section.group;
+                    const $group = $('<button>')
+                        .addClass('section-nav-parent-group')
+                        .attr('type', 'button')
+                        .text(currentGroup);
+                    $group.on('click', () => {
+                        this.jumpToSection(index);
+                    });
+                    this.$listGrid.append($group);
+                }
+
                 const $btn = $('<button>')
                     .addClass('section-nav-parent-item')
                     .attr('type', 'button')
                     .attr('data-section-index', index);
-                this.fillLabeled($btn, section.label);
+                this.fillLabeled($btn, section.label, grouped ? this.categoryLabelInGroup(section.label, section.group) : '');
 
-                if (this.listView === 'alphabetical') {
+                if (isListView) {
                     const firstLetter = this.getFirstLetter(section.label);
                     $btn.attr('data-first-letter', firstLetter);
 
@@ -2988,12 +3083,13 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             }
         }
 
-        fillLabeled($el, label) {
+        fillLabeled($el, label, displayLabel) {
             $el.empty();
-            if (!label) return;
-            const iconHtml = (typeof window.playlistIconHtml === "function") ? window.playlistIconHtml(label) : "";
+            const shown = displayLabel || label;
+            if (!shown) return;
+            const iconHtml = (typeof window.playlistIconHtml === "function") ? window.playlistIconHtml(label || shown) : "";
             if (iconHtml) $el.append(iconHtml);
-            $el.append($('<span class="playlist-icon-label"></span>').text(label));
+            $el.append($('<span class="playlist-icon-label"></span>').text(shown));
         }
 
         updateNav() {
@@ -3028,6 +3124,12 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     $el.removeAttr('aria-current');
                 }
             });
+
+            this.$listGrid.find('.section-nav-parent-group').removeClass('section-nav-parent-group--active');
+            const $activeItem = this.$listGrid.find('.section-nav-parent-item--active');
+            if ($activeItem.length) {
+                $activeItem.prevAll('.section-nav-parent-group').first().addClass('section-nav-parent-group--active');
+            }
         }
     }
 
@@ -3038,5 +3140,19 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     </script>
 
     <script src="assets/js/app.js?v=2"></script>
+    <div id="playlist-guide-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="playlist-guide-title">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="playlist-guide-title">Copy a playlist URL</h4>
+                </div>
+                <div class="modal-body" id="playlist-guide-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="openPlaylistIdFromGuide()">Playlist ID</button>
+                </div>
+            </div>
+        </div>
+    </div>
   </body>
 </html>

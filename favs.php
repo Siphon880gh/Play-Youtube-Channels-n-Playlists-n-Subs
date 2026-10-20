@@ -2,9 +2,9 @@
 <?php $prependPath="./"; ?>
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<link href="<?php echo $prependPath; ?>assets/css/favs.css?v=6" rel="stylesheet"></link>
+<link href="<?php echo $prependPath; ?>assets/css/favs.css?v=7" rel="stylesheet"></link>
 <script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
-<script src="<?php echo $prependPath; ?>env/playlist-icons.js?v=5"></script>
+<script src="<?php echo $prependPath; ?>env/playlist-icons.js?v=7"></script>
 <?php include __DIR__ . "/env/icon-fonts.php"; ?>
 <div id="favs">
   <?php include($prependPath."assets/templates/favs.php"); ?>
@@ -18,7 +18,7 @@
       <span>|</span>
       <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Travel") { $("#playlist-filter").val("Travel") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Travel]</a>
       <span>|</span>
-      <a href="javascript:void(0)" onclick='RandomPlaylist.select();'>[Rand]</a>
+      <a href="javascript:void(0)" onclick='RandomPlaylist.select();'>[[Rand]]</a>
 
       <div style="width:1px; height:5px;"></div>
       <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Comedy") { $("#playlist-filter").val("Comedy") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Comedy/Wake]</a>
@@ -93,7 +93,7 @@ if(currentCollection==="favs") currentCollection = "Default";
 function filterListItems(userFilterText, listItems) {
   let $allListItems = listItems.find("li");
   let $sectionHeaders = listItems.find("li.section-header");
-  let $playlistItems = listItems.find("li:not(.section-header)");
+  let $groupHeaders = listItems.find("li.section-group");
 
   if(userFilterText.length) {
     $allListItems.hide();
@@ -103,10 +103,11 @@ function filterListItems(userFilterText, listItems) {
     terms.forEach(term=>{
       if(term.length===0) return true;
 
+      var $matches = listItems.find(`li:not(.section-header):not(.section-group):contains('${term}')`);
       if($filteredIn===null) {
-        $filteredIn = listItems.find(`li:not(.section-header):contains('${term}')`);
+        $filteredIn = $matches;
       } else {
-        $.merge($filteredIn, listItems.find(`li:not(.section-header):contains('${term}')`));
+        $.merge($filteredIn, $matches);
       }
     })
     if($filteredIn!==null) {
@@ -118,6 +119,14 @@ function filterListItems(userFilterText, listItems) {
       var $nextItems = $header.nextUntil('.section-header');
       var hasVisibleItems = $nextItems.filter(':visible').length > 0;
       if(hasVisibleItems) {
+        $header.show();
+      }
+    });
+
+    $groupHeaders.each(function() {
+      var $header = $(this);
+      var $nextItems = $header.nextUntil('.section-group');
+      if($nextItems.filter(':visible').length > 0) {
         $header.show();
       }
     });
@@ -191,6 +200,29 @@ function changeVideo(event) {
     window.parent.urlChange.playlist($el, id);
   }
 
+function isGuideHttpUrl(value) {
+  try {
+    var url = new URL(value, window.location.href);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch (err) {
+    return false;
+  }
+}
+
+function openPlaylistGuide(event) {
+  event.preventDefault();
+  var $el = $(event.target).closest("a");
+  var url = $el.attr("data-open");
+  var instructions = $el.data("instructions") || "";
+  if(isGuideHttpUrl(url)) {
+    var tab = window.open(url, "_blank");
+    if(tab) tab.opener = null;
+  }
+  if(window.parent && typeof window.parent.showPlaylistGuide === "function") {
+    window.parent.showPlaylistGuide(instructions);
+  }
+}
+
 // Fetch and render list of playlists
 
 function fetchPlaylist(calledCollection) {
@@ -211,44 +243,66 @@ function fetchPlaylist(calledCollection) {
         }
     });
   } // fetchPlaylist
+  function appendSectionHeader($playlistContainer, sectionCategory, seenCategories, currentGroup) {
+    if(!sectionCategory || seenCategories[sectionCategory]) return;
+    seenCategories[sectionCategory] = true;
+
+    var sectionId = 'section-' + sectionCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    var $sectionHeader = $('<li class="section-header"></li>');
+    var $sectionLabel = $('<span class="section-label"></span>')
+      .attr('data-section-id', sectionId)
+      .attr('id', sectionId)
+      .attr('data-section-label', sectionCategory)
+      .attr('data-section-group', currentGroup || '');
+    var sectionIcon = (typeof window.playlistIconHtml === "function") ? window.playlistIconHtml(sectionCategory) : "";
+    if (sectionIcon) $sectionLabel.append(sectionIcon);
+    $sectionLabel.append(document.createTextNode('[' + sectionCategory + ']'));
+    $sectionHeader.append($sectionLabel);
+    $playlistContainer.append($sectionHeader);
+  }
+
   function renderPlaylists(collection) {
     var $playlistContainer = $(".playlists-target");
     $playlistContainer.html("");
 
     var seenCategories = {};
-    var categoryOrder = [];
+    var currentGroup = "";
 
     for(var i =0; i<collection.length; i++) {
         var playlistObject = collection[i];
+        var groupName = (typeof playlistObject.group==="string") ? playlistObject.group.trim() : "";
+        if(groupName) {
+          currentGroup = groupName;
+          var $groupHeader = $('<li class="section-group"></li>');
+          $groupHeader.append($('<h2 class="section-group-label"></h2>').text(currentGroup));
+          $playlistContainer.append($groupHeader);
+          continue;
+        }
+
         var id = (typeof playlistObject.id!=="undefined")?playlistObject.id:-1;
-        var name = playlistObject.name;
+        var name = playlistObject.name || "";
+        var openUrl = (typeof playlistObject.open==="string") ? playlistObject.open.trim() : "";
+        var explicitSection = (typeof playlistObject.section==="string") ? playlistObject.section.trim() : "";
+        if(explicitSection && id===-1 && !openUrl) {
+          appendSectionHeader($playlistContainer, explicitSection, seenCategories, currentGroup);
+          continue;
+        }
 
         var categories = extractCategoriesFromPlaylistLabel(name);
         var primaryCategory = categories.length > 0 ? categories[0] : null;
         var sectionCategory = primaryCategory;
 
-        if(sectionCategory && !seenCategories[sectionCategory]) {
-          seenCategories[sectionCategory] = true;
-          categoryOrder.push(sectionCategory);
-
-          var sectionId = 'section-' + sectionCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-          var $sectionHeader = $('<li class="section-header"></li>');
-          var $sectionLabel = $('<span class="section-label"></span>')
-            .attr('data-section-id', sectionId)
-            .attr('id', sectionId)
-            .attr('data-section-label', sectionCategory);
-          var sectionIcon = (typeof window.playlistIconHtml === "function") ? window.playlistIconHtml(sectionCategory) : "";
-          if (sectionIcon) $sectionLabel.append(sectionIcon);
-          $sectionLabel.append(document.createTextNode('[' + sectionCategory + ']'));
-          $sectionHeader.append($sectionLabel);
-          $playlistContainer.append($sectionHeader);
-        }
+        appendSectionHeader($playlistContainer, sectionCategory, seenCategories, currentGroup);
 
         var li = $("<li></li>")
         var a = $("<a></a>");
 
         a.attr("href","javascript:void(0);");
-        if(id===-1) {
+        if(openUrl) {
+          a.attr("data-open", openUrl);
+          a.data("instructions", playlistObject.instructions || "");
+          a.attr("onclick", "openPlaylistGuide(event)");
+        } else if(id===-1) {
           a.addClass('not-link')
           li.addClass('not-link')
         } else if(id) {

@@ -327,6 +327,24 @@ h2 {
     font-weight: 600;
 }
 
+.override-playlist-ui-error {
+    margin: 8px 0 0;
+    color: var(--red-main);
+    font-size: var(--type-meta);
+    line-height: 1.4;
+}
+
+.override-playlist-ui-error:empty {
+    display: none;
+}
+
+#playlist-guide-body {
+    white-space: pre-wrap;
+    color: var(--text-muted);
+    font-size: var(--type-action);
+    line-height: 1.45;
+}
+
 .playback-mode-control {
     display: flex;
     flex-direction: column;
@@ -1777,7 +1795,7 @@ body::before {
 }
 
 .section-nav-parent-list-body {
-    max-height: min(45vh, 360px);
+    max-height: min(70vh, 640px);
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
@@ -1916,6 +1934,35 @@ body::before {
     flex-wrap: wrap;
     gap: 8px;
     align-items: flex-start;
+}
+
+.section-nav-parent-group {
+    flex: 1 0 100%;
+    width: 100%;
+    margin: 14px 0 0;
+    padding: 2px 2px 0;
+    border: 0;
+    background: transparent;
+    color: #3d1016;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    text-align: left;
+    cursor: pointer;
+}
+
+.section-nav-parent-list-grid--grouped .section-nav-parent-group:first-child {
+    margin-top: 0;
+}
+
+.section-nav-parent-group:hover,
+.section-nav-parent-group--active {
+    color: var(--red-main);
+}
+
+.section-nav-parent-group:focus-visible {
+    outline: 2px solid rgba(188, 35, 46, 0.5);
+    outline-offset: 2px;
 }
 
 .section-nav-parent-item {
