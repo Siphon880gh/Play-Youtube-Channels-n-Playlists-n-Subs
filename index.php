@@ -23,7 +23,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="assets/js/favs.js?v=2"></script>
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
     <script src="env/playlist-icons.js?v=7"></script>
-    <link rel="stylesheet" href="assets/css/index.css?v=18">
+    <link rel="stylesheet" href="assets/css/index.css?v=21">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
     <style>
@@ -130,18 +130,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         // out playlists is so that you know it's been explored for the week.
 
         setTimeout(()=>{
-            // Equivalent: Push playlist Id to the top if it exists or inserts to the top if it doesn't
-            arrLastOpened = arrLastOpened.filter(aPlayerlistId => aPlayerlistId !== window.playlistId);
-            arrLastOpened.push(window.playlistId);
-
-            // Keep track of only 10 crossed out playlists
-            // arrLastOpened = arrLastOpened.slice(-10);
-            // debugger;
-
-            var lastWatchedList = JSON.stringify(arrLastOpened);
-            localStorage.setItem("YT__last-opened", lastWatchedList);
-            renderCrossedOutPlaylists(arrLastOpened);
-            // console.log("Updated last watched list: " + lastWatchedList);
+            recordOpenedPlaylist(window.playlistId);
         }, 10000);
     }
 
@@ -264,6 +253,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
         initBrightnessControl();
         initWatchTime();
+        initWatchHistory();
         initPlayerVideoActionTooltips();
 
     }); // on doc ready
@@ -409,6 +399,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 window.ytWatchTime.sessionMs += deltaMs;
                 window.ytWatchTime.todayMs += deltaMs;
                 saveTodayWatchTime();
+                recordPlaylistWatchMinutes(window.playlistId, deltaMs);
             }
         }
 
@@ -486,6 +477,445 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             if(event.key === "Enter" || event.key === " ") {
                 let scope = $(this).hasClass("watch-time-stat--today") ? "today" : "session";
                 handleWatchTimeClick(event, scope);
+            }
+        });
+    }
+
+    const WATCH_HISTORY_STORAGE_KEY = "YT__watch-history";
+    const WATCH_HISTORY_MAX_ENTRIES = 1000;
+
+    function loadWatchHistory() {
+        try {
+            let parsed = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY) || "null");
+            if(!Array.isArray(parsed)) {
+                return [];
+            }
+            return parsed.filter(function(entry) {
+                return entry && typeof entry.playlistId === "string" && entry.playlistId.length;
+            });
+        } catch(e) {
+            return [];
+        }
+    }
+
+    function saveWatchHistory(entries) {
+        localStorage.setItem(
+            WATCH_HISTORY_STORAGE_KEY,
+            JSON.stringify(entries.slice(0, WATCH_HISTORY_MAX_ENTRIES))
+        );
+    }
+
+    function currentFavsBundle() {
+        try {
+            let iframe = $("#favs-wrapper iframe")[0];
+            if(iframe && iframe.contentWindow) {
+                let match = String(iframe.contentWindow.location.href).match(/[?&]favs=([^&]+)/);
+                if(match) {
+                    return decodeURIComponent(match[1]).replace(/\.php$/i, "");
+                }
+            }
+        } catch(e) {}
+        return new URLSearchParams(window.location.search).get("favs") || "Default";
+    }
+
+    function playlistTitleForId(playlistId) {
+        try {
+            let $link = $("#favs-wrapper iframe").contents().find("a[data-playlist-id]").filter(function() {
+                return $(this).attr("data-playlist-id") === playlistId;
+            }).first();
+            if($link.length) {
+                let text = $link.text().replace(/\s+/g, " ").trim();
+                if(text) {
+                    return text;
+                }
+            }
+        } catch(e) {}
+        return "";
+    }
+
+    function seedWatchHistoryFromLastOpened() {
+        if(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY) !== null) {
+            return;
+        }
+
+        let ids = Array.isArray(window.arrLastOpened) ? window.arrLastOpened.slice() : [];
+        let seeded = [];
+        for(let i = ids.length - 1; i >= 0; i--) {
+            let playlistId = ids[i];
+            if(!playlistId || seeded.some(function(entry) { return entry.playlistId === playlistId; })) {
+                continue;
+            }
+            seeded.push({
+                playlistId: playlistId,
+                title: "",
+                favs: "",
+                date: "",
+                ms: 0,
+                updatedAt: 0
+            });
+        }
+        saveWatchHistory(seeded);
+    }
+
+    function markPlaylistOpened(playlistId) {
+        if(!playlistId) {
+            return;
+        }
+
+        let list = Array.isArray(window.arrLastOpened) ? window.arrLastOpened.slice() : [];
+        if(list.length && list[list.length - 1] === playlistId) {
+            window.arrLastOpened = list;
+            return;
+        }
+
+        list = list.filter(function(id) {
+            return id !== playlistId;
+        });
+        list.push(playlistId);
+        window.arrLastOpened = list;
+        localStorage.setItem("YT__last-opened", JSON.stringify(list));
+        if(typeof renderCrossedOutPlaylists === "function") {
+            renderCrossedOutPlaylists(list);
+        }
+    }
+
+    function upsertWatchHistory(playlistId, deltaMs) {
+        if(!playlistId) {
+            return null;
+        }
+
+        let today = getWatchTimeTodayKey();
+        let entries = loadWatchHistory().filter(function(entry) {
+            return !(entry.playlistId === playlistId && !entry.date);
+        });
+        let index = -1;
+        for(let i = 0; i < entries.length; i++) {
+            if(entries[i].playlistId === playlistId && entries[i].date === today) {
+                index = i;
+                break;
+            }
+        }
+
+        let title = playlistTitleForId(playlistId);
+        let favs = currentFavsBundle();
+        let now = Date.now();
+        let entry;
+        let moved = false;
+
+        if(index === -1) {
+            entry = {
+                playlistId: playlistId,
+                title: title,
+                favs: favs,
+                date: today,
+                ms: Math.max(0, Math.round(deltaMs || 0)),
+                updatedAt: now
+            };
+            entries.unshift(entry);
+            moved = true;
+        } else {
+            entry = entries[index];
+            entry.ms = Math.max(0, Math.round((Number(entry.ms) || 0) + (deltaMs || 0)));
+            entry.updatedAt = now;
+            if(title) {
+                entry.title = title;
+            }
+            if(favs) {
+                entry.favs = favs;
+            }
+            if(index !== 0) {
+                entries.splice(index, 1);
+                entries.unshift(entry);
+                moved = true;
+            }
+        }
+
+        saveWatchHistory(entries);
+        return { entry: entry, moved: moved };
+    }
+
+    function formatHistoryDate(dateKey) {
+        if(!dateKey) {
+            return "—";
+        }
+        let parts = String(dateKey).split("-");
+        if(parts.length !== 3) {
+            return dateKey;
+        }
+        let date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        if(isNaN(date.getTime())) {
+            return dateKey;
+        }
+        return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    }
+
+    function formatHistoryMinutes(ms, dateKey) {
+        if(!dateKey && !(ms > 0)) {
+            return "—";
+        }
+        let totalSeconds = Math.max(0, Math.floor((Number(ms) || 0) / 1000));
+        let hours = Math.floor(totalSeconds / 3600);
+        let minutes = Math.floor((totalSeconds % 3600) / 60);
+        if(hours > 0) {
+            return hours + "h " + minutes + "m";
+        }
+        if(minutes > 0) {
+            return minutes + "m";
+        }
+        if(totalSeconds > 0) {
+            return "<1m";
+        }
+        return "0m";
+    }
+
+    function isWatchHistoryOpen() {
+        return $("#watch-history-root").hasClass("is-open");
+    }
+
+    function appendWrappableText($el, title) {
+        $el.empty();
+        String(title || "").split(/(\s+|[/\[\]])/).forEach(function(part) {
+            if(part === "") {
+                return;
+            }
+            $el.append(document.createTextNode(part));
+            if(part === "/" || part === "]" || part === "[") {
+                $el.append(document.createElement("wbr"));
+            }
+        });
+    }
+
+    function renderWatchHistory() {
+        let entries = loadWatchHistory();
+        let titlesChanged = false;
+        entries.forEach(function(entry) {
+            if(entry.title) {
+                return;
+            }
+            let title = playlistTitleForId(entry.playlistId);
+            if(title) {
+                entry.title = title;
+                titlesChanged = true;
+            }
+        });
+        if(titlesChanged) {
+            saveWatchHistory(entries);
+        }
+
+        let $rows = $("#watch-history-rows");
+        let $empty = $("#watch-history-empty");
+        let $table = $("#watch-history-table");
+        if(!$rows.length) {
+            return;
+        }
+
+        $rows.empty();
+        if(!entries.length) {
+            $empty.removeAttr("hidden");
+            $table.attr("hidden", true);
+            return;
+        }
+
+        $empty.attr("hidden", true);
+        $table.removeAttr("hidden");
+        entries.forEach(function(entry) {
+            let title = entry.title || entry.playlistId;
+            let $tr = $("<tr>")
+                .addClass("watch-history-row")
+                .attr("data-playlist-id", entry.playlistId)
+                .attr("data-date", entry.date || "");
+            if(entry.favs) {
+                $tr.attr("data-favs", entry.favs);
+            }
+
+            let $button = $("<button>", {
+                type: "button",
+                class: "watch-history-playlist",
+                title: "Open this playlist"
+            });
+            appendWrappableText($button, title);
+            $("<td>").append($button).appendTo($tr);
+
+            let $time = $("<time>", { class: "watch-history-meta watch-history-date" }).text(formatHistoryDate(entry.date));
+            if(entry.date) {
+                $time.attr("datetime", entry.date);
+            }
+            $("<td>").append($time).appendTo($tr);
+
+            $("<td>").addClass("watch-history-minutes-cell").append(
+                $("<span>", { class: "watch-history-meta watch-history-minutes" }).text(formatHistoryMinutes(entry.ms, entry.date))
+            ).appendTo($tr);
+            $rows.append($tr);
+        });
+    }
+
+    function syncOpenHistoryRow(result) {
+        if(!result || !isWatchHistoryOpen()) {
+            return;
+        }
+        if(result.moved) {
+            renderWatchHistory();
+            return;
+        }
+
+        let entry = result.entry;
+        let $row = $("#watch-history-rows .watch-history-row").filter(function() {
+            return $(this).attr("data-playlist-id") === entry.playlistId && $(this).attr("data-date") === entry.date;
+        }).first();
+        if(!$row.length) {
+            renderWatchHistory();
+            return;
+        }
+        $row.find(".watch-history-minutes").text(formatHistoryMinutes(entry.ms, entry.date));
+        if(entry.title) {
+            appendWrappableText($row.find(".watch-history-playlist"), entry.title);
+        }
+    }
+
+    function recordOpenedPlaylist(playlistId) {
+        if(!playlistId) {
+            return;
+        }
+        markPlaylistOpened(playlistId);
+        syncOpenHistoryRow(upsertWatchHistory(playlistId, 0));
+    }
+
+    function recordPlaylistWatchMinutes(playlistId, deltaMs) {
+        if(!playlistId || !(deltaMs > 0)) {
+            return;
+        }
+        markPlaylistOpened(playlistId);
+        syncOpenHistoryRow(upsertWatchHistory(playlistId, deltaMs));
+    }
+
+    function closeWatchHistoryMenu() {
+        $("#watch-history-menu").attr("hidden", true);
+        $("#watch-history-menu-toggle").attr("aria-expanded", "false");
+    }
+
+    function toggleWatchHistoryMenu(event) {
+        if(event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        let $menu = $("#watch-history-menu");
+        if($menu.is("[hidden]")) {
+            $menu.removeAttr("hidden");
+            $("#watch-history-menu-toggle").attr("aria-expanded", "true");
+            return;
+        }
+        closeWatchHistoryMenu();
+    }
+
+    function openWatchHistoryPanel() {
+        closeWatchHistoryMenu();
+        renderWatchHistory();
+        let root = document.getElementById("watch-history-root");
+        if(!root) {
+            return;
+        }
+        root.setAttribute("aria-hidden", "false");
+        root.classList.add("is-closing");
+        window.requestAnimationFrame(function() {
+            root.classList.add("is-open");
+        });
+        $("#watch-history-open").attr("aria-expanded", "true");
+        document.body.style.overflow = "hidden";
+        $("#watch-history-close").trigger("focus");
+    }
+
+    function closeWatchHistoryPanel() {
+        let root = document.getElementById("watch-history-root");
+        if(!root || !root.classList.contains("is-open")) {
+            return;
+        }
+        root.classList.remove("is-open");
+        $("#watch-history-open").attr("aria-expanded", "false");
+        document.body.style.overflow = "";
+
+        let panel = root.querySelector(".watch-history-panel");
+        let finished = false;
+        let done = function() {
+            if(finished || root.classList.contains("is-open")) {
+                return;
+            }
+            finished = true;
+            root.classList.remove("is-closing");
+            root.setAttribute("aria-hidden", "true");
+        };
+        if(panel) {
+            panel.addEventListener("transitionend", done, { once: true });
+        }
+        window.setTimeout(done, 360);
+        $("#watch-history-open").trigger("focus");
+    }
+
+    function clearWatchHistory() {
+        window.arrLastOpened = [];
+        localStorage.setItem("YT__last-opened", "[]");
+        localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, "[]");
+        $("#favs-wrapper iframe").contents().find(".crossed-out").removeClass("crossed-out");
+        closeWatchHistoryMenu();
+        renderWatchHistory();
+    }
+
+    function openPlaylistFromHistory(playlistId, favs) {
+        if(!playlistId) {
+            return;
+        }
+        let $link = $("#favs-wrapper iframe").contents().find("a[data-playlist-id]").filter(function() {
+            return $(this).attr("data-playlist-id") === playlistId;
+        }).first();
+        if($link.length) {
+            closeWatchHistoryPanel();
+            $link.trigger("click");
+            return;
+        }
+
+        let params = new URLSearchParams(window.location.search);
+        params.set("playlistId", playlistId);
+        params.delete("loop-video-id");
+        if(favs) {
+            params.set("favs", favs);
+        }
+        window.location.search = params.toString();
+    }
+
+    function initWatchHistory() {
+        seedWatchHistoryFromLastOpened();
+
+        $("#watch-history-open").on("click", function() {
+            openWatchHistoryPanel();
+        });
+        $("#watch-history-menu-toggle").on("click", toggleWatchHistoryMenu);
+        $("#watch-history-clear").on("click", function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            clearWatchHistory();
+        });
+        $("#watch-history-backdrop, #watch-history-close").on("click", function() {
+            closeWatchHistoryPanel();
+        });
+        $("#watch-history-rows").on("click", ".watch-history-playlist", function() {
+            let $row = $(this).closest("tr");
+            openPlaylistFromHistory($row.attr("data-playlist-id"), $row.attr("data-favs") || "");
+        });
+        $(document).on("click", function(event) {
+            if(!$(event.target).closest(".watch-history-split").length) {
+                closeWatchHistoryMenu();
+            }
+        });
+        $(document).on("keydown", function(event) {
+            if(event.key !== "Escape") {
+                return;
+            }
+            if(!$("#watch-history-menu").is("[hidden]")) {
+                closeWatchHistoryMenu();
+                $("#watch-history-menu-toggle").trigger("focus");
+                return;
+            }
+            if(isWatchHistoryOpen()) {
+                closeWatchHistoryPanel();
             }
         });
     }
@@ -2256,7 +2686,16 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             <nav id="section-nav-parent" class="section-nav-parent" aria-label="Section navigation">
                 <div class="section-nav-parent-header">
                     <a class="section-nav-parent-title" href="javascript:void(0);" onclick="$('#favs-wrapper iframe')[0].contentWindow.fetchPlaylist('Default'); More.counter('Favheader');">Youtube uploads and playlists:</a>
-                    <a class="section-nav-parent-clear" href="javascript:void(0)" onclick='localStorage.setItem("YT__last-opened", "[]"); $("#favs-wrapper iframe").contents().find(".crossed-out").removeClass("crossed-out");'>Clear history</a>
+                    <div class="watch-history-split">
+                        <button type="button" class="watch-history-open" id="watch-history-open" aria-expanded="false" aria-controls="watch-history-panel">History</button>
+                        <span class="watch-history-split-sep" aria-hidden="true"></span>
+                        <button type="button" class="watch-history-menu-toggle" id="watch-history-menu-toggle" aria-expanded="false" aria-haspopup="menu" aria-controls="watch-history-menu" aria-label="History actions">
+                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                        </button>
+                        <div id="watch-history-menu" class="watch-history-menu" role="menu" hidden>
+                            <button type="button" class="watch-history-menu-item" id="watch-history-clear" role="menuitem">Clear history</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="section-nav-parent-controls">
                     <button class="section-nav-parent-btn section-nav-parent-prev" type="button" aria-label="Go to previous section" style="display:none;">
@@ -3138,6 +3577,31 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         window.parentSectionNav.init();
     });
     </script>
+
+    <div id="watch-history-root" class="watch-history-root" aria-hidden="true">
+        <button type="button" class="watch-history-backdrop" id="watch-history-backdrop" aria-label="Close history"></button>
+        <aside id="watch-history-panel" class="watch-history-panel" role="dialog" aria-modal="true" aria-labelledby="watch-history-title">
+            <div class="watch-history-header">
+                <h2 id="watch-history-title" class="watch-history-title">Recently watched</h2>
+                <button type="button" class="watch-history-close" id="watch-history-close" aria-label="Close history">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="watch-history-body">
+                <p id="watch-history-empty" class="watch-history-empty" hidden>No playlists watched yet.</p>
+                <table id="watch-history-table" class="watch-history-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Playlist</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Minutes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="watch-history-rows"></tbody>
+                </table>
+            </div>
+        </aside>
+    </div>
 
     <script src="assets/js/app.js?v=2"></script>
     <div id="playlist-guide-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="playlist-guide-title">
