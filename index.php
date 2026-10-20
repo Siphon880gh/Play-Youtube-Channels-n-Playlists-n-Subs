@@ -891,6 +891,9 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         $("#watch-history-clear").on("click", function(event) {
             event.preventDefault();
             event.stopPropagation();
+            if(!window.confirm("Clear history?")) {
+                return;
+            }
             clearWatchHistory();
         });
         $("#watch-history-backdrop, #watch-history-close").on("click", function() {
