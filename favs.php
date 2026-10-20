@@ -18,16 +18,12 @@
       <span>|</span>
       <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Travel") { $("#playlist-filter").val("Travel") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Travel]</a>
       <span>|</span>
-      <a href="javascript:void(0)" onclick='RandomPlaylist.select();'>[[Rand]]</a>
+      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Comedy") { $("#playlist-filter").val("Comedy") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Comedy/Wake]</a>
 
       <div style="width:1px; height:5px;"></div>
-      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Comedy") { $("#playlist-filter").val("Comedy") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Comedy/Wake]</a>
+      <a href="javascript:void(0)" onclick='RandomPlaylist.select();'>[[Rand]]</a>
       <span>|</span>
-      <a target="_blank" href="//docs.google.com/spreadsheets/d/12KOsTfkDUbC-eJSxzKCKn1MGp0o4vSE65wNBd_FI_jg/edit#gid=1451394616">[Motiv]</a>
-      <span>|</span>
-      <a target="_blank" href="//wengindustry.com/tools/daily-portal/#analysis">[Paralysis]</a>
-      <span>|</span>
-      <a target="_blank" href="//wengindustry.com/tools/daily-portal/#impaired">[Impaired]</a>
+      <a target="_blank" href="https://docs.google.com/spreadsheets/d/12kDsyiiyeEgl7t87sRy1TkOd4XH4cRa-/edit?gid=409693151#gid=409693151">[[Motiv]]</a>
 
       <div style="width:1px; height:5px;"></div>
       <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Loopable") { $("#playlist-filter").val("Loopable") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[LL]</a>
