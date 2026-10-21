@@ -80,7 +80,10 @@ var playlistIconRules = [
   { pattern: "Lifestyle", font: "fas fa-home" },
   { pattern: "Env:", font: "fas fa-spa" },
   { pattern: "\\bRelease\\b", font: "fas fa-feather-alt" },
-  { pattern: "\\bSx\\b|Sxy", font: "fas fa-heart" }
+  { pattern: "\\bSx\\b|Sxy", font: "fas fa-heart" },
+  { pattern: "(?:^Legal Cases$|\\[Legal Cases\\])", font: "fas fa-gavel" },
+  { pattern: "(?:^Documentary/FairyTales$|\\[Documentary/FairyTales\\])", font: "fas fa-book-open" },
+  { pattern: "(?:^AI Leverage$|\\[AI Leverage\\])", font: "fas fa-robot" }
 ];
 
 (function (root) {

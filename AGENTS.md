@@ -13,3 +13,7 @@ When the user asks what skills there are, which skills are available, or what a 
 Do not answer from a list written in this file, a remembered list, or any other hardcoded catalog. This file does not name the skills. If `.agents/skills` is missing or has no `SKILL.md` files, say there are no project skills.
 
 When a task matches a description you just read, follow that `SKILL.md`.
+
+## Memory
+
+Read `MEMORY.md` in this directory when a task matches a project skill. Those notes are for this project only. Follow them when they apply, including when a skill would file the same link somewhere else. Do not copy them into a skill.
