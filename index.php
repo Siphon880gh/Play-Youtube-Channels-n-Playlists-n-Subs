@@ -3856,7 +3856,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         </aside>
     </div>
 
-    <script src="assets/js/app.js?v=4"></script>
+    <script src="assets/js/app.js?v=5"></script>
     <div id="playlist-guide-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="playlist-guide-title">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

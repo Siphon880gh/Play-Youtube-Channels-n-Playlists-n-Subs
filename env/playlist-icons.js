@@ -19,7 +19,8 @@ var playlistIconRules = [
   { pattern: "Videogame Playthroughs|Videogames|Nintendo|Playstation|God of War|Final Fantasy|Kingdom Hearts|Resident Evil|Cyberpunk|Call of Duty|Half[- ]Life|Chrono Trigger|EarthBound|Duck Tales|Demon.?s Souls|Xenoblade|Torchlight|inFamous|Fenyx|Kid Icarus|\\bHalo\\b|Marvel's Avengers", font: "fas fa-gamepad" },
   { pattern: "Marvel", font: "fas fa-mask" },
   { pattern: "(?:^Animated History$|\\[Animated History\\])", font: "fas fa-scroll" },
-  { pattern: "(?:^Fictional Animations$|\\[Fictional Animations\\])", font: "fas fa-palette" },
+  { pattern: "(?:^Fictional Animations(?:/[^\\]]*)?$|\\[Fictional Animations(?:/[^\\]]*)?\\])", font: "fas fa-palette" },
+  { pattern: "(?:^AI/|\\[AI/)", font: "fas fa-robot" },
 
   { pattern: "Car-repair", font: "fas fa-wrench" },
   { pattern: "Police", font: "fas fa-video" },
@@ -28,6 +29,7 @@ var playlistIconRules = [
 
   { pattern: "Sleepy Cat", emoji: "😴" },
   { pattern: "(?:^Deliverance/Spiritual Warfare \\(Spirits and Healing\\)$|\\[Deliverance/Spiritual Warfare \\(Spirits and Healing\\)\\])", font: "fas fa-praying-hands" },
+  { pattern: "(?:^Prophetic$|\\[Prophetic\\])", font: "fas fa-bible" },
   { pattern: "Yoga|Medit|\\bHealing\\b", reject: "Sleepy Cat", font: "fas fa-spa" },
   { pattern: "Physical\\.Therapy|\\bmedical\\b|nursing|\\bICU\\b", font: "fas fa-notes-medical" },
   { pattern: "Nootropics", font: "fas fa-capsules" },
@@ -66,6 +68,8 @@ var playlistIconRules = [
   { pattern: "reddit", font: "fab fa-reddit-alien" },
   { pattern: "Reacts", font: "fas fa-eye" },
   { pattern: "Scambait|\\bScammers\\b", font: "fas fa-user-secret" },
+  { pattern: "\\bFraud\\b", font: "fas fa-search-dollar" },
+  { pattern: "Body Language", font: "fas fa-street-view" },
   { pattern: "Survivalist|Prepping|\\bDefense\\b", font: "fas fa-campground" },
   { pattern: "Japan", font: "fas fa-torii-gate" },
   { pattern: "\\bTravel\\b|Walking", font: "fas fa-plane" },
@@ -85,6 +89,8 @@ var playlistIconRules = [
   { pattern: "\\bRelease\\b", font: "fas fa-feather-alt" },
   { pattern: "\\bSx\\b|Sxy", font: "fas fa-heart" },
   { pattern: "(?:^Legal Cases$|\\[Legal Cases\\])", font: "fas fa-gavel" },
+  { pattern: "(?:^Documentary/History/Pirates$|\\[Documentary/History/Pirates\\])", font: "fas fa-skull-crossbones" },
+  { pattern: "(?:^Documentary/History$|\\[Documentary/History\\])", font: "fas fa-landmark" },
   { pattern: "(?:^Documentary/FairyTales$|\\[Documentary/FairyTales\\])", font: "fas fa-book-open" },
   { pattern: "(?:^AI Leverage$|\\[AI Leverage\\])", font: "fas fa-robot" },
   { pattern: "(?:^House Hearings$|\\[House Hearings\\])", font: "fas fa-landmark" }
