@@ -28,7 +28,11 @@
     { "id": "UUaeO5vkdj5xOQHp4UmIN6dw", "name": "[News/Commentary] The Daily Wire (Right)" },
     { "id": "UUG749Dj4V2fKa143f8sE60Q", "name": "[News/Commentary] Tim Pool (Right)" },
     { "id": "UU0AvY8x1GqGIst1C4yygXWw", "name": "[News/Commentary] OfficialACLJ (Right)" },
+    { "id": "UUyR3jMVUgZadX9dHjuKFuMQ", "name": "[News/Commentary] Just Pearly Things (Right)" },
+    { "id": "UUXuwhn5_41m4VxZJ3wcDyxA", "name": "[News/Commentary] Facts Matter with Roman Balmakov (Right)" },
+    { "id": "UUb1Pugmxopj1EQ7XAO7Tg4g", "name": "[News/Commentary] Vince Dao (Right)" },
     { "id": "UUhzVhAwzGR7hV-4O8ZmBLHg", "name": "[News/Commentary] Glenn Greenwald (System Update) (Independent)" },
+    { "id": "UU0uVZd8N7FfIZnPu0y7o95A", "name": "[News/Commentary] ReasonTV (Independent)" },
     { "id": "UU1yBKRuGpC1tSM73A0ZjYjQ", "name": "[News/Commentary] The Young Turks (Left)" },
     { "id": "UU9r9HYFxEQOBXSopFS61ZWg", "name": "[News/Commentary] MeidasTouch (Left)" },
     { "id": "UUvixJtaXuNdMPUGdOPcY8Ag", "name": "[News/Commentary] David Pakman (Left)" },
@@ -42,6 +46,7 @@
     { "id": "UUbjBOso0vpWgDht9dPIVwhQ", "name": "[News/Commentary] Thom Hartmann Program (Left)" },
     { "id": "UUuDv5p8E-evaRSh542hDV5g", "name": "[News/Commentary] Robert Reich (Left)" },
     { "id": "UU3bHsedO3Es_56I5E8r4XFA", "name": "[News/Commentary] The Lever (Left)" },
+    { "id": "UUl9roQQwv4o4OuBj3FhQdDQ", "name": "[News/Commentary] The Damage Report (Left)" },
     { "id": "UUQMb7c66tJ7Si8IrWHOgAPg", "name": "[Alternative.News] Liberty Hangout" },
     { "id": "UUzUV5283-l5c0oKRtyenj6Q", "name": "[Alternative.News] Mark Dice" },
     { "id": "UUeLc4heXqG9dtL7jiPHMBfQ", "name": "[Curiosity/news/China] The Epoch Times" },
@@ -109,5 +114,6 @@
     { "id": "UUefPpd-HJMYzrRuS8B_xE7w", "name": "[Conspiracy/Christian] Jeremiah Cohen" },
     { "id": "UUTYu3LHeW4GliTc5iBAkX-w", "name": "[Conspiracy/Christian] PocketsOfTheFuture" },
     { "id": "UUpJrVPHAVgd1cfVVxWPicPQ", "name": "[Conspiracy/Christian] PocketsOfTheFuture Backup" },
+    { "id": "UUgDhHvyV16HSnC0ko6-K3nA", "name": "[Conspiracy/Christian] MorgueOfficial" },
     { "id": "UUswH8ovgUp5Bdg-0_JTYFNw", "name": "[Conspiracy/Spirituality] Russell Brand" }
 ]
