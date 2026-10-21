@@ -277,7 +277,8 @@ html[data-yt-theme] .category-browser-item:focus {
 }
 
 /* Active entry in the tag (category) panel: the section currently in view. */
-.category-browser-item.category-browser-item--active {
+.category-browser-item.category-browser-item--active,
+html[data-yt-theme] .category-browser-item.category-browser-item--active {
     color: var(--yt-accent, #8e1823);
     background: var(--yt-tint-strong, rgba(188, 35, 46, 0.12));
     box-shadow: inset 3px 0 0 var(--yt-accent, #bc232e);

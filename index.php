@@ -24,7 +24,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
     <script src="env/playlist-icons.js?v=7"></script>
     <link rel="stylesheet" href="assets/css/index.css?v=25">
-    <link rel="stylesheet" href="assets/css/collection-themes.css?v=1">
+    <link rel="stylesheet" href="assets/css/collection-themes.css?v=2">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
     <style>
@@ -2951,7 +2951,84 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         } else {
             $panel.removeAttr("hidden");
             $("#category-browser-toggle").attr("aria-expanded", "true");
+            syncCategoryBrowserActive(true);
         }
+    }
+
+    // ---- Tag panel: follow the section currently in view ----
+    // The section in view comes from the "All topics" nav (window.parentSectionNav), which
+    // already tracks it from page scroll. Only the panel's own list is scrolled here,
+    // never the page.
+    var categoryBrowserActiveLabel = null;
+
+    function currentSectionLabelInView() {
+        var nav = window.parentSectionNav;
+        if(!nav || !nav.sections || nav.sections.length === 0) {
+            return null;
+        }
+        nav.syncCurrentSection();
+        var current = nav.sections[nav.currentIndex];
+        return current ? String(current.label || "") : null;
+    }
+
+    function findCategoryBrowserItem(label) {
+        if(!label) return $();
+        var $items = $("#category-browser-list .category-browser-item");
+        var $exact = $items.filter(function() {
+            return this.getAttribute("data-category") === label;
+        });
+        if($exact.length) return $exact.first();
+        var lower = label.toLowerCase();
+        return $items.filter(function() {
+            return String(this.getAttribute("data-category") || "").toLowerCase() === lower;
+        }).first();
+    }
+
+    // Keeps $item visible inside the list by scrolling the list only.
+    function scrollCategoryBrowserListTo($item, instant) {
+        var list = document.getElementById("category-browser-list");
+        var item = $item[0];
+        if(!list || !item) return;
+        var listRect = list.getBoundingClientRect();
+        var itemRect = item.getBoundingClientRect();
+        var itemTop = itemRect.top - listRect.top + list.scrollTop;
+        var itemBottom = itemTop + itemRect.height;
+        var viewTop = list.scrollTop;
+        var viewBottom = viewTop + list.clientHeight;
+        if(itemTop >= viewTop && itemBottom <= viewBottom) return;
+        var target = itemTop - (list.clientHeight - itemRect.height) / 2;
+        target = Math.max(0, Math.min(target, list.scrollHeight - list.clientHeight));
+        if(typeof list.scrollTo === "function") {
+            list.scrollTo({ top: target, behavior: instant ? "auto" : "smooth" });
+        } else {
+            list.scrollTop = target;
+        }
+    }
+
+    function syncCategoryBrowserActive(forceScroll) {
+        if($("#category-browser-panel").is("[hidden]")) return;
+        var label = currentSectionLabelInView();
+        var $items = $("#category-browser-list .category-browser-item");
+        var $active = findCategoryBrowserItem(label);
+        var changed = label !== categoryBrowserActiveLabel;
+        categoryBrowserActiveLabel = label;
+
+        $items.not($active).removeClass("category-browser-item--active").removeAttr("aria-current");
+        if(!$active.length) return;
+        $active.addClass("category-browser-item--active").attr("aria-current", "location");
+        if(changed || forceScroll) {
+            scrollCategoryBrowserListTo($active, !!forceScroll);
+        }
+    }
+
+    var categoryBrowserSyncPending = false;
+    function scheduleCategoryBrowserSync() {
+        if(categoryBrowserSyncPending || $("#category-browser-panel").is("[hidden]")) return;
+        categoryBrowserSyncPending = true;
+        requestAnimationFrame(function() {
+            categoryBrowserSyncPending = false;
+            syncCategoryBrowserActive(false);
+        });
     }
 
     function scrollToPlaylistCategory(category) {
@@ -3008,6 +3085,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         );
 
         $("#category-browser-toggle").attr("title", categories.length + " categories");
+        categoryBrowserActiveLabel = null;
+        syncCategoryBrowserActive(true);
     };
 
     $(document).on("click", function(event) {
@@ -3018,6 +3097,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
     $(window).on("scroll resize", function() {
         updateCategoryBrowserVisibility();
+        scheduleCategoryBrowserSync();
     });
 
     $(function() {
