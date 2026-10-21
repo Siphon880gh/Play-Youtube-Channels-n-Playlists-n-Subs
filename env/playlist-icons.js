@@ -18,6 +18,8 @@ var playlistIconRules = [
   { pattern: "\\bDBZ\\b|Dragon Ball", font: "fas fa-dragon" },
   { pattern: "Videogame Playthroughs|Videogames|Nintendo|Playstation|God of War|Final Fantasy|Kingdom Hearts|Resident Evil|Cyberpunk|Call of Duty|Half[- ]Life|Chrono Trigger|EarthBound|Duck Tales|Demon.?s Souls|Xenoblade|Torchlight|inFamous|Fenyx|Kid Icarus|\\bHalo\\b|Marvel's Avengers", font: "fas fa-gamepad" },
   { pattern: "Marvel", font: "fas fa-mask" },
+  { pattern: "(?:^Animated History$|\\[Animated History\\])", font: "fas fa-scroll" },
+  { pattern: "(?:^Fictional Animations$|\\[Fictional Animations\\])", font: "fas fa-palette" },
 
   { pattern: "Car-repair", font: "fas fa-wrench" },
   { pattern: "Police", font: "fas fa-video" },
@@ -83,7 +85,8 @@ var playlistIconRules = [
   { pattern: "\\bSx\\b|Sxy", font: "fas fa-heart" },
   { pattern: "(?:^Legal Cases$|\\[Legal Cases\\])", font: "fas fa-gavel" },
   { pattern: "(?:^Documentary/FairyTales$|\\[Documentary/FairyTales\\])", font: "fas fa-book-open" },
-  { pattern: "(?:^AI Leverage$|\\[AI Leverage\\])", font: "fas fa-robot" }
+  { pattern: "(?:^AI Leverage$|\\[AI Leverage\\])", font: "fas fa-robot" },
+  { pattern: "(?:^House Hearings$|\\[House Hearings\\])", font: "fas fa-landmark" }
 ];
 
 (function (root) {
