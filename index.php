@@ -23,7 +23,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="assets/js/favs.js?v=2"></script>
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
     <script src="env/playlist-icons.js?v=7"></script>
-    <link rel="stylesheet" href="assets/css/index.css?v=25">
+    <link rel="stylesheet" href="assets/css/index.css?v=26">
     <link rel="stylesheet" href="assets/css/collection-themes.css?v=2">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
@@ -2873,6 +2873,15 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                         <div class="section-nav-parent-list-grid section-nav-parent-list-grid--mosaic"></div>
                     </div>
                 </div>
+                <div id="fav-collections-panel" class="fav-collections-panel" hidden aria-hidden="true">
+                    <div class="fav-collections-panel-header">
+                        <p class="fav-collections-panel-title">More favs collections</p>
+                        <button type="button" class="fav-collections-panel-close" aria-label="Close collections" onclick="closeFavCollectionsPanel();">
+                            <i class="fa fa-times" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="fav-collections-panel-body contents"></div>
+                </div>
             </nav>
             <div id="favs-wrapper">
             </div>
@@ -3847,7 +3856,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         </aside>
     </div>
 
-    <script src="assets/js/app.js?v=3"></script>
+    <script src="assets/js/app.js?v=4"></script>
     <div id="playlist-guide-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="playlist-guide-title">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

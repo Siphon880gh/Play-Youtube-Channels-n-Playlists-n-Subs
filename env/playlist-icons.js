@@ -27,6 +27,7 @@ var playlistIconRules = [
   { pattern: "Cooking|Restaurants|\\bFood\\b|\\bMeals\\b|Nutrition|Holistic", font: "fas fa-utensils" },
 
   { pattern: "Sleepy Cat", emoji: "😴" },
+  { pattern: "(?:^Deliverance \\(Spirits and Healing\\)$|\\[Deliverance \\(Spirits and Healing\\)\\])", font: "fas fa-praying-hands" },
   { pattern: "Yoga|Medit|\\bHealing\\b", reject: "Sleepy Cat", font: "fas fa-spa" },
   { pattern: "Physical\\.Therapy|\\bmedical\\b|nursing|\\bICU\\b", font: "fas fa-notes-medical" },
   { pattern: "Nootropics", font: "fas fa-capsules" },
