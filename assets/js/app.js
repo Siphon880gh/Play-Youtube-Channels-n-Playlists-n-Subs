@@ -37,6 +37,10 @@ var More = {
 function openFavCollectionsPanel() {
     var panel = document.getElementById("fav-collections-panel");
     if (!panel) return;
+    if (window.parentSectionNav && window.parentSectionNav.$toggle && window.parentSectionNav.$toggle.attr("aria-expanded") === "true") {
+        window.parentSectionNav.collapseList();
+        window.parentSectionNav.measureNavHeight();
+    }
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
