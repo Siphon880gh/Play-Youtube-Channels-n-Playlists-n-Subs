@@ -2,10 +2,8 @@
 // Password gate for private collections (favs/Private*.json).
 //
 // The password lives only on the server, in .env:
-//   PRIVATE_PLAYLISTS_PASSWORD_HASH  bcrypt hash, checked with password_verify (preferred)
-//   PRIVATE_PLAYLISTS_PASSWORD       plain value, checked with hash_equals (fallback)
-// Generate a hash with:
-//   php -r 'echo password_hash("your password", PASSWORD_BCRYPT), PHP_EOL;'
+//   PRIVATE_PLAYLISTS_PASSWORD=your-password
+// It is compared with hash_equals (constant time) and never sent to the browser.
 //
 // After a correct password, a PHP session marks the browser as unlocked.
 // Private JSON is only served through private-favs.php while unlocked.
@@ -73,21 +71,16 @@ function yt_private_env($name) {
 }
 
 function yt_private_is_configured() {
-    return yt_private_env('PRIVATE_PLAYLISTS_PASSWORD_HASH') !== ''
-        || yt_private_env('PRIVATE_PLAYLISTS_PASSWORD') !== '';
+    return yt_private_env('PRIVATE_PLAYLISTS_PASSWORD') !== '';
 }
 
 function yt_private_check_password($password) {
     $password = (string) $password;
-    $hash = yt_private_env('PRIVATE_PLAYLISTS_PASSWORD_HASH');
-    if ($hash !== '') {
-        return password_verify($password, $hash);
+    $expected = yt_private_env('PRIVATE_PLAYLISTS_PASSWORD');
+    if ($expected === '') {
+        return false;
     }
-    $plain = yt_private_env('PRIVATE_PLAYLISTS_PASSWORD');
-    if ($plain !== '') {
-        return hash_equals($plain, $password);
-    }
-    return false;
+    return hash_equals($expected, $password);
 }
 
 function yt_private_is_https() {

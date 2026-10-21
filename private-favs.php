@@ -36,7 +36,7 @@ switch ($action) {
             yt_private_respond(405, ['error' => 'Use POST.']);
         }
         if (!yt_private_is_configured()) {
-            yt_private_respond(503, ['error' => 'Private collections are not set up. Set PRIVATE_PLAYLISTS_PASSWORD_HASH in .env.']);
+            yt_private_respond(503, ['error' => 'Private collections are not set up. Set PRIVATE_PLAYLISTS_PASSWORD in .env.']);
         }
         $wait = yt_private_lockout_remaining();
         if ($wait > 0) {
