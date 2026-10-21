@@ -23,8 +23,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="assets/js/favs.js?v=2"></script>
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
     <script src="env/playlist-icons.js?v=7"></script>
-    <link rel="stylesheet" href="assets/css/index.css?v=26">
-    <link rel="stylesheet" href="assets/css/collection-themes.css?v=2">
+    <link rel="stylesheet" href="assets/css/index.css?v=27">
+    <link rel="stylesheet" href="assets/css/collection-themes.css?v=4">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
     <style>
@@ -2796,7 +2796,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
     <div class="container-custom p-20">
         <div id="buttons">
-            <div class="panel panel-warning control-card control-card-playlist" style="border-color:rgba(196,125,123,.75);">
+            <div class="panel panel-warning control-card control-card-playlist">
                 <div class="panel-heading" style="background-color:rgba(230,125,123,.75); color:rgba(255,255,255,0.75);">
                     <span onclick="More.counter('Playlistheader')"><i class="fa fa-list"></i> <span>Playlist</span></span>
                 </div>
