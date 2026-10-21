@@ -3,6 +3,7 @@
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <link href="<?php echo $prependPath; ?>assets/css/favs.css?v=8" rel="stylesheet"></link>
+<link href="<?php echo $prependPath; ?>assets/css/collection-themes.css?v=1" rel="stylesheet"></link>
 <script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
 <script src="<?php echo $prependPath; ?>env/playlist-icons.js?v=7"></script>
 <?php include __DIR__ . "/env/icon-fonts.php"; ?>
@@ -239,11 +240,38 @@ function fetchPlaylist(calledCollection) {
         success: function(data, status) {
           if(data) {
             window.collection = data;
+            applyCollectionTheme(getCollectionTheme(window.collection));
             renderPlaylists(window.collection);
           }
         }
     });
   } // fetchPlaylist
+
+  // Collection themes: a row like { "theme": "matrix-green" } picks a preset from
+  // assets/css/collection-themes.css. No row (or an unknown name) = youtube-red.
+  var COLLECTION_THEMES = ["youtube-red", "matrix-green", "monochrome"];
+
+  function getCollectionTheme(collection) {
+    if(!Array.isArray(collection)) return "youtube-red";
+    for(var i = 0; i < collection.length; i++) {
+      var row = collection[i];
+      if(row && typeof row.theme === "string") {
+        var theme = row.theme.trim();
+        return COLLECTION_THEMES.indexOf(theme) !== -1 ? theme : "youtube-red";
+      }
+    }
+    return "youtube-red";
+  }
+
+  // Applies the theme to this iframe and to the parent page around it.
+  function applyCollectionTheme(theme) {
+    document.documentElement.setAttribute("data-yt-theme", theme);
+    try {
+      if(window.parent && window.parent !== window) {
+        window.parent.document.documentElement.setAttribute("data-yt-theme", theme);
+      }
+    } catch(err) {}
+  }
 
   function isPrivateCollection(name) {
     return typeof name === "string" && name.indexOf("Private") === 0;
@@ -259,6 +287,7 @@ function fetchPlaylist(calledCollection) {
         success: function(data) {
           if(data) {
             window.collection = data;
+            applyCollectionTheme(getCollectionTheme(window.collection));
             renderPlaylists(window.collection);
           }
         },
@@ -275,9 +304,11 @@ function fetchPlaylist(calledCollection) {
   }
 
   function renderPrivateMessage(message) {
+    applyCollectionTheme("monochrome");
     var $target = $(".playlists-target");
     $target.html("");
     $target.append($('<li class="not-link private-unlock-message"></li>').text(message));
+    syncCategoryBrowser();
     resizeIframeNow();
   }
 
@@ -323,6 +354,7 @@ function fetchPlaylist(calledCollection) {
   }
 
   function renderPrivateUnlockForm(name, message) {
+    applyCollectionTheme("monochrome");
     var $target = $(".playlists-target");
     $target.html("");
     var $li = $('<li class="not-link private-unlock"></li>');
@@ -331,6 +363,7 @@ function fetchPlaylist(calledCollection) {
     });
     $li.append($form);
     $target.append($li);
+    syncCategoryBrowser(); // hides the tag panel: nothing to list while locked
     resizeIframeNow();
     $form.find(".private-unlock-input").trigger("focus");
   }
@@ -391,6 +424,9 @@ function fetchPlaylist(calledCollection) {
 
     for(var i =0; i<collection.length; i++) {
         var playlistObject = collection[i];
+        if(!playlistObject || (typeof playlistObject.theme==="string" && typeof playlistObject.name==="undefined" && typeof playlistObject.id==="undefined")) {
+          continue; // theme row: styling only, not a list entry
+        }
         var groupName = (typeof playlistObject.group==="string") ? playlistObject.group.trim() : "";
         if(groupName) {
           currentGroup = groupName;

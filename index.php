@@ -24,6 +24,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
     <script src="env/playlist-icons.js?v=7"></script>
     <link rel="stylesheet" href="assets/css/index.css?v=25">
+    <link rel="stylesheet" href="assets/css/collection-themes.css?v=1">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
     <style>

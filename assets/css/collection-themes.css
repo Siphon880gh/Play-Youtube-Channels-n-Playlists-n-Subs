@@ -1,0 +1,285 @@
+/*
+ * Collection themes.
+ * A collection picks a theme with a row like { "theme": "matrix-green" } in its JSON.
+ * favs.php sets data-yt-theme on <html> of both the favs iframe and the parent page,
+ * and these rules map the preset to colors. No theme row = "youtube-red".
+ *
+ * Presets: youtube-red (Default), matrix-green (black/green), monochrome (black/gray/white).
+ */
+
+html[data-yt-theme="youtube-red"] {
+    --yt-bg: #fff8f8;
+    --yt-bg-2: #fff1f1;
+    --yt-surface: #ffffff;
+    --yt-text: #0f0f0f;
+    --yt-text-muted: #6b5b5e;
+    --yt-heading: #282828;
+    --yt-accent: #cc0000;
+    --yt-accent-hover: #b00000;
+    --yt-accent-contrast: #ffffff;
+    --yt-border: rgba(204, 0, 0, 0.14);
+    --yt-border-strong: rgba(204, 0, 0, 0.34);
+    --yt-tint: rgba(204, 0, 0, 0.07);
+    --yt-tint-strong: rgba(204, 0, 0, 0.13);
+}
+
+html[data-yt-theme="matrix-green"] {
+    --yt-bg: #050a06;
+    --yt-bg-2: #0a140c;
+    --yt-surface: #0f1b11;
+    --yt-text: #d6f5dc;
+    --yt-text-muted: #86b892;
+    --yt-heading: #5dff8f;
+    --yt-accent: #2bd96b;
+    --yt-accent-hover: #6dffa0;
+    --yt-accent-contrast: #031006;
+    --yt-border: rgba(43, 217, 107, 0.22);
+    --yt-border-strong: rgba(43, 217, 107, 0.5);
+    --yt-tint: rgba(43, 217, 107, 0.09);
+    --yt-tint-strong: rgba(43, 217, 107, 0.18);
+}
+
+html[data-yt-theme="monochrome"] {
+    --yt-bg: #0e0e0e;
+    --yt-bg-2: #171717;
+    --yt-surface: #1d1d1d;
+    --yt-text: #f0f0f0;
+    --yt-text-muted: #a8a8a8;
+    --yt-heading: #ffffff;
+    --yt-accent: #e2e2e2;
+    --yt-accent-hover: #ffffff;
+    --yt-accent-contrast: #111111;
+    --yt-border: rgba(255, 255, 255, 0.16);
+    --yt-border-strong: rgba(255, 255, 255, 0.42);
+    --yt-tint: rgba(255, 255, 255, 0.07);
+    --yt-tint-strong: rgba(255, 255, 255, 0.14);
+}
+
+/* ---------- Favs iframe (favs.php) ---------- */
+
+html[data-yt-theme] body {
+    color: var(--yt-text);
+    background: linear-gradient(180deg, var(--yt-bg), var(--yt-bg-2));
+}
+
+html[data-yt-theme] .favs-header,
+html[data-yt-theme] .section-label {
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme] .favs-title-link,
+html[data-yt-theme] .favs-title-link:visited,
+html[data-yt-theme] .favs-history-link,
+html[data-yt-theme] .favs-history-link:visited,
+html[data-yt-theme] .quick-filters a,
+html[data-yt-theme] .quick-filters a:visited,
+html[data-yt-theme] .emoji-filters,
+html[data-yt-theme] .section-label,
+html[data-yt-theme] .filter-bar label {
+    color: var(--yt-accent);
+}
+
+html[data-yt-theme] .favs-title-link:hover,
+html[data-yt-theme] .quick-filters a:hover {
+    color: var(--yt-accent-hover);
+}
+
+html[data-yt-theme] .section-group-label {
+    color: var(--yt-heading);
+}
+
+html[data-yt-theme] .quick-filters,
+html[data-yt-theme] .filter-bar {
+    background: var(--yt-surface);
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme] .filter-reset {
+    background: var(--yt-tint);
+    color: var(--yt-accent);
+}
+
+html[data-yt-theme] .playlist-filter,
+html[data-yt-theme] .private-unlock-input {
+    background: var(--yt-surface);
+    color: var(--yt-text);
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme] .playlist-filter:focus,
+html[data-yt-theme] .private-unlock-input:focus {
+    border-color: var(--yt-border-strong);
+}
+
+html[data-yt-theme] .playlists-target li a {
+    background: var(--yt-surface);
+    color: var(--yt-text);
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme] .playlists-target li a:hover {
+    color: var(--yt-accent);
+    border-color: var(--yt-border-strong);
+}
+
+html[data-yt-theme] .playlists-target li a.crossed-out {
+    background: var(--yt-bg-2);
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme] a.not-link {
+    color: var(--yt-text-muted) !important;
+}
+
+html[data-yt-theme] .category-jump-hit {
+    color: var(--yt-accent) !important;
+    border-color: var(--yt-border-strong) !important;
+    box-shadow: 0 0 0 4px var(--yt-tint-strong) !important;
+}
+
+html[data-yt-theme] .fav-collections-panel {
+    background: var(--yt-surface);
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme] .fav-collections-panel-header {
+    background: var(--yt-bg-2);
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme] .fav-collections-panel-header .fav-collections-panel-title,
+html[data-yt-theme] .private-unlock-title {
+    color: var(--yt-heading);
+}
+
+html[data-yt-theme] .fav-collections-panel-close,
+html[data-yt-theme] .fav-collections-link,
+html[data-yt-theme] .fav-collections-link:visited,
+html[data-yt-theme] .private-unlock-btn,
+html[data-yt-theme] .fav-collections-lock-btn {
+    background: var(--yt-surface);
+    color: var(--yt-accent);
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme] .fav-collections-panel-close:hover,
+html[data-yt-theme] .fav-collections-link:hover,
+html[data-yt-theme] .fav-collections-link:focus,
+html[data-yt-theme] .private-unlock-btn:hover,
+html[data-yt-theme] .fav-collections-lock-btn:hover {
+    background: var(--yt-tint);
+    color: var(--yt-accent-hover);
+    border-color: var(--yt-border-strong);
+}
+
+html[data-yt-theme] .private-unlock-error {
+    color: var(--yt-accent-hover);
+}
+
+/* ---------- Parent page (index.php): playlist section, All topics, tag button ---------- */
+
+html[data-yt-theme] #favs-section {
+    background: linear-gradient(180deg, var(--yt-bg), var(--yt-bg-2));
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme] .section-nav-parent,
+html[data-yt-theme] .section-nav-parent-list-toolbar {
+    background: var(--yt-bg);
+}
+
+html[data-yt-theme] .section-nav-parent.is-stuck,
+html[data-yt-theme] .section-nav-parent-header,
+html[data-yt-theme] .section-nav-parent-controls,
+html[data-yt-theme] .section-nav-parent-list {
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme] .section-nav-parent-title {
+    color: var(--yt-accent);
+}
+
+html[data-yt-theme] .section-nav-parent-title:hover {
+    color: var(--yt-accent-hover);
+}
+
+html[data-yt-theme] .section-nav-collections-btn,
+html[data-yt-theme] .section-nav-parent-btn,
+html[data-yt-theme] .section-nav-parent-toggle,
+html[data-yt-theme] .section-nav-parent-alpha-toggle,
+html[data-yt-theme] .section-nav-parent-view-toggle,
+html[data-yt-theme] .section-nav-parent-alpha-item,
+html[data-yt-theme] .section-nav-parent-item {
+    background: var(--yt-surface);
+    color: var(--yt-accent);
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme] .section-nav-parent-item {
+    color: var(--yt-text);
+}
+
+html[data-yt-theme] .section-nav-collections-btn:hover,
+html[data-yt-theme] .section-nav-parent-btn:hover,
+html[data-yt-theme] .section-nav-parent-toggle:hover,
+html[data-yt-theme] .section-nav-parent-view-toggle:hover,
+html[data-yt-theme] .section-nav-parent-alpha-item:hover,
+html[data-yt-theme] .section-nav-parent-item:hover {
+    background: var(--yt-tint);
+    color: var(--yt-accent-hover);
+    border-color: var(--yt-border-strong);
+}
+
+html[data-yt-theme] .section-nav-parent-current {
+    background: var(--yt-tint);
+    color: var(--yt-text);
+}
+
+html[data-yt-theme] .section-nav-parent-group {
+    color: var(--yt-heading);
+}
+
+html[data-yt-theme] .section-nav-parent-group--active,
+html[data-yt-theme] .section-nav-parent-item--active {
+    color: var(--yt-accent);
+}
+
+html[data-yt-theme] .section-nav-parent-item--active {
+    background: var(--yt-tint-strong);
+    border-color: var(--yt-border-strong);
+}
+
+html[data-yt-theme] .category-browser-toggle,
+html[data-yt-theme] .category-browser-toggle[aria-expanded="true"] {
+    background: var(--yt-accent);
+    color: var(--yt-accent-contrast);
+}
+
+html[data-yt-theme] .category-browser-panel {
+    background: var(--yt-surface);
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme] .category-browser-title {
+    color: var(--yt-heading);
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme] .category-browser-item {
+    color: var(--yt-text);
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme] .category-browser-item:hover,
+html[data-yt-theme] .category-browser-item:focus {
+    color: var(--yt-accent);
+    background: var(--yt-tint);
+}
+
+/* Active entry in the tag (category) panel: the section currently in view. */
+.category-browser-item.category-browser-item--active {
+    color: var(--yt-accent, #8e1823);
+    background: var(--yt-tint-strong, rgba(188, 35, 46, 0.12));
+    box-shadow: inset 3px 0 0 var(--yt-accent, #bc232e);
+    font-weight: 700;
+}
