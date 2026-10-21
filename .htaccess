@@ -1,0 +1,21 @@
+# Keep secrets out of reach of the browser (.env holds the API key and the private-collections password).
+<FilesMatch "^\.env">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# OAuth client secrets, tokens, keys and credential files: server-side only, never downloadable.
+<FilesMatch "(^client_secret.*\.json$|^credentials.*\.json$|^token.*\.json$|^service[-_]account.*\.json$|\.(pem|key|p12|pfx)$)">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>

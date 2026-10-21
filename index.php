@@ -23,7 +23,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="assets/js/favs.js?v=2"></script>
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
     <script src="env/playlist-icons.js?v=7"></script>
-    <link rel="stylesheet" href="assets/css/index.css?v=24">
+    <link rel="stylesheet" href="assets/css/index.css?v=25">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
     <style>
@@ -2826,7 +2826,10 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         <div id="favs-section">
             <nav id="section-nav-parent" class="section-nav-parent" aria-label="Section navigation">
                 <div class="section-nav-parent-header">
-                    <a class="section-nav-parent-title" href="javascript:void(0);" onclick="$('#favs-wrapper iframe')[0].contentWindow.fetchPlaylist('Default'); More.counter('Favheader');">Youtube uploads and playlists:</a>
+                    <div class="section-nav-parent-title-wrap">
+                        <a class="section-nav-parent-title" href="javascript:void(0);" onclick="$('#favs-wrapper iframe')[0].contentWindow.fetchPlaylist('Default'); More.counter('Favheader');">Youtube uploads and playlists:</a>
+                        <button type="button" class="section-nav-collections-btn" onclick="openFavCollectionsPanel();" title="Show playlist collections"><i class="fa fa-layer-group" aria-hidden="true"></i> Collections</button>
+                    </div>
                     <div class="watch-history-split">
                         <button type="button" class="watch-history-open" id="watch-history-open" aria-expanded="false" aria-controls="watch-history-panel">History</button>
                         <span class="watch-history-split-sep" aria-hidden="true"></span>
@@ -3763,7 +3766,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         </aside>
     </div>
 
-    <script src="assets/js/app.js?v=2"></script>
+    <script src="assets/js/app.js?v=3"></script>
     <div id="playlist-guide-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="playlist-guide-title">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

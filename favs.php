@@ -2,7 +2,7 @@
 <?php $prependPath="./"; ?>
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<link href="<?php echo $prependPath; ?>assets/css/favs.css?v=7" rel="stylesheet"></link>
+<link href="<?php echo $prependPath; ?>assets/css/favs.css?v=8" rel="stylesheet"></link>
 <script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
 <script src="<?php echo $prependPath; ?>env/playlist-icons.js?v=7"></script>
 <?php include __DIR__ . "/env/icon-fonts.php"; ?>
@@ -225,6 +225,13 @@ function fetchPlaylist(calledCollection) {
 
     // debugger;
 
+    // Private collections are never fetched as static files; they go through
+    // private-favs.php, which only answers after the password was entered.
+    if(isPrivateCollection(currentCollection)) {
+      fetchPrivateCollection(currentCollection);
+      return;
+    }
+
     $.ajax({
         url: "./favs/" + currentCollection + ".json",
         method:"GET",
@@ -237,6 +244,126 @@ function fetchPlaylist(calledCollection) {
         }
     });
   } // fetchPlaylist
+
+  function isPrivateCollection(name) {
+    return typeof name === "string" && name.indexOf("Private") === 0;
+  }
+
+  function fetchPrivateCollection(name) {
+    $.ajax({
+        url: "./private-favs.php",
+        method: "GET",
+        data: { action: "collection", favs: name },
+        dataType: "json",
+        cache: false,
+        success: function(data) {
+          if(data) {
+            window.collection = data;
+            renderPlaylists(window.collection);
+          }
+        },
+        error: function(xhr) {
+          if(xhr.status === 401) {
+            renderPrivateUnlockForm(name, "");
+          } else if(xhr.status === 404) {
+            renderPrivateMessage("That private collection was not found.");
+          } else {
+            renderPrivateMessage("Could not load this private collection.");
+          }
+        }
+    });
+  }
+
+  function renderPrivateMessage(message) {
+    var $target = $(".playlists-target");
+    $target.html("");
+    $target.append($('<li class="not-link private-unlock-message"></li>').text(message));
+    resizeIframeNow();
+  }
+
+  // The password is only sent to the server; nothing private is in this page until it says yes.
+  function buildPrivateUnlockForm(titleText, message, onUnlocked) {
+    var $form = $('<form class="private-unlock-form" autocomplete="on"></form>');
+    $form.append($('<p class="private-unlock-title"></p>').append('<i class="fa fa-lock" aria-hidden="true"></i> ').append(document.createTextNode(titleText)));
+    var $user = $('<input type="text" name="username" autocomplete="username" value="private-playlists" hidden>');
+    var $input = $('<input type="password" name="password" class="private-unlock-input" autocomplete="current-password" placeholder="Password" required>');
+    var $button = $('<button type="submit" class="private-unlock-btn">Unlock</button>');
+    var $msg = $('<p class="private-unlock-error" role="alert"></p>').text(message || "");
+    $form.append($user, $input, $button, $msg);
+    $form.on("submit", function(event) {
+      event.preventDefault();
+      $button.prop("disabled", true);
+      $msg.text("");
+      $.ajax({
+        url: "./private-favs.php?action=login",
+        method: "POST",
+        data: { password: $input.val() },
+        dataType: "json",
+        cache: false,
+        success: function() {
+          $input.val("");
+          onUnlocked();
+        },
+        error: function(xhr) {
+          $button.prop("disabled", false);
+          $input.val("").trigger("focus");
+          var body = xhr.responseJSON || {};
+          if(xhr.status === 429) {
+            var mins = Math.max(1, Math.ceil((body.retryAfter || 60) / 60));
+            $msg.text("Too many wrong passwords. Try again in about " + mins + " min.");
+          } else if(xhr.status === 503) {
+            $msg.text("Private collections are not set up on the server yet.");
+          } else {
+            $msg.text("Wrong password.");
+          }
+        }
+      });
+    });
+    return $form;
+  }
+
+  function renderPrivateUnlockForm(name, message) {
+    var $target = $(".playlists-target");
+    $target.html("");
+    var $li = $('<li class="not-link private-unlock"></li>');
+    var $form = buildPrivateUnlockForm('"' + name + '" is private.', message, function() {
+      fetchPrivateCollection(name);
+    });
+    $li.append($form);
+    $target.append($li);
+    resizeIframeNow();
+    $form.find(".private-unlock-input").trigger("focus");
+  }
+
+  // Clicked a blurred (locked) collection in the collections panel. After unlocking,
+  // the panel is reloaded from list-favs.php, which now returns the real names.
+  function promptPrivateUnlock() {
+    var $contents = $("#modal-more .contents");
+    $contents.find(".private-unlock-form").remove();
+    var $form = buildPrivateUnlockForm("Enter the password to see private collections.", "", function() {
+      if(window.parent && typeof window.parent.openFavCollectionsPanel === "function") {
+        window.parent.openFavCollectionsPanel();
+      }
+    });
+    $contents.prepend($form);
+    resizeIframeNow();
+    $form.find(".private-unlock-input").trigger("focus");
+  }
+
+  // Locks private collections again (ends the session on the server).
+  function lockPrivateCollections() {
+    $.ajax({
+      url: "./private-favs.php?action=logout",
+      method: "POST",
+      cache: false,
+      complete: function() {
+        closeFavCollectionsPanel();
+        if(isPrivateCollection(currentCollection)) {
+          renderPrivateUnlockForm(currentCollection, "Locked.");
+        }
+      }
+    });
+  }
   function appendSectionHeader($playlistContainer, sectionCategory, seenCategories, currentGroup) {
     if(!sectionCategory || seenCategories[sectionCategory]) return;
     seenCategories[sectionCategory] = true;
@@ -346,5 +473,44 @@ $(document).ready(function(){
   li.not-link {
     list-style-type: none;
     margin-bottom: 5px;
+  }
+  .private-unlock-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .private-unlock-title {
+    flex-basis: 100%;
+    margin: 0;
+    font-weight: 600;
+    color: #5a1a20;
+  }
+  .private-unlock-input {
+    padding: 6px 10px;
+    border: 1px solid rgba(188, 35, 46, 0.25);
+    border-radius: 8px;
+    min-width: 180px;
+  }
+  .private-unlock-btn,
+  .fav-collections-lock-btn {
+    padding: 6px 12px;
+    border: 1px solid rgba(188, 35, 46, 0.3);
+    border-radius: 8px;
+    background: #fff;
+    color: #8e1823;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .private-unlock-error {
+    flex-basis: 100%;
+    margin: 0;
+    min-height: 1em;
+    color: #bc232e;
+  }
+  .fav-collections-private-actions {
+    margin-top: 12px;
+    text-align: right;
   }
 </style>

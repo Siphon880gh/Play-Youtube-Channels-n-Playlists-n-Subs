@@ -132,6 +132,19 @@ body {
     outline-offset: 2px;
 }
 
+.fav-collections-link--locked {
+    gap: 6px;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.fav-collections-scramble {
+    filter: blur(4px);
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
+}
+
 #favs {
     display: block;
     background: transparent;

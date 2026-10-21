@@ -1664,6 +1664,36 @@ body::before {
     text-decoration: underline;
 }
 
+.section-nav-parent-title-wrap {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.section-nav-collections-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(188, 35, 46, 0.22);
+    background: rgba(255, 255, 255, 0.92);
+    color: #8e1823;
+    font-size: var(--type-action);
+    font-weight: 600;
+    line-height: 1.3;
+    cursor: pointer;
+}
+
+.section-nav-collections-btn:hover,
+.section-nav-collections-btn:focus-visible {
+    border-color: rgba(188, 35, 46, 0.45);
+    color: #bc232e;
+    outline: none;
+    box-shadow: 0 4px 12px rgba(70, 28, 33, 0.08);
+}
+
 .watch-history-split {
     position: relative;
     display: inline-flex;

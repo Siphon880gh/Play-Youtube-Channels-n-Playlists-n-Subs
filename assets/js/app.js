@@ -22,18 +22,7 @@ var More = {
                             More.count = 0;
                             More.areas = [];
 
-                            var xhttp = new XMLHttpRequest();
-                            xhttp.onreadystatechange = function() {
-                                if (this.readyState == 4 && this.status == 200) {
-                                    var responseText = this.responseText;
-                                    var $modal = $("#favs-wrapper iframe").contents().find("#modal-more");
-                                    $modal.find(".contents").html(responseText);
-                                    $modal.removeClass("fade").attr("aria-hidden", "false");
-                                    resizeIframeFavs();
-                                }
-                            };
-                            xhttp.open("GET", "list-favs.php?prependPath=" + prependPath, true);
-                            xhttp.send();
+                            openFavCollectionsPanel();
                         }
 
 
@@ -43,3 +32,19 @@ var More = {
                 console.log(this.areas);
             } // count
     } // object More
+
+// Shows the playlist collections panel inside the favs iframe.
+// Used by the "Collections" button next to the heading (and the older triple-click shortcut).
+function openFavCollectionsPanel() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var $modal = $("#favs-wrapper iframe").contents().find("#modal-more");
+            $modal.find(".contents").html(this.responseText);
+            $modal.removeClass("fade").attr("aria-hidden", "false");
+            resizeIframeFavs();
+        }
+    };
+    xhttp.open("GET", "list-favs.php?prependPath=" + encodeURIComponent(window.prependPath || "./"), true);
+    xhttp.send();
+}
