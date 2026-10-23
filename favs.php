@@ -2,10 +2,11 @@
 <?php $prependPath="./"; ?>
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<link href="<?php echo $prependPath; ?>assets/css/favs.css?v=8" rel="stylesheet"></link>
+<link href="<?php echo $prependPath; ?>assets/css/favs.css?v=9" rel="stylesheet"></link>
 <link href="<?php echo $prependPath; ?>assets/css/collection-themes.css?v=4" rel="stylesheet"></link>
 <script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
-<script src="<?php echo $prependPath; ?>env/playlist-icons.js?v=7"></script>
+<script src="<?php echo $prependPath; ?>env/playlist-icons.js?v=8"></script>
+<script src="<?php echo $prependPath; ?>env/playlist-actions.js?v=1"></script>
 <?php include __DIR__ . "/env/icon-fonts.php"; ?>
 <div id="favs">
   <?php include($prependPath."assets/templates/favs.php"); ?>
@@ -470,6 +471,13 @@ function fetchPlaylist(calledCollection) {
         a.html(playlistIcon + name);
 
         li.append(a);
+        var actionHtml = (typeof window.playlistActionHtml === "function")
+          ? window.playlistActionHtml(name, primaryCategory)
+          : "";
+        if (actionHtml) {
+          li.addClass("playlist-row--has-action");
+          li.append(actionHtml);
+        }
         $playlistContainer.append(li);
       }
 
