@@ -2421,11 +2421,12 @@ body::before {
 }
 
 .section-nav-parent-list-tools {
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 6px;
     flex-wrap: wrap;
-    max-width: 100%;
+    width: 100%;
 }
 
 .section-nav-parent-alpha-toggle {
@@ -2475,12 +2476,23 @@ body::before {
     outline-offset: 2px;
 }
 
+/* Letters get their own single line under the toggles */
 .section-nav-parent-alpha-index {
+    order: 3;
+    flex: 1 0 100%;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
+    justify-content: flex-end;
     gap: 4px;
-    max-width: calc(100% - 120px);
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 2px 0;
+    scrollbar-width: thin;
+}
+
+.section-nav-parent-alpha-item {
+    flex: 0 0 auto;
 }
 
 .section-nav-parent-alpha-index[hidden] {
