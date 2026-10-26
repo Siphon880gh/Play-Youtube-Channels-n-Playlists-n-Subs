@@ -24,7 +24,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="assets/js/favs.js?v=2"></script>
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
     <script src="env/playlist-icons.js?v=8"></script>
-    <link rel="stylesheet" href="assets/css/index.css?v=28">
+    <link rel="stylesheet" href="assets/css/index.css?v=29">
     <link rel="stylesheet" href="assets/css/collection-themes.css?v=4">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
@@ -3435,6 +3435,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             this.$filterStatus = $('.section-nav-parent-filter-status');
 
             this.loadFilterViews();
+            this.syncSortForActiveView(true);
             this.bindEvents();
             this.updateViewToggleUi();
         }
@@ -3623,6 +3624,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             // The iframe may have switched to another favs collection with its own views
             if (this.filterScope !== this.filterStorageScope()) {
                 this.loadFilterViews();
+                this.syncSortForActiveView(true);
             }
             this.renderAllTopicsList();
             this.measureNavHeight();
@@ -3656,6 +3658,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
             if (isListView) {
                 const total = items.length;
+                this.syncSortForActiveView(false);
+                this.$list.toggleClass('section-nav-parent-list--view-order', this.listSortKey === 'view');
                 const activeView = this.getActiveFilterView();
                 if (activeView) {
                     items = items.filter(({ section }) => this.sectionMatchesView(section, activeView));
@@ -3708,6 +3712,19 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         }
 
         sortAlphabeticalItems(items) {
+            // The active view's saved order
+            if (this.listSortKey === 'view') {
+                const active = this.getActiveFilterView();
+                const position = {};
+                if (active) {
+                    this.resolveViewOrder(active).forEach((section, i) => {
+                        position[section.label] = i;
+                    });
+                }
+                const pos = (item) => (position[item.section.label] !== undefined ? position[item.section.label] : 1e9);
+                return items.slice().sort((a, b) => (pos(a) - pos(b)) || a.index - b.index);
+            }
+
             const dir = this.listSortDir === 'desc' ? -1 : 1;
             const byShelf = this.listSortKey === 'shelf';
 
@@ -3736,8 +3753,11 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         renderAlphabeticalTable(items) {
             const sorted = this.sortAlphabeticalItems(items);
             const byShelf = this.listSortKey === 'shelf';
+            const byView = this.listSortKey === 'view';
             const isDesc = this.listSortDir === 'desc';
             const seenAlphaAnchors = {};
+            const activeView = this.getActiveFilterView();
+            const hasViewOrder = this.viewHasCustomOrder(activeView);
             const $table = $('<table>')
                 .addClass('section-nav-parent-table')
                 .toggleClass('section-nav-parent-table--by-shelf', byShelf);
@@ -3770,7 +3790,33 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     this.setListSort(key);
                 });
 
-                $headRow.append($th.append($sortBtn));
+                $th.append($sortBtn);
+
+                // Views with their own order get a "View order" pill: on when in use, a way back after a header sort
+                if (key === 'category' && hasViewOrder) {
+                    $th.addClass('section-nav-parent-table-th--has-view-order');
+                    const $viewBtn = $('<button>')
+                        .addClass('section-nav-parent-table-vieworder')
+                        .toggleClass('section-nav-parent-table-vieworder--active', byView)
+                        .attr('type', 'button')
+                        .attr('aria-pressed', byView ? 'true' : 'false')
+                        .attr('aria-label', byView ? 'View order (in use)' : 'Back to view order')
+                        .attr('title', byView
+                            ? `In "${activeView.name}" saved order. Click Shelf or Category to sort.`
+                            : `Back to "${activeView.name}" saved order`)
+                        .append(
+                            $('<i>').addClass(`fas ${byView ? 'fa-list-ol' : 'fa-undo'}`).attr('aria-hidden', 'true'),
+                            $('<span>').append($('<span>').addClass('section-nav-parent-table-vieworder-long').text('View '), 'order')
+                        );
+                    $viewBtn.on('click', (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        this.setListSort('view');
+                    });
+                    $th.append($viewBtn);
+                }
+
+                $headRow.append($th);
             });
 
             const $tbody = $('<tbody>');
@@ -3784,7 +3830,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 });
             }
 
-            sorted.forEach(({ section, index }) => {
+            sorted.forEach(({ section, index }, position) => {
                 const shelf = section.group || '';
 
                 // Sorted by shelf: each shelf shows once as a sticky sub-header
@@ -3825,6 +3871,9 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
                 const $category = $('<span>').addClass('section-nav-parent-table-category');
                 this.fillLabeled($category, section.label, byShelf ? this.categoryLabelInGroup(section.label, shelf) : '');
+                if (byView) {
+                    $category.prepend($('<span>').addClass('section-nav-parent-table-pos').attr('aria-hidden', 'true').text(position + 1));
+                }
                 $btn.append($category);
 
                 if (!byShelf) {
@@ -3881,7 +3930,9 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     id: String(view.id),
                     name: String(view.name).trim(),
                     shelves: toStrings(view.shelves),
-                    categories: toStrings(view.categories)
+                    categories: toStrings(view.categories),
+                    // Saved topic order (category labels); empty means A–Z by category
+                    order: toStrings(view.order)
                 }));
 
             const activeId = localStorage.getItem(this.filterStorageKey('active'));
@@ -3915,11 +3966,277 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         setActiveFilter(id) {
             const exists = this.filterViews.some((view) => view.id === id);
             this.activeFilterId = (id && exists && id !== this.activeFilterId) ? id : null;
+            this.syncSortForActiveView(true);
             this.saveFilterViews();
             this.renderAllTopicsList();
             this.$listBody.scrollTop(0);
             this.measureNavHeight();
             this.fitListBody();
+        }
+
+        // Topics a view matches, in the order they'll show: saved order first, newly matched topics appended A–Z
+        resolveViewOrder(view) {
+            const byLabel = {};
+            const matched = [];
+            this.sections.forEach((section) => {
+                if (!byLabel[section.label] && this.sectionMatchesView(section, view)) {
+                    byLabel[section.label] = section;
+                    matched.push(section);
+                }
+            });
+
+            const ordered = [];
+            const used = {};
+            (view.order || []).forEach((label) => {
+                if (byLabel[label] && !used[label]) {
+                    used[label] = true;
+                    ordered.push(byLabel[label]);
+                }
+            });
+            matched
+                .filter((section) => !used[section.label])
+                .sort((a, b) => this.compareTopicLabels(a.label, b.label))
+                .forEach((section) => ordered.push(section));
+            return ordered;
+        }
+
+        viewHasCustomOrder(view) {
+            return !!(view && Array.isArray(view.order) && view.order.length);
+        }
+
+        // A view with its own order opens in that order; without one, fall back to Category A–Z
+        syncSortForActiveView(preferViewOrder) {
+            const active = this.getActiveFilterView();
+            if (this.viewHasCustomOrder(active)) {
+                if (preferViewOrder) {
+                    this.listSortKey = 'view';
+                    this.listSortDir = 'asc';
+                }
+            } else if (this.listSortKey === 'view') {
+                this.listSortKey = 'category';
+                this.listSortDir = 'asc';
+            }
+        }
+
+        filterDraftView() {
+            return {
+                shelves: Object.keys(this.filterDraft.shelves),
+                categories: Object.keys(this.filterDraft.categories),
+                order: this.filterDraft.order
+            };
+        }
+
+        // Order tab: live preview of the topics the view matches, reorderable by drag, arrows, or Alt+Up/Down
+        renderFilterOrder(focusLabel, focusSelector) {
+            const ordered = this.resolveViewOrder(this.filterDraftView());
+            const custom = this.filterDraft.order.length > 0;
+            const $list = this.$filterOrderList.empty();
+
+            this.$filterOrder.find('.yt-filter-order-reset').prop('disabled', !custom);
+            this.$filterOrder.find('.yt-filter-order-state').text(custom ? 'Custom order' : 'A–Z by category');
+
+            if (!ordered.length) {
+                $list.append($('<li>')
+                    .addClass('yt-filter-order-empty')
+                    .text('Pick shelves or categories first. The topics they match show up here.'));
+                return;
+            }
+
+            ordered.forEach((section, i) => {
+                const label = section.label;
+                const $name = $('<span>').addClass('yt-filter-order-name');
+                this.fillLabeled($name, label);
+
+                $list.append($('<li>')
+                    .addClass('yt-filter-order-item')
+                    .attr('data-label', label)
+                    .append(
+                        $('<button>')
+                            .addClass('yt-filter-order-handle')
+                            .attr('type', 'button')
+                            .attr('aria-label', `Reorder ${label}, position ${i + 1} of ${ordered.length}. Drag, or press Up or Down.`)
+                            .attr('title', 'Drag to reorder (or Alt+↑/↓)')
+                            .append($('<i>').addClass('fas fa-grip-vertical').attr('aria-hidden', 'true')),
+                        $('<span>').addClass('yt-filter-order-pos').attr('aria-hidden', 'true').text(i + 1),
+                        $('<span>').addClass('yt-filter-order-text').append(
+                            $name,
+                            section.group ? $('<span>').addClass('yt-filter-order-meta').text(section.group) : null
+                        ),
+                        $('<button>')
+                            .addClass('yt-filter-order-move')
+                            .attr('type', 'button')
+                            .attr('data-move', '-1')
+                            .attr('aria-label', `Move ${label} up`)
+                            .prop('disabled', i === 0)
+                            .append($('<i>').addClass('fas fa-chevron-up').attr('aria-hidden', 'true')),
+                        $('<button>')
+                            .addClass('yt-filter-order-move')
+                            .attr('type', 'button')
+                            .attr('data-move', '1')
+                            .attr('aria-label', `Move ${label} down`)
+                            .prop('disabled', i === ordered.length - 1)
+                            .append($('<i>').addClass('fas fa-chevron-down').attr('aria-hidden', 'true'))
+                    ));
+            });
+
+            if (focusLabel) {
+                const $item = $list.children().filter((_, el) => el.getAttribute('data-label') === focusLabel);
+                let $target = $item.find(focusSelector || '.yt-filter-order-handle');
+                if (!$target.length || $target.prop('disabled')) {
+                    $target = $item.find('.yt-filter-order-handle');
+                }
+                $target.trigger('focus');
+                const el = $item[0];
+                if (el && el.scrollIntoView) {
+                    el.scrollIntoView({ block: 'nearest' });
+                }
+            }
+        }
+
+        announceFilterOrder(message) {
+            this.$filterOrder.find('.yt-filter-order-live').text(message);
+        }
+
+        moveFilterOrderItem(label, delta, focusSelector) {
+            const labels = this.resolveViewOrder(this.filterDraftView()).map((section) => section.label);
+            const from = labels.indexOf(label);
+            const to = from + delta;
+            if (from < 0 || to < 0 || to >= labels.length) {
+                return;
+            }
+
+            labels.splice(to, 0, labels.splice(from, 1)[0]);
+            this.filterDraft.order = labels;
+            this.renderFilterOrder(label, focusSelector);
+            this.announceFilterOrder(`${label} moved to position ${to + 1} of ${labels.length}`);
+            this.updateFilterModalSummary();
+        }
+
+        resetFilterOrder() {
+            this.filterDraft.order = [];
+            this.renderFilterOrder();
+            this.announceFilterOrder('Order reset to A–Z by category');
+            this.updateFilterModalSummary();
+            this.$filterOrder.find('.yt-filter-order-list .yt-filter-order-handle').first().trigger('focus');
+        }
+
+        // Pointer-event drag (mouse, pen, touch). The row follows the pointer; a line marks the drop spot.
+        startFilterOrderDrag(event) {
+            const e = event.originalEvent || event;
+            if (e.button !== undefined && e.button !== 0) {
+                return;
+            }
+            event.preventDefault();
+
+            const handle = event.currentTarget;
+            const item = handle.closest('.yt-filter-order-item');
+            const listEl = this.$filterOrderList[0];
+            if (!item || !listEl) {
+                return;
+            }
+
+            const pointerId = e.pointerId;
+            const startY = e.clientY;
+            const startScroll = listEl.scrollTop;
+            const others = Array.prototype.slice.call(listEl.querySelectorAll('.yt-filter-order-item')).filter((el) => el !== item);
+            const fromIndex = Array.prototype.indexOf.call(listEl.children, item);
+            let lastY = startY;
+            let targetIndex = fromIndex;
+            let frame = null;
+            let moved = false;
+
+            try {
+                handle.setPointerCapture(pointerId);
+            } catch (err) {}
+            item.classList.add('yt-filter-order-item--dragging');
+            listEl.classList.add('yt-filter-order-list--dragging');
+
+            const clearMarks = () => {
+                others.forEach((el) => el.classList.remove('yt-filter-order-item--drop-before', 'yt-filter-order-item--drop-after'));
+            };
+
+            const place = () => {
+                item.style.transform = `translateY(${lastY - startY + (listEl.scrollTop - startScroll)}px)`;
+                targetIndex = 0;
+                others.forEach((el) => {
+                    const rect = el.getBoundingClientRect();
+                    if (lastY > rect.top + rect.height / 2) {
+                        targetIndex++;
+                    }
+                });
+                clearMarks();
+                if (targetIndex !== fromIndex) {
+                    if (targetIndex < others.length) {
+                        others[targetIndex].classList.add('yt-filter-order-item--drop-before');
+                    } else if (others.length) {
+                        others[others.length - 1].classList.add('yt-filter-order-item--drop-after');
+                    }
+                }
+            };
+
+            // Scroll the list when dragging near its top or bottom edge
+            const autoScroll = () => {
+                const rect = listEl.getBoundingClientRect();
+                const edge = 40;
+                let step = 0;
+                if (lastY < rect.top + edge) {
+                    step = -10;
+                } else if (lastY > rect.bottom - edge) {
+                    step = 10;
+                }
+                if (!step) {
+                    frame = null;
+                    return;
+                }
+                listEl.scrollTop += step;
+                place();
+                frame = requestAnimationFrame(autoScroll);
+            };
+
+            const onMove = (ev) => {
+                if (ev.pointerId !== pointerId) {
+                    return;
+                }
+                ev.preventDefault();
+                lastY = ev.clientY;
+                moved = moved || Math.abs(lastY - startY) > 3;
+                place();
+                if (!frame) {
+                    frame = requestAnimationFrame(autoScroll);
+                }
+            };
+
+            const onEnd = (ev) => {
+                if (ev.pointerId !== pointerId) {
+                    return;
+                }
+                handle.removeEventListener('pointermove', onMove);
+                handle.removeEventListener('pointerup', onEnd);
+                handle.removeEventListener('pointercancel', onEnd);
+                if (frame) {
+                    cancelAnimationFrame(frame);
+                }
+                clearMarks();
+                item.style.transform = '';
+                item.classList.remove('yt-filter-order-item--dragging');
+                listEl.classList.remove('yt-filter-order-list--dragging');
+
+                const label = item.getAttribute('data-label');
+                if (ev.type === 'pointerup' && moved && targetIndex !== fromIndex) {
+                    const labels = others.map((el) => el.getAttribute('data-label'));
+                    labels.splice(targetIndex, 0, label);
+                    this.filterDraft.order = labels;
+                    this.renderFilterOrder(label);
+                    this.announceFilterOrder(`${label} moved to position ${targetIndex + 1} of ${labels.length}`);
+                    this.updateFilterModalSummary();
+                } else {
+                    handle.focus();
+                }
+            };
+
+            handle.addEventListener('pointermove', onMove);
+            handle.addEventListener('pointerup', onEnd);
+            handle.addEventListener('pointercancel', onEnd);
         }
 
         renderFilterBar(total, shown) {
@@ -4067,8 +4384,9 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                                 <p class="yt-filter-modal-error" role="alert" hidden></p>
                                 <p id="yt-filter-modal-desc" class="yt-filter-modal-hint">Pick shelves, categories, or both. A topic shows if its shelf or its category is picked.</p>
                                 <div class="yt-filter-modal-tabs" role="tablist" aria-label="Pick by">
-                                    <button type="button" role="tab" id="yt-filter-tab-shelves" class="yt-filter-modal-tab" data-filter-tab="shelves" aria-controls="yt-filter-modal-panel">By shelf <span class="yt-filter-modal-tab-count" data-filter-count="shelves"></span></button>
-                                    <button type="button" role="tab" id="yt-filter-tab-categories" class="yt-filter-modal-tab" data-filter-tab="categories" aria-controls="yt-filter-modal-panel">By category <span class="yt-filter-modal-tab-count" data-filter-count="categories"></span></button>
+                                    <button type="button" role="tab" id="yt-filter-tab-shelves" class="yt-filter-modal-tab" data-filter-tab="shelves" aria-controls="yt-filter-modal-panel"><span class="yt-filter-modal-tab-by">By </span>shelf <span class="yt-filter-modal-tab-count" data-filter-count="shelves"></span></button>
+                                    <button type="button" role="tab" id="yt-filter-tab-categories" class="yt-filter-modal-tab" data-filter-tab="categories" aria-controls="yt-filter-modal-panel"><span class="yt-filter-modal-tab-by">By </span>category <span class="yt-filter-modal-tab-count" data-filter-count="categories"></span></button>
+                                    <button type="button" role="tab" id="yt-filter-tab-order" class="yt-filter-modal-tab" data-filter-tab="order" aria-controls="yt-filter-modal-panel"><i class="fas fa-sort-amount-down" aria-hidden="true"></i> Order <span class="yt-filter-modal-tab-count yt-filter-modal-tab-count--text" data-filter-count="order"></span></button>
                                 </div>
                                 <div id="yt-filter-modal-panel" class="yt-filter-modal-panel" role="tabpanel">
                                     <div class="yt-filter-modal-panel-tools">
@@ -4077,6 +4395,14 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                                         <button type="button" class="yt-filter-modal-link" data-filter-select="none">None</button>
                                     </div>
                                     <div class="yt-filter-modal-options" role="group"></div>
+                                    <div class="yt-filter-order" hidden>
+                                        <div class="yt-filter-order-tools">
+                                            <p class="yt-filter-order-hint"><span class="yt-filter-order-state">A–Z by category</span> · drag <i class="fas fa-grip-vertical" aria-hidden="true"></i> or use the arrows</p>
+                                            <button type="button" class="yt-filter-modal-link yt-filter-order-reset"><i class="fas fa-sort-alpha-down" aria-hidden="true"></i> Reset to A–Z</button>
+                                        </div>
+                                        <ol class="yt-filter-order-list" aria-label="Topic order"></ol>
+                                        <p class="yt-filter-order-live sr-only" aria-live="polite"></p>
+                                    </div>
                                 </div>
                                 <p class="yt-filter-modal-summary" aria-live="polite"></p>
                             </div>
@@ -4107,6 +4433,38 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             this.$filterSearch = $modal.find('.yt-filter-modal-search');
             this.$filterOptions = $modal.find('.yt-filter-modal-options');
             this.$filterSummary = $modal.find('.yt-filter-modal-summary');
+            this.$filterOrder = $modal.find('.yt-filter-order');
+            this.$filterOrderList = $modal.find('.yt-filter-order-list');
+
+            this.$filterOrderList.on('pointerdown', '.yt-filter-order-handle', (event) => this.startFilterOrderDrag(event));
+            this.$filterOrderList.on('click', '.yt-filter-order-move', (event) => {
+                event.preventDefault();
+                const $btn = $(event.currentTarget);
+                const delta = parseInt($btn.attr('data-move'), 10);
+                this.moveFilterOrderItem(
+                    $btn.closest('.yt-filter-order-item').attr('data-label'),
+                    delta,
+                    `.yt-filter-order-move[data-move="${delta}"]`
+                );
+            });
+            this.$filterOrderList.on('keydown', '.yt-filter-order-item', (event) => {
+                if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') {
+                    return;
+                }
+                const onHandle = $(event.target).hasClass('yt-filter-order-handle');
+                if (!event.altKey && !onHandle) {
+                    return;
+                }
+                event.preventDefault();
+                event.stopPropagation();
+                const delta = event.key === 'ArrowUp' ? -1 : 1;
+                const focusSelector = onHandle ? '.yt-filter-order-handle' : `.yt-filter-order-move[data-move="${delta}"]`;
+                this.moveFilterOrderItem($(event.currentTarget).attr('data-label'), delta, focusSelector);
+            });
+            $modal.find('.yt-filter-order-reset').on('click', (event) => {
+                event.preventDefault();
+                this.resetFilterOrder();
+            });
 
             $modal.on('click', '[data-filter-close]', (event) => {
                 event.preventDefault();
@@ -4119,7 +4477,9 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             $modal.on('keydown', '[role="tab"]', (event) => {
                 if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
                     event.preventDefault();
-                    this.setFilterModalTab(this.filterDraft.tab === 'shelves' ? 'categories' : 'shelves', true);
+                    const tabs = ['shelves', 'categories', 'order'];
+                    const step = event.key === 'ArrowRight' ? 1 : tabs.length - 1;
+                    this.setFilterModalTab(tabs[(tabs.indexOf(this.filterDraft.tab) + step) % tabs.length], true);
                     $modal.find(`[data-filter-tab="${this.filterDraft.tab}"]`).trigger('focus');
                 }
             });
@@ -4183,6 +4543,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 id: view ? view.id : null,
                 shelves: toMap(view ? view.shelves : []),
                 categories: toMap(view ? view.categories : []),
+                order: view && Array.isArray(view.order) ? view.order.slice() : [],
                 tab: (view && !view.shelves.length && view.categories.length) ? 'categories' : 'shelves'
             };
 
@@ -4313,8 +4674,10 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         }
 
         setFilterModalTab(tab, focusSearch) {
-            this.filterDraft.tab = tab === 'categories' ? 'categories' : 'shelves';
+            const tabs = ['shelves', 'categories', 'order'];
+            this.filterDraft.tab = tabs.indexOf(tab) !== -1 ? tab : 'shelves';
             const isShelves = this.filterDraft.tab === 'shelves';
+            const isOrder = this.filterDraft.tab === 'order';
 
             this.$filterModal.find('[data-filter-tab]').each((_, el) => {
                 const selected = $(el).attr('data-filter-tab') === this.filterDraft.tab;
@@ -4325,6 +4688,15 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             });
             this.$filterModal.find('.yt-filter-modal-panel')
                 .attr('aria-labelledby', `yt-filter-tab-${this.filterDraft.tab}`);
+            this.$filterModal.find('.yt-filter-modal-panel-tools, .yt-filter-modal-options').prop('hidden', isOrder);
+            this.$filterOrder.prop('hidden', !isOrder);
+
+            if (isOrder) {
+                this.renderFilterOrder();
+                this.updateFilterModalSummary();
+                return;
+            }
+
             this.$filterSearch
                 .val('')
                 .attr('placeholder', isShelves ? 'Search shelves' : 'Search categories')
@@ -4397,6 +4769,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
             this.$filterModal.find('[data-filter-count="shelves"]').text(shelves.length || '');
             this.$filterModal.find('[data-filter-count="categories"]').text(categories.length || '');
+            this.$filterModal.find('[data-filter-count="order"]').text(this.filterDraft.order.length ? 'Custom' : '');
 
             if (!shelves.length && !categories.length) {
                 this.$filterSummary.text('Nothing picked yet');
@@ -4421,6 +4794,10 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             const shelves = Object.keys(this.filterDraft.shelves);
             const categories = Object.keys(this.filterDraft.categories);
             const editingId = this.filterDraft.id;
+            // Keep a custom order only for topics the view still matches
+            const order = this.filterDraft.order.length
+                ? this.resolveViewOrder({ shelves, categories, order: this.filterDraft.order }).map((section) => section.label)
+                : [];
 
             if (!name) {
                 this.showFilterModalError('Give the view a name.', this.$filterName);
@@ -4444,14 +4821,19 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     view.name = name;
                     view.shelves = shelves;
                     view.categories = categories;
+                    view.order = order;
                 }
             } else {
                 const id = `fv_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
-                this.filterViews.push({ id, name, shelves, categories });
+                this.filterViews.push({ id, name, shelves, categories, order });
                 // A new view is applied right away so the result is visible
                 this.activeFilterId = id;
             }
 
+            // Saving a reordered view that's showing switches the table to its order
+            if (!editingId || editingId === this.activeFilterId) {
+                this.syncSortForActiveView(order.length > 0);
+            }
             this.saveFilterViews();
             this.closeFilterModal();
             this.renderAllTopicsList();
@@ -4467,6 +4849,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             const $wrap = this.$filterModal.find('.yt-filter-modal-delete-wrap');
             $wrap.find('.yt-filter-modal-delete').toggle(!show);
             $wrap.find('.yt-filter-modal-confirm').prop('hidden', !show);
+            // The confirm takes the whole footer so it doesn't wrap next to Cancel / Save
+            this.$filterModal.find('.yt-filter-modal-footer').toggleClass('yt-filter-modal-footer--confirming', show);
             if (show) {
                 const view = this.filterViews.find((item) => item.id === this.filterDraft.id);
                 $wrap.find('.yt-filter-modal-confirm-text').text(view ? `Delete "${view.name}"?` : 'Delete this view?');
@@ -4479,6 +4863,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             if (this.activeFilterId === id) {
                 this.activeFilterId = null;
             }
+            this.syncSortForActiveView(false);
             this.saveFilterViews();
             this.filterModalOpener = this.$filterNew ? this.$filterNew[0] : null;
             this.closeFilterModal();
@@ -4520,7 +4905,10 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         }
 
         setListSort(key) {
-            if (this.listSortKey === key) {
+            if (key === 'view') {
+                this.listSortKey = 'view';
+                this.listSortDir = 'asc';
+            } else if (this.listSortKey === key) {
                 this.listSortDir = this.listSortDir === 'desc' ? 'asc' : 'desc';
             } else {
                 this.listSortKey = key;
