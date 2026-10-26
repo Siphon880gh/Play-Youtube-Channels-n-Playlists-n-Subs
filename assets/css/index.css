@@ -2931,3 +2931,750 @@ html[data-yt-theme] .section-nav-parent-table--by-shelf .section-nav-parent-item
         justify-content: center;
     }
 }
+/* ---- Filter views (alphabetical table only) ---- */
+.section-nav-parent-list-toolbar {
+    flex-wrap: wrap;
+    row-gap: 6px;
+}
+
+.section-nav-parent-list:not(.section-nav-parent-list--alphabetical) .section-nav-parent-filter-bar,
+.section-nav-parent-list:not(.section-nav-parent-list--alphabetical) .section-nav-parent-filter-status {
+    display: none !important;
+}
+
+.section-nav-parent-filter-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+    padding-top: 6px;
+    border-top: 1px dashed var(--yt-border, rgba(188, 35, 46, 0.14));
+}
+
+.section-nav-parent-filter-bar-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-right: 2px;
+    color: var(--yt-text-muted, #7a5a5e);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.section-nav-parent-filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    flex: 0 1 auto;
+    min-width: 0;
+}
+
+.section-nav-parent-filter-chip {
+    display: inline-flex;
+    align-items: stretch;
+    height: 30px;
+    max-width: 100%;
+    border: 1px solid var(--yt-border, rgba(188, 35, 46, 0.18));
+    border-radius: 999px;
+    background: var(--yt-surface, #fff);
+    color: var(--yt-text, #3d1016);
+    font-size: 0.78rem;
+    font-weight: 600;
+    overflow: hidden;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+button.section-nav-parent-filter-chip {
+    align-items: center;
+    padding: 0 12px;
+    cursor: pointer;
+}
+
+.section-nav-parent-filter-chip-apply,
+.section-nav-parent-filter-chip-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.section-nav-parent-filter-chip-apply {
+    min-width: 0;
+    padding: 0 8px 0 12px;
+}
+
+.section-nav-parent-filter-chip-name {
+    max-width: 16em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.section-nav-parent-filter-chip-count {
+    color: var(--yt-text-muted, #7a5a5e);
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.section-nav-parent-filter-chip-edit {
+    justify-content: center;
+    width: 28px;
+    padding: 0;
+    border-left: 1px solid var(--yt-border, rgba(188, 35, 46, 0.14));
+    color: var(--yt-text-muted, #7a5a5e);
+    font-size: 0.68rem;
+}
+
+.section-nav-parent-filter-chip:hover,
+.section-nav-parent-filter-chip-edit:hover {
+    background: var(--yt-tint, rgba(188, 35, 46, 0.07));
+    border-color: var(--yt-border-strong, rgba(188, 35, 46, 0.3));
+}
+
+.section-nav-parent-filter-chip-edit:hover {
+    color: var(--yt-accent, var(--red-main));
+}
+
+.section-nav-parent-filter-chip--active,
+.section-nav-parent-filter-chip--active:hover {
+    background: var(--yt-accent, var(--red-main, #bc232e));
+    border-color: var(--yt-accent, var(--red-main, #bc232e));
+    color: var(--yt-accent-contrast, #fff);
+}
+
+.section-nav-parent-filter-chip--active .section-nav-parent-filter-chip-count,
+.section-nav-parent-filter-chip--active .section-nav-parent-filter-chip-edit {
+    color: inherit;
+    opacity: 0.85;
+}
+
+.section-nav-parent-filter-chip--active .section-nav-parent-filter-chip-edit {
+    border-left-color: rgba(255, 255, 255, 0.35);
+}
+
+.section-nav-parent-filter-chip--active .section-nav-parent-filter-chip-edit:hover {
+    background: rgba(255, 255, 255, 0.16);
+    color: inherit;
+    opacity: 1;
+}
+
+.section-nav-parent-filter-chip-check {
+    font-size: 0.66rem;
+}
+
+.section-nav-parent-filter-new {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 30px;
+    padding: 0 12px;
+    border: 1px dashed var(--yt-border-strong, rgba(188, 35, 46, 0.35));
+    border-radius: 999px;
+    background: transparent;
+    color: var(--yt-accent, var(--red-main));
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.section-nav-parent-filter-new:hover {
+    background: var(--yt-tint, rgba(188, 35, 46, 0.07));
+    border-style: solid;
+}
+
+.section-nav-parent-filter-chip-apply:focus-visible,
+.section-nav-parent-filter-chip-edit:focus-visible,
+button.section-nav-parent-filter-chip:focus-visible,
+.section-nav-parent-filter-new:focus-visible,
+.section-nav-parent-filter-clear:focus-visible,
+.section-nav-parent-filter-empty-btn:focus-visible {
+    outline: 2px solid var(--yt-border-strong, rgba(188, 35, 46, 0.5));
+    outline-offset: 2px;
+}
+
+/* "Filtered by" banner sits above the table, outside the scrolling body, so it stays in view */
+.section-nav-parent-filter-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 6px 6px 12px;
+    border: 1px solid var(--yt-border-strong, rgba(188, 35, 46, 0.3));
+    border-left: 4px solid var(--yt-accent, var(--red-main, #bc232e));
+    border-radius: 8px;
+    background: var(--yt-tint-strong, rgba(188, 35, 46, 0.1));
+    color: var(--yt-text, #3d1016);
+    font-size: 0.8rem;
+}
+
+.section-nav-parent-filter-status[hidden] {
+    display: none !important;
+}
+
+.section-nav-parent-filter-status-icon {
+    color: var(--yt-accent, var(--red-main));
+}
+
+.section-nav-parent-filter-status-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.section-nav-parent-filter-status-count {
+    color: var(--yt-text-muted, #7a5a5e);
+}
+
+.section-nav-parent-filter-clear {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 28px;
+    padding: 0 10px;
+    border: 1px solid var(--yt-border-strong, rgba(188, 35, 46, 0.3));
+    border-radius: 6px;
+    background: var(--yt-surface, #fff);
+    color: var(--yt-accent, var(--red-main));
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.section-nav-parent-filter-clear:hover {
+    background: var(--yt-tint, rgba(188, 35, 46, 0.07));
+}
+
+/* Filtered list gets an accent edge so it never reads as the full list */
+.section-nav-parent-list--filtered .section-nav-parent-list-body {
+    box-shadow: inset 3px 0 0 var(--yt-accent, var(--red-main, #bc232e));
+    padding-left: 3px;
+}
+
+/* Badge on "All topics" so filtering shows even when the list is closed */
+.section-nav-parent-toggle-filter-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--yt-accent, var(--red-main, #bc232e));
+    color: var(--yt-accent-contrast, #fff);
+    font-size: 0.55rem;
+}
+
+.section-nav-parent-toggle-filter-badge[hidden] {
+    display: none !important;
+}
+
+.section-nav-parent-toggle--filtered,
+html[data-yt-theme] .section-nav-parent-toggle.section-nav-parent-toggle--filtered {
+    border-color: var(--yt-border-strong, rgba(188, 35, 46, 0.4));
+    background: var(--yt-tint-strong, rgba(188, 35, 46, 0.1));
+}
+
+.section-nav-parent-filter-empty {
+    flex: 1 0 100%;
+    width: 100%;
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--yt-text, #3d1016);
+}
+
+.section-nav-parent-filter-empty-title {
+    margin: 0 0 4px;
+    font-weight: 800;
+}
+
+.section-nav-parent-filter-empty-text {
+    margin: 0 0 12px;
+    color: var(--yt-text-muted, #7a5a5e);
+    font-size: 0.85rem;
+}
+
+.section-nav-parent-filter-empty-actions {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.section-nav-parent-filter-empty-btn {
+    height: 34px;
+    padding: 0 14px;
+    border: 1px solid var(--yt-border-strong, rgba(188, 35, 46, 0.3));
+    border-radius: 8px;
+    background: var(--yt-surface, #fff);
+    color: var(--yt-accent, var(--red-main));
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* ---- Filter view editor modal ---- */
+body.yt-filter-modal-open {
+    overflow: hidden;
+}
+
+.yt-filter-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.yt-filter-modal[hidden] {
+    display: none !important;
+}
+
+.yt-filter-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 5, 7, 0.5);
+}
+
+.yt-filter-modal-dialog {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: min(560px, 100%);
+    max-height: min(86vh, 720px);
+    border: 1px solid var(--yt-border, rgba(188, 35, 46, 0.18));
+    border-radius: 14px;
+    background: var(--yt-surface, #fff);
+    color: var(--yt-text, #222);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.yt-filter-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--yt-border, rgba(188, 35, 46, 0.12));
+}
+
+.yt-filter-modal-title {
+    margin: 0;
+    color: var(--yt-heading, #3d1016);
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.yt-filter-modal-close {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--yt-text-muted, #7a5a5e);
+    cursor: pointer;
+}
+
+.yt-filter-modal-close:hover {
+    background: var(--yt-tint, rgba(188, 35, 46, 0.07));
+}
+
+.yt-filter-modal-form {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    margin: 0;
+}
+
+.yt-filter-modal-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 12px 16px;
+}
+
+.yt-filter-modal-label {
+    margin: 0 0 4px;
+    color: var(--yt-heading, #3d1016);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.yt-filter-modal .yt-filter-modal-name,
+.yt-filter-modal .yt-filter-modal-search {
+    box-sizing: border-box;
+    width: 100%;
+    height: 38px;
+    min-height: 38px;
+    line-height: normal;
+    padding: 0 10px;
+    border: 1px solid var(--yt-border-strong, rgba(188, 35, 46, 0.3));
+    border-radius: 8px;
+    background: var(--yt-bg, #fff);
+    color: var(--yt-text, #222);
+    font-size: 0.95rem;
+}
+
+.yt-filter-modal-name:focus,
+.yt-filter-modal-search:focus {
+    outline: 2px solid var(--yt-border-strong, rgba(188, 35, 46, 0.45));
+    outline-offset: 0;
+}
+
+.yt-filter-modal-error {
+    margin: 6px 0 0;
+    color: #c0182a;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.yt-filter-modal-error[hidden] {
+    display: none;
+}
+
+.yt-filter-modal-hint {
+    margin: 8px 0 10px;
+    color: var(--yt-text-muted, #7a5a5e);
+    font-size: 0.8rem;
+}
+
+.yt-filter-modal-tabs {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 10px;
+    background: var(--yt-tint, rgba(188, 35, 46, 0.07));
+}
+
+.yt-filter-modal-tab {
+    flex: 1 1 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 34px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--yt-text-muted, #7a5a5e);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.yt-filter-modal-tab--active {
+    background: var(--yt-surface, #fff);
+    color: var(--yt-accent, var(--red-main));
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.yt-filter-modal-tab:focus-visible {
+    outline: 2px solid var(--yt-border-strong, rgba(188, 35, 46, 0.5));
+}
+
+.yt-filter-modal-tab-count:not(:empty) {
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: var(--yt-accent, var(--red-main, #bc232e));
+    color: var(--yt-accent-contrast, #fff);
+    font-size: 0.68rem;
+    line-height: 18px;
+}
+
+.yt-filter-modal-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 160px;
+    margin-top: 10px;
+}
+
+.yt-filter-modal-panel-tools {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.yt-filter-modal-search {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.yt-filter-modal-link {
+    flex: 0 0 auto;
+    height: 38px;
+    padding: 0 8px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--yt-accent, var(--red-main));
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.yt-filter-modal-link:hover {
+    background: var(--yt-tint, rgba(188, 35, 46, 0.07));
+}
+
+.yt-filter-modal-options {
+    flex: 1 1 auto;
+    min-height: 120px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 1px solid var(--yt-border, rgba(188, 35, 46, 0.14));
+    border-radius: 8px;
+}
+
+.yt-filter-modal-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 38px;
+    margin: 0;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--yt-border, rgba(188, 35, 46, 0.08));
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.yt-filter-modal-option[hidden],
+.yt-filter-modal-none[hidden] {
+    display: none !important;
+}
+
+.yt-filter-modal-option:last-of-type {
+    border-bottom: 0;
+}
+
+.yt-filter-modal-option:hover {
+    background: var(--yt-tint, rgba(188, 35, 46, 0.05));
+}
+
+.yt-filter-modal-option--checked {
+    background: var(--yt-tint, rgba(188, 35, 46, 0.06));
+}
+
+.yt-filter-modal-option input {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--yt-accent, var(--red-main, #bc232e));
+}
+
+.yt-filter-modal-option-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.yt-filter-modal-option-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yt-filter-modal-option-meta {
+    color: var(--yt-text-muted, #7a5a5e);
+    font-size: 0.72rem;
+}
+
+.yt-filter-modal-option--missing .yt-filter-modal-option-name {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.yt-filter-modal-none {
+    margin: 0;
+    padding: 16px;
+    color: var(--yt-text-muted, #7a5a5e);
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.yt-filter-modal-summary {
+    margin: 8px 0 0;
+    color: var(--yt-text-muted, #7a5a5e);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.yt-filter-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 16px 14px;
+    border-top: 1px solid var(--yt-border, rgba(188, 35, 46, 0.12));
+}
+
+.yt-filter-modal-delete-wrap,
+.yt-filter-modal-actions,
+.yt-filter-modal-confirm {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.yt-filter-modal-actions {
+    margin-left: auto;
+}
+
+.yt-filter-modal-confirm[hidden] {
+    display: none !important;
+}
+
+.yt-filter-modal-confirm-text {
+    color: #c0182a;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.yt-filter-modal-btn {
+    height: 36px;
+    padding: 0 14px;
+    border: 1px solid var(--yt-border-strong, rgba(188, 35, 46, 0.3));
+    border-radius: 8px;
+    background: var(--yt-surface, #fff);
+    color: var(--yt-text, #222);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.yt-filter-modal-btn:hover {
+    background: var(--yt-tint, rgba(188, 35, 46, 0.07));
+}
+
+.yt-filter-modal-btn:focus-visible,
+.yt-filter-modal-close:focus-visible,
+.yt-filter-modal-link:focus-visible {
+    outline: 2px solid var(--yt-border-strong, rgba(188, 35, 46, 0.5));
+    outline-offset: 2px;
+}
+
+.yt-filter-modal-btn--primary,
+.yt-filter-modal-btn--primary:hover {
+    border-color: var(--yt-accent, var(--red-main, #bc232e));
+    background: var(--yt-accent, var(--red-main, #bc232e));
+    color: var(--yt-accent-contrast, #fff);
+}
+
+.yt-filter-modal-btn--primary:hover {
+    filter: brightness(1.08);
+}
+
+.yt-filter-modal-btn--danger,
+.yt-filter-modal-btn--danger:hover {
+    border-color: #c0182a;
+    background: #c0182a;
+    color: #fff;
+}
+
+.yt-filter-modal-btn--danger-ghost {
+    border-color: transparent;
+    background: transparent;
+    color: #c0182a;
+}
+
+.yt-filter-modal-btn--danger-ghost:hover {
+    background: rgba(192, 24, 42, 0.08);
+}
+
+@media screen and (max-width: 768px) {
+    .section-nav-parent-filter-bar {
+        flex-wrap: nowrap;
+    }
+
+    /* One swipeable line of chips on phones */
+    .section-nav-parent-filter-chips {
+        flex: 1 1 auto;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: thin;
+        padding: 2px 0;
+    }
+
+    .section-nav-parent-filter-chip {
+        flex: 0 0 auto;
+        height: 44px;
+    }
+
+    .section-nav-parent-filter-chip-edit {
+        width: 40px;
+    }
+
+    .section-nav-parent-filter-new {
+        flex: 0 0 auto;
+        height: 44px;
+    }
+
+    .section-nav-parent-filter-bar-label {
+        display: none;
+    }
+
+    .section-nav-parent-filter-clear {
+        height: 40px;
+    }
+
+    /* Let the "Filtered by" line wrap instead of cutting off the count */
+    .section-nav-parent-filter-status-text {
+        white-space: normal;
+        line-height: 1.3;
+    }
+
+    .yt-filter-modal-option {
+        min-height: 44px;
+    }
+
+    .yt-filter-modal-btn,
+    .yt-filter-modal-tab,
+    .yt-filter-modal .yt-filter-modal-name,
+    .yt-filter-modal .yt-filter-modal-search,
+    .yt-filter-modal-link,
+    .yt-filter-modal-close {
+        min-height: 44px;
+        height: 44px;
+    }
+
+    /* Keeps iOS from zooming into the fields */
+    .yt-filter-modal .yt-filter-modal-name,
+    .yt-filter-modal .yt-filter-modal-search {
+        font-size: 16px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .yt-filter-modal {
+        align-items: stretch;
+        padding: 0;
+    }
+
+    .yt-filter-modal-dialog {
+        width: 100%;
+        max-height: none;
+        height: 100%;
+        border: 0;
+        border-radius: 0;
+    }
+}
