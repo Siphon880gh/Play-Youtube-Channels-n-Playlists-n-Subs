@@ -12,6 +12,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 <html>
 <head>
     <title>Youtube Viewer and Shuffler by Weng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta property="fb:app_id" content="685633705547844" />
     <meta property="og:image" content="https://www.publicdomainpictures.net/pictures/250000/nahled/youtube-1515875370Xwr.jpg" />
@@ -2860,11 +2861,11 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 <div id="section-nav-parent-list" class="section-nav-parent-list" hidden>
                     <div class="section-nav-parent-list-toolbar">
                         <div class="section-nav-parent-list-tools">
-                            <button class="section-nav-parent-alpha-toggle" type="button" aria-expanded="false" aria-label="Show letter jump (A–Z)" title="Jump by letter">
-                                <i class="fa fa-chevron-left section-nav-parent-alpha-toggle-chevron" aria-hidden="true"></i>
-                                <span class="section-nav-parent-alpha-toggle-label">A–Z</span>
+                            <button class="section-nav-parent-alpha-toggle" type="button" aria-expanded="false" aria-controls="section-nav-parent-alpha-index" aria-label="Show letter jump by category" title="Jump by first letter of category">
+                                <i class="fas fa-sort-alpha-down section-nav-parent-alpha-toggle-icon" aria-hidden="true"></i>
+                                <span class="section-nav-parent-alpha-toggle-label">Jump · Category</span>
                             </button>
-                            <div class="section-nav-parent-alpha-index" hidden></div>
+                            <div id="section-nav-parent-alpha-index" class="section-nav-parent-alpha-index" hidden></div>
                             <button class="section-nav-parent-view-toggle" type="button" aria-label="Switch to alphabetical list view" title="Alphabetical list">
                                 <i class="fa fa-list" aria-hidden="true"></i>
                             </button>
@@ -3395,7 +3396,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             this.listSortKey = 'category';
             this.listSortDir = 'asc';
             localStorage.removeItem('YT__all-topics-sort');
-            this.alphaIndexExpanded = false;
+            // Letter jump row remembers whether it was left open
+            this.alphaIndexExpanded = localStorage.getItem('YT__all-topics-alpha-open') === '1';
         }
 
         init() {
@@ -3441,7 +3443,11 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             if (!this.$nav.length) return;
             const sectionTop = $('#favs-section').offset().top;
             const isStuck = window.scrollY > sectionTop + 2;
+            const wasStuck = this.$nav.hasClass('is-stuck');
             this.$nav.toggleClass('is-stuck', isStuck);
+            if (isStuck !== wasStuck && this.$list && this.$list.length) {
+                this.fitListBody();
+            }
         }
 
         toggleList() {
@@ -3449,9 +3455,10 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             this.$toggle.attr('aria-expanded', !expanded);
             if (expanded) {
                 this.$list.attr('hidden', '');
-                this.collapseAlphaIndex();
             } else {
                 this.$list.removeAttr('hidden');
+                this.syncTableHeadOffset();
+                this.fitListBody();
             }
             this.measureNavHeight();
         }
@@ -3459,7 +3466,6 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         collapseList() {
             this.$toggle.attr('aria-expanded', 'false');
             this.$list.attr('hidden', '');
-            this.collapseAlphaIndex();
         }
 
         getFirstLetter(label) {
@@ -3472,25 +3478,36 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             return /[A-Z]/.test(char) ? char : '#';
         }
 
-        collapseAlphaIndex() {
-            this.alphaIndexExpanded = false;
-            this.$alphaToggle.attr('aria-expanded', 'false');
-            this.$alphaToggle.removeClass('section-nav-parent-alpha-toggle--expanded');
-            this.$alphaIndex.attr('hidden', '');
-        }
+        syncAlphaToggleUi() {
+            if (!this.$alphaToggle || !this.$alphaToggle.length) {
+                return;
+            }
 
-        toggleAlphaIndex() {
-            this.alphaIndexExpanded = !this.alphaIndexExpanded;
-            this.$alphaToggle.attr('aria-expanded', this.alphaIndexExpanded);
-            this.$alphaToggle.toggleClass('section-nav-parent-alpha-toggle--expanded', this.alphaIndexExpanded);
+            const expanded = this.alphaIndexExpanded;
+            const column = this.listSortKey === 'shelf' ? 'Shelf' : 'Category';
+            const isDesc = this.listSortDir === 'desc';
 
-            if (this.alphaIndexExpanded) {
+            this.$alphaToggle
+                .attr('aria-expanded', expanded ? 'true' : 'false')
+                .attr('aria-label', `${expanded ? 'Hide' : 'Show'} letter jump by ${column.toLowerCase()}`)
+                .attr('title', `Jump by first letter of ${column.toLowerCase()}`)
+                .toggleClass('section-nav-parent-alpha-toggle--expanded', expanded);
+            this.$alphaToggle.find('.section-nav-parent-alpha-toggle-icon')
+                .attr('class', `fas ${isDesc ? 'fa-sort-alpha-down-alt' : 'fa-sort-alpha-down'} section-nav-parent-alpha-toggle-icon`);
+            this.$alphaToggle.find('.section-nav-parent-alpha-toggle-label').text(`Jump · ${column}`);
+
+            if (expanded) {
                 this.renderAlphaIndex();
                 this.$alphaIndex.removeAttr('hidden');
             } else {
                 this.$alphaIndex.attr('hidden', '');
             }
+        }
 
+        toggleAlphaIndex() {
+            this.alphaIndexExpanded = !this.alphaIndexExpanded;
+            localStorage.setItem('YT__all-topics-alpha-open', this.alphaIndexExpanded ? '1' : '0');
+            this.syncAlphaToggleUi();
             this.measureNavHeight();
         }
 
@@ -3498,7 +3515,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             const letters = [];
             const seenLetters = {};
 
-            this.$listGrid.find('.section-nav-parent-item').each((_, el) => {
+            this.$listGrid.find('[data-first-letter]').each((_, el) => {
                 const letter = $(el).attr('data-first-letter');
                 if (letter && !seenLetters[letter]) {
                     seenLetters[letter] = true;
@@ -3610,10 +3627,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
             if (isListView) {
                 this.renderAlphabeticalTable(items);
-
-                if (this.alphaIndexExpanded) {
-                    this.renderAlphaIndex();
-                }
+                this.syncAlphaToggleUi();
 
                 this.updateNav();
                 return;
@@ -3683,7 +3697,9 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             const byShelf = this.listSortKey === 'shelf';
             const isDesc = this.listSortDir === 'desc';
             const seenAlphaAnchors = {};
-            const $table = $('<table>').addClass('section-nav-parent-table');
+            const $table = $('<table>')
+                .addClass('section-nav-parent-table')
+                .toggleClass('section-nav-parent-table--by-shelf', byShelf);
             const $headRow = $('<tr>');
 
             [
@@ -3703,10 +3719,9 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                         ? `Sorted by ${label.toLowerCase()} (${isDesc ? 'Z–A' : 'A–Z'}); click to reverse`
                         : `Sort by ${label.toLowerCase()}`)
                     .append($('<span>').text(label))
-                    .append($('<span>')
-                        .addClass('section-nav-parent-table-sort-icon')
-                        .attr('aria-hidden', 'true')
-                        .html(isActive ? (isDesc ? '&#9660;' : '&#9650;') : '&#8597;'));
+                    .append($('<i>')
+                        .addClass(`fas ${isActive ? (isDesc ? 'fa-sort-down' : 'fa-sort-up') : 'fa-sort'} section-nav-parent-table-sort-icon`)
+                        .attr('aria-hidden', 'true'));
 
                 $sortBtn.on('click', (event) => {
                     event.preventDefault();
@@ -3718,29 +3733,62 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             });
 
             const $tbody = $('<tbody>');
+            const shelfCounts = {};
+            let currentShelf = null;
+
+            if (byShelf) {
+                sorted.forEach(({ section }) => {
+                    const shelf = section.group || '';
+                    shelfCounts[shelf] = (shelfCounts[shelf] || 0) + 1;
+                });
+            }
 
             sorted.forEach(({ section, index }) => {
                 const shelf = section.group || '';
-                const $row = $('<tr>').addClass('section-nav-parent-table-row');
-                const $shelfCell = $('<td>').addClass('section-nav-parent-table-shelf');
 
-                if (shelf) {
-                    $shelfCell.text(shelf);
-                } else {
-                    $shelfCell.addClass('section-nav-parent-table-shelf--empty').text('—');
+                // Sorted by shelf: each shelf shows once as a sticky sub-header
+                if (byShelf && shelf !== currentShelf) {
+                    currentShelf = shelf;
+                    const $groupCell = $('<th>')
+                        .addClass('section-nav-parent-table-group-cell')
+                        .attr('scope', 'colgroup')
+                        .attr('colspan', 2)
+                        .append($('<span>').addClass('section-nav-parent-table-group-name').text(shelf || 'No shelf'))
+                        .append($('<span>').addClass('section-nav-parent-table-group-count').text(shelfCounts[shelf]));
+
+                    if (shelf) {
+                        const shelfLetter = this.getFirstLetter(shelf);
+                        $groupCell.attr('data-first-letter', shelfLetter);
+                        if (!seenAlphaAnchors[shelfLetter]) {
+                            seenAlphaAnchors[shelfLetter] = true;
+                            $groupCell.attr('data-alpha-anchor', shelfLetter);
+                        }
+                    }
+
+                    $tbody.append($('<tr>').addClass('section-nav-parent-table-group').append($groupCell));
                 }
 
+                // The whole row is one button, so any click on the row jumps
                 const $btn = $('<button>')
-                    .addClass('section-nav-parent-item')
+                    .addClass('section-nav-parent-item section-nav-parent-table-link')
                     .attr('type', 'button')
-                    .attr('data-section-index', index);
-                this.fillLabeled($btn, section.label, '');
+                    .attr('data-section-index', index)
+                    .attr('aria-label', (!byShelf && shelf) ? `${section.label} (shelf: ${shelf})` : section.label);
 
-                // A–Z jump follows the active sort column
-                if (!byShelf || shelf) {
-                    const firstLetter = this.getFirstLetter(byShelf ? shelf : section.label);
+                if (!byShelf) {
+                    $btn.append($('<span>')
+                        .addClass('section-nav-parent-table-shelf')
+                        .toggleClass('section-nav-parent-table-shelf--empty', !shelf)
+                        .text(shelf || '—'));
+                }
+
+                const $category = $('<span>').addClass('section-nav-parent-table-category');
+                this.fillLabeled($category, section.label, byShelf ? this.categoryLabelInGroup(section.label, shelf) : '');
+                $btn.append($category);
+
+                if (!byShelf) {
+                    const firstLetter = this.getFirstLetter(section.label);
                     $btn.attr('data-first-letter', firstLetter);
-
                     if (!seenAlphaAnchors[firstLetter]) {
                         seenAlphaAnchors[firstLetter] = true;
                         $btn.attr('data-alpha-anchor', firstLetter);
@@ -3751,15 +3799,49 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     this.jumpToSection(index);
                 });
 
-                $row.append(
-                    $shelfCell,
-                    $('<td>').addClass('section-nav-parent-table-category').append($btn)
-                );
-                $tbody.append($row);
+                $tbody.append($('<tr>')
+                    .addClass('section-nav-parent-table-row')
+                    .append($('<td>')
+                        .addClass('section-nav-parent-table-cell')
+                        .attr('colspan', 2)
+                        .append($btn)));
             });
 
             $table.append($('<thead>').append($headRow), $tbody);
             this.$listGrid.append($table);
+            this.syncTableHeadOffset();
+        }
+
+        // On short screens the stuck nav can push the list past the bottom edge; cap it to what's visible
+        fitListBody() {
+            if (!this.$listBody || !this.$listBody.length) {
+                return;
+            }
+
+            this.$listBody.css('max-height', '');
+            if (this.$list.is('[hidden]') || !this.$nav.hasClass('is-stuck')) {
+                return;
+            }
+
+            const bodyEl = this.$listBody[0];
+            const cssMax = parseFloat(window.getComputedStyle(bodyEl).maxHeight) || Infinity;
+            const available = window.innerHeight - Math.max(bodyEl.getBoundingClientRect().top, 0) - 8;
+            if (available < cssMax) {
+                this.$listBody.css('max-height', `${Math.max(available, 200)}px`);
+            }
+        }
+
+        // Shelf sub-headers stick just under the column header
+        syncTableHeadOffset() {
+            const $table = this.$listGrid ? this.$listGrid.find('.section-nav-parent-table') : $();
+            if (!$table.length) {
+                return;
+            }
+
+            const headHeight = $table.find('thead').outerHeight();
+            if (headHeight) {
+                $table[0].style.setProperty('--section-nav-table-head-h', `${headHeight}px`);
+            }
         }
 
         setListSort(key) {
@@ -3771,18 +3853,15 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             }
 
             this.renderAllTopicsList();
-            if (this.alphaIndexExpanded) {
-                this.renderAlphaIndex();
-            }
             this.$listBody.scrollTop(0);
         }
 
         toggleListView() {
             this.listView = this.listView === 'alphabetical' ? 'mosaic' : 'alphabetical';
             localStorage.setItem('YT__all-topics-view', this.listView);
-            this.collapseAlphaIndex();
             this.updateViewToggleUi();
             this.renderAllTopicsList();
+            this.$listBody.scrollTop(0);
             this.measureNavHeight();
         }
 
@@ -3796,11 +3875,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
             this.$list.toggleClass('section-nav-parent-list--alphabetical', isListView);
 
-            if (!isListView) {
-                this.collapseAlphaIndex();
-            } else if (this.alphaIndexExpanded) {
-                this.$alphaIndex.removeAttr('hidden');
-            }
+            this.syncAlphaToggleUi();
 
             this.$viewToggle.attr(
                 'aria-label',
@@ -3849,6 +3924,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
         onResize() {
             this.measureNavHeight();
+            this.syncTableHeadOffset();
+            this.fitListBody();
             this.updateStuckState();
             this.syncCurrentSection();
         }
