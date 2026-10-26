@@ -2860,8 +2860,9 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 <div id="section-nav-parent-list" class="section-nav-parent-list" hidden>
                     <div class="section-nav-parent-list-toolbar">
                         <div class="section-nav-parent-list-tools">
-                            <button class="section-nav-parent-alpha-toggle" type="button" aria-expanded="false" aria-label="Show alphabet index" title="Jump by letter">
-                                <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                            <button class="section-nav-parent-alpha-toggle" type="button" aria-expanded="false" aria-label="Show letter jump (A–Z)" title="Jump by letter">
+                                <i class="fa fa-chevron-left section-nav-parent-alpha-toggle-chevron" aria-hidden="true"></i>
+                                <span class="section-nav-parent-alpha-toggle-label">A–Z</span>
                             </button>
                             <div class="section-nav-parent-alpha-index" hidden></div>
                             <button class="section-nav-parent-view-toggle" type="button" aria-label="Switch to alphabetical list view" title="Alphabetical list">
