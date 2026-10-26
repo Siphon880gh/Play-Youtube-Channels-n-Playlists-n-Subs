@@ -24,7 +24,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="assets/js/favs.js?v=2"></script>
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
     <script src="env/playlist-icons.js?v=8"></script>
-    <link rel="stylesheet" href="assets/css/index.css?v=27">
+    <link rel="stylesheet" href="assets/css/index.css?v=28">
     <link rel="stylesheet" href="assets/css/collection-themes.css?v=4">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
@@ -2855,6 +2855,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     </button>
                     <button class="section-nav-parent-toggle" type="button" aria-expanded="false" aria-controls="section-nav-parent-list">
                         All topics
+                        <span class="section-nav-parent-toggle-filter-badge" hidden><i class="fas fa-filter" aria-hidden="true"></i><span class="sr-only">(filtered)</span></span>
                         <span class="section-nav-parent-toggle-icon">&#9662;</span>
                     </button>
                 </div>
@@ -2870,6 +2871,14 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                                 <i class="fa fa-list" aria-hidden="true"></i>
                             </button>
                         </div>
+                        <div class="section-nav-parent-filter-bar" role="group" aria-label="Filter views">
+                            <span class="section-nav-parent-filter-bar-label"><i class="fas fa-filter" aria-hidden="true"></i> Views</span>
+                            <div class="section-nav-parent-filter-chips"></div>
+                            <button class="section-nav-parent-filter-new" type="button" title="Save a set of shelves or categories as a filter view">
+                                <i class="fas fa-plus" aria-hidden="true"></i> New view
+                            </button>
+                        </div>
+                        <div class="section-nav-parent-filter-status" role="status" aria-live="polite" hidden></div>
                     </div>
                     <div class="section-nav-parent-list-body">
                         <div class="section-nav-parent-list-grid section-nav-parent-list-grid--mosaic"></div>
@@ -3398,6 +3407,12 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             localStorage.removeItem('YT__all-topics-sort');
             // Letter jump row remembers whether it was left open
             this.alphaIndexExpanded = localStorage.getItem('YT__all-topics-alpha-open') === '1';
+            // Saved filter views for the alphabetical table (loaded per collection)
+            this.filterViews = [];
+            this.activeFilterId = null;
+            this.filterScope = null;
+            this.filterDraft = null;
+            this.$filterModal = null;
         }
 
         init() {
@@ -3414,7 +3429,12 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             this.$viewToggle = $('.section-nav-parent-view-toggle');
             this.$alphaToggle = $('.section-nav-parent-alpha-toggle');
             this.$alphaIndex = $('.section-nav-parent-alpha-index');
+            this.$filterBar = $('.section-nav-parent-filter-bar');
+            this.$filterChips = $('.section-nav-parent-filter-chips');
+            this.$filterNew = $('.section-nav-parent-filter-new');
+            this.$filterStatus = $('.section-nav-parent-filter-status');
 
+            this.loadFilterViews();
             this.bindEvents();
             this.updateViewToggleUi();
         }
@@ -3430,6 +3450,11 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 event.preventDefault();
                 event.stopPropagation();
                 this.toggleAlphaIndex();
+            });
+            this.$filterNew.on('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.openFilterModal(null, event.currentTarget);
             });
             this.$prevBtn.on('click', () => this.jumpToSection(this.currentIndex - 1));
             this.$nextBtn.on('click', () => this.jumpToSection(this.currentIndex + 1));
@@ -3595,6 +3620,10 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             }
 
             this.currentIndex = 0;
+            // The iframe may have switched to another favs collection with its own views
+            if (this.filterScope !== this.filterStorageScope()) {
+                this.loadFilterViews();
+            }
             this.renderAllTopicsList();
             this.measureNavHeight();
             if (this.sections.length > 0) {
@@ -3626,7 +3655,18 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             let items = this.sections.map((section, index) => ({ section, index }));
 
             if (isListView) {
-                this.renderAlphabeticalTable(items);
+                const total = items.length;
+                const activeView = this.getActiveFilterView();
+                if (activeView) {
+                    items = items.filter(({ section }) => this.sectionMatchesView(section, activeView));
+                }
+
+                if (items.length || !activeView) {
+                    this.renderAlphabeticalTable(items);
+                } else {
+                    this.renderFilterEmpty(activeView);
+                }
+                this.renderFilterBar(total, items.length);
                 this.syncAlphaToggleUi();
 
                 this.updateNav();
@@ -3659,6 +3699,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 this.$listGrid.append($btn);
             });
 
+            this.renderFilterBar(items.length, items.length);
             this.updateNav();
         }
 
@@ -3810,6 +3851,640 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             $table.append($('<thead>').append($headRow), $tbody);
             this.$listGrid.append($table);
             this.syncTableHeadOffset();
+        }
+
+
+        // ---- Filter views: saved shelf/category picks that narrow the alphabetical table ----
+        // Saved per favs collection, since each collection has its own shelves and categories
+        filterStorageScope() {
+            const bundle = (typeof currentFavsBundle === 'function') ? currentFavsBundle() : '';
+            return bundle || 'Default';
+        }
+
+        filterStorageKey(kind) {
+            return `YT__all-topics-filter-${kind}::${this.filterScope}`;
+        }
+
+        loadFilterViews() {
+            this.filterScope = this.filterStorageScope();
+            let parsed = [];
+            try {
+                parsed = JSON.parse(localStorage.getItem(this.filterStorageKey('views')) || '[]');
+            } catch (e) {
+                parsed = [];
+            }
+
+            const toStrings = (list) => Array.isArray(list) ? list.map((item) => String(item)) : [];
+            this.filterViews = (Array.isArray(parsed) ? parsed : [])
+                .filter((view) => view && typeof view === 'object' && view.id && String(view.name || '').trim())
+                .map((view) => ({
+                    id: String(view.id),
+                    name: String(view.name).trim(),
+                    shelves: toStrings(view.shelves),
+                    categories: toStrings(view.categories)
+                }));
+
+            const activeId = localStorage.getItem(this.filterStorageKey('active'));
+            this.activeFilterId = this.filterViews.some((view) => view.id === activeId) ? activeId : null;
+        }
+
+        saveFilterViews() {
+            localStorage.setItem(this.filterStorageKey('views'), JSON.stringify(this.filterViews));
+            if (this.activeFilterId) {
+                localStorage.setItem(this.filterStorageKey('active'), this.activeFilterId);
+            } else {
+                localStorage.removeItem(this.filterStorageKey('active'));
+            }
+        }
+
+        getActiveFilterView() {
+            return this.filterViews.find((view) => view.id === this.activeFilterId) || null;
+        }
+
+        // A topic shows if its shelf OR its category is in the view; names no longer in the collection just match nothing
+        sectionMatchesView(section, view) {
+            return view.shelves.indexOf(section.group || '') !== -1
+                || view.categories.indexOf(section.label) !== -1;
+        }
+
+        countViewMatches(view) {
+            return this.sections.filter((section) => this.sectionMatchesView(section, view)).length;
+        }
+
+        // Radio behavior: one view at a time; picking the active one again (or All) clears it
+        setActiveFilter(id) {
+            const exists = this.filterViews.some((view) => view.id === id);
+            this.activeFilterId = (id && exists && id !== this.activeFilterId) ? id : null;
+            this.saveFilterViews();
+            this.renderAllTopicsList();
+            this.$listBody.scrollTop(0);
+            this.measureNavHeight();
+            this.fitListBody();
+        }
+
+        renderFilterBar(total, shown) {
+            if (!this.$filterChips || !this.$filterChips.length) {
+                return;
+            }
+
+            const isListView = this.listView === 'alphabetical';
+            const active = this.getActiveFilterView();
+            const applied = isListView && !!active;
+
+            this.$filterChips.empty();
+
+            const $all = $('<button>')
+                .addClass('section-nav-parent-filter-chip section-nav-parent-filter-chip--all')
+                .toggleClass('section-nav-parent-filter-chip--active', !active)
+                .attr('type', 'button')
+                .attr('aria-pressed', active ? 'false' : 'true')
+                .attr('title', 'Show every topic')
+                .append($('<span>').addClass('section-nav-parent-filter-chip-name').text('All'));
+            $all.on('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.setActiveFilter(null);
+            });
+            this.$filterChips.append($all);
+
+            this.filterViews.forEach((view) => {
+                const isActive = view.id === this.activeFilterId;
+                const matches = this.countViewMatches(view);
+                const $chip = $('<div>')
+                    .addClass('section-nav-parent-filter-chip section-nav-parent-filter-chip--view')
+                    .toggleClass('section-nav-parent-filter-chip--active', isActive);
+                const $apply = $('<button>')
+                    .addClass('section-nav-parent-filter-chip-apply')
+                    .attr('type', 'button')
+                    .attr('aria-pressed', isActive ? 'true' : 'false')
+                    .attr('title', isActive ? `Showing "${view.name}"; click to show all` : `Show only "${view.name}" (${matches} topics)`)
+                    .append(isActive ? $('<i>').addClass('fas fa-check section-nav-parent-filter-chip-check').attr('aria-hidden', 'true') : null)
+                    .append($('<span>').addClass('section-nav-parent-filter-chip-name').text(view.name))
+                    .append($('<span>').addClass('section-nav-parent-filter-chip-count').text(matches));
+                const $edit = $('<button>')
+                    .addClass('section-nav-parent-filter-chip-edit')
+                    .attr('type', 'button')
+                    .attr('aria-label', `Edit view "${view.name}"`)
+                    .attr('title', 'Edit or delete this view')
+                    .append($('<i>').addClass('fas fa-pen').attr('aria-hidden', 'true'));
+
+                $apply.on('click', (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.setActiveFilter(view.id);
+                });
+                $edit.on('click', (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.openFilterModal(view.id, event.currentTarget);
+                });
+
+                this.$filterChips.append($chip.append($apply, $edit));
+            });
+
+            // Clear signs that a filter is on: banner above the table, tinted list, badge on "All topics"
+            this.$list.toggleClass('section-nav-parent-list--filtered', applied);
+            this.$toggle
+                .toggleClass('section-nav-parent-toggle--filtered', applied)
+                .attr('title', applied ? `All topics (filtered by "${active.name}")` : 'All topics');
+            this.$toggle.find('.section-nav-parent-toggle-filter-badge').prop('hidden', !applied);
+
+            if (!applied) {
+                this.$filterStatus.attr('hidden', '').empty();
+                return;
+            }
+
+            const $clear = $('<button>')
+                .addClass('section-nav-parent-filter-clear')
+                .attr('type', 'button')
+                .append($('<i>').addClass('fa fa-times').attr('aria-hidden', 'true'), ' Clear');
+            $clear.on('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.setActiveFilter(null);
+            });
+
+            this.$filterStatus
+                .empty()
+                .append(
+                    $('<i>').addClass('fas fa-filter section-nav-parent-filter-status-icon').attr('aria-hidden', 'true'),
+                    $('<span>').addClass('section-nav-parent-filter-status-text').append(
+                        'Filtered by ',
+                        $('<strong>').text(`"${active.name}"`),
+                        $('<span>').addClass('section-nav-parent-filter-status-count').text(` · showing ${shown} of ${total}`)
+                    ),
+                    $clear
+                )
+                .removeAttr('hidden');
+        }
+
+        renderFilterEmpty(view) {
+            const $clear = $('<button>')
+                .addClass('section-nav-parent-filter-empty-btn')
+                .attr('type', 'button')
+                .text('Show all topics');
+            const $edit = $('<button>')
+                .addClass('section-nav-parent-filter-empty-btn')
+                .attr('type', 'button')
+                .text('Edit view');
+            $clear.on('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.setActiveFilter(null);
+            });
+            $edit.on('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.openFilterModal(view.id, event.currentTarget);
+            });
+
+            this.$listGrid.append($('<div>')
+                .addClass('section-nav-parent-filter-empty')
+                .append(
+                    $('<p>').addClass('section-nav-parent-filter-empty-title').text(`No topics match "${view.name}"`),
+                    $('<p>').addClass('section-nav-parent-filter-empty-text').text('Its shelves and categories aren\u2019t in this collection right now.'),
+                    $('<div>').addClass('section-nav-parent-filter-empty-actions').append($edit, $clear)
+                ));
+        }
+
+        buildFilterModal() {
+            if (this.$filterModal) {
+                return;
+            }
+
+            const $modal = $(`
+                <div class="yt-filter-modal" hidden>
+                    <div class="yt-filter-modal-backdrop" data-filter-close></div>
+                    <div class="yt-filter-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="yt-filter-modal-title" aria-describedby="yt-filter-modal-desc">
+                        <div class="yt-filter-modal-header">
+                            <h2 id="yt-filter-modal-title" class="yt-filter-modal-title">New filter view</h2>
+                            <button type="button" class="yt-filter-modal-close" data-filter-close aria-label="Close"><i class="fa fa-times" aria-hidden="true"></i></button>
+                        </div>
+                        <form class="yt-filter-modal-form" novalidate>
+                            <div class="yt-filter-modal-body">
+                                <label class="yt-filter-modal-label" for="yt-filter-modal-name">Name</label>
+                                <input id="yt-filter-modal-name" class="yt-filter-modal-name" type="text" maxlength="60" autocomplete="off" placeholder="e.g. Faith, Games, Weekend">
+                                <p class="yt-filter-modal-error" role="alert" hidden></p>
+                                <p id="yt-filter-modal-desc" class="yt-filter-modal-hint">Pick shelves, categories, or both. A topic shows if its shelf or its category is picked.</p>
+                                <div class="yt-filter-modal-tabs" role="tablist" aria-label="Pick by">
+                                    <button type="button" role="tab" id="yt-filter-tab-shelves" class="yt-filter-modal-tab" data-filter-tab="shelves" aria-controls="yt-filter-modal-panel">By shelf <span class="yt-filter-modal-tab-count" data-filter-count="shelves"></span></button>
+                                    <button type="button" role="tab" id="yt-filter-tab-categories" class="yt-filter-modal-tab" data-filter-tab="categories" aria-controls="yt-filter-modal-panel">By category <span class="yt-filter-modal-tab-count" data-filter-count="categories"></span></button>
+                                </div>
+                                <div id="yt-filter-modal-panel" class="yt-filter-modal-panel" role="tabpanel">
+                                    <div class="yt-filter-modal-panel-tools">
+                                        <input type="search" class="yt-filter-modal-search" autocomplete="off" aria-label="Search">
+                                        <button type="button" class="yt-filter-modal-link" data-filter-select="all">Select all</button>
+                                        <button type="button" class="yt-filter-modal-link" data-filter-select="none">None</button>
+                                    </div>
+                                    <div class="yt-filter-modal-options" role="group"></div>
+                                </div>
+                                <p class="yt-filter-modal-summary" aria-live="polite"></p>
+                            </div>
+                            <div class="yt-filter-modal-footer">
+                                <div class="yt-filter-modal-delete-wrap">
+                                    <button type="button" class="yt-filter-modal-btn yt-filter-modal-btn--danger-ghost yt-filter-modal-delete"><i class="fas fa-trash-alt" aria-hidden="true"></i> Delete</button>
+                                    <span class="yt-filter-modal-confirm" hidden>
+                                        <span class="yt-filter-modal-confirm-text">Delete this view?</span>
+                                        <button type="button" class="yt-filter-modal-btn yt-filter-modal-btn--danger yt-filter-modal-confirm-yes">Delete</button>
+                                        <button type="button" class="yt-filter-modal-btn yt-filter-modal-confirm-no">Keep</button>
+                                    </span>
+                                </div>
+                                <div class="yt-filter-modal-actions">
+                                    <button type="button" class="yt-filter-modal-btn" data-filter-close>Cancel</button>
+                                    <button type="submit" class="yt-filter-modal-btn yt-filter-modal-btn--primary yt-filter-modal-save">Save view</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `);
+
+            $('body').append($modal);
+            this.$filterModal = $modal;
+            this.$filterDialog = $modal.find('.yt-filter-modal-dialog');
+            this.$filterName = $modal.find('.yt-filter-modal-name');
+            this.$filterError = $modal.find('.yt-filter-modal-error');
+            this.$filterSearch = $modal.find('.yt-filter-modal-search');
+            this.$filterOptions = $modal.find('.yt-filter-modal-options');
+            this.$filterSummary = $modal.find('.yt-filter-modal-summary');
+
+            $modal.on('click', '[data-filter-close]', (event) => {
+                event.preventDefault();
+                this.closeFilterModal();
+            });
+            $modal.on('click', '[data-filter-tab]', (event) => {
+                event.preventDefault();
+                this.setFilterModalTab($(event.currentTarget).attr('data-filter-tab'), true);
+            });
+            $modal.on('keydown', '[role="tab"]', (event) => {
+                if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+                    event.preventDefault();
+                    this.setFilterModalTab(this.filterDraft.tab === 'shelves' ? 'categories' : 'shelves', true);
+                    $modal.find(`[data-filter-tab="${this.filterDraft.tab}"]`).trigger('focus');
+                }
+            });
+            $modal.on('click', '[data-filter-select]', (event) => {
+                event.preventDefault();
+                const selectAll = $(event.currentTarget).attr('data-filter-select') === 'all';
+                const picked = this.filterDraft[this.filterDraft.tab];
+                this.$filterOptions.find('.yt-filter-modal-option:not([hidden]) input').each((_, input) => {
+                    if (selectAll) {
+                        picked[input.value] = true;
+                    } else {
+                        delete picked[input.value];
+                    }
+                    input.checked = selectAll;
+                });
+                this.updateFilterModalSummary();
+            });
+            this.$filterOptions.on('change', 'input[type="checkbox"]', (event) => {
+                const picked = this.filterDraft[this.filterDraft.tab];
+                if (event.target.checked) {
+                    picked[event.target.value] = true;
+                } else {
+                    delete picked[event.target.value];
+                }
+                $(event.target).closest('.yt-filter-modal-option').toggleClass('yt-filter-modal-option--checked', event.target.checked);
+                this.updateFilterModalSummary();
+            });
+            this.$filterSearch.on('input', () => this.applyFilterModalSearch());
+            this.$filterSearch.on('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                }
+            });
+            this.$filterName.on('input', () => this.$filterError.attr('hidden', ''));
+            $modal.find('.yt-filter-modal-form').on('submit', (event) => {
+                event.preventDefault();
+                this.saveFilterModal();
+            });
+            $modal.find('.yt-filter-modal-delete').on('click', (event) => {
+                event.preventDefault();
+                this.showFilterDeleteConfirm(true);
+            });
+            $modal.find('.yt-filter-modal-confirm-no').on('click', (event) => {
+                event.preventDefault();
+                this.showFilterDeleteConfirm(false);
+            });
+            $modal.find('.yt-filter-modal-confirm-yes').on('click', (event) => {
+                event.preventDefault();
+                this.deleteFilterView(this.filterDraft.id);
+            });
+            $modal.on('keydown', (event) => this.onFilterModalKeydown(event));
+        }
+
+        openFilterModal(viewId, opener) {
+            this.buildFilterModal();
+            const view = viewId ? this.filterViews.find((item) => item.id === viewId) : null;
+            const toMap = (list) => (list || []).reduce((map, key) => { map[key] = true; return map; }, {});
+
+            this.filterModalOpener = opener || document.activeElement;
+            this.filterDraft = {
+                id: view ? view.id : null,
+                shelves: toMap(view ? view.shelves : []),
+                categories: toMap(view ? view.categories : []),
+                tab: (view && !view.shelves.length && view.categories.length) ? 'categories' : 'shelves'
+            };
+
+            this.$filterModal.find('.yt-filter-modal-title').text(view ? 'Edit filter view' : 'New filter view');
+            this.$filterModal.find('.yt-filter-modal-save').text(view ? 'Save changes' : 'Save view');
+            this.$filterModal.find('.yt-filter-modal-delete-wrap').toggle(!!view);
+            this.showFilterDeleteConfirm(false);
+            this.$filterName.val(view ? view.name : '');
+            this.$filterError.attr('hidden', '').text('');
+            this.setFilterModalTab(this.filterDraft.tab, false);
+
+            this.$filterModal.removeAttr('hidden');
+            $('body').addClass('yt-filter-modal-open');
+            setTimeout(() => this.$filterName.trigger('focus'), 0);
+        }
+
+        closeFilterModal() {
+            if (!this.$filterModal || this.$filterModal.is('[hidden]')) {
+                return;
+            }
+
+            this.$filterModal.attr('hidden', '');
+            $('body').removeClass('yt-filter-modal-open');
+            const opener = this.filterModalOpener;
+            this.filterModalOpener = null;
+            if (opener && document.body.contains(opener)) {
+                opener.focus();
+            } else if (this.$filterNew && this.$filterNew.length) {
+                this.$filterNew.trigger('focus');
+            }
+        }
+
+        onFilterModalKeydown(event) {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                event.stopPropagation();
+                if (!this.$filterModal.find('.yt-filter-modal-confirm').is('[hidden]')) {
+                    this.showFilterDeleteConfirm(false);
+                } else {
+                    this.closeFilterModal();
+                }
+                return;
+            }
+
+            if (event.key !== 'Tab') {
+                return;
+            }
+
+            // Keep Tab inside the dialog
+            const focusables = this.$filterDialog
+                .find('button, input, [tabindex]:not([tabindex="-1"])')
+                .filter((_, el) => !el.disabled && $(el).is(':visible'));
+            if (!focusables.length) {
+                return;
+            }
+
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        }
+
+        // Shelf and category choices, plus any saved picks that are no longer in this collection
+        filterModalOptions(kind) {
+            const picked = this.filterDraft[kind];
+            const options = [];
+            const seen = {};
+
+            if (kind === 'shelves') {
+                const counts = {};
+                this.sections.forEach((section) => {
+                    const shelf = section.group || '';
+                    counts[shelf] = (counts[shelf] || 0) + 1;
+                });
+                Object.keys(counts).forEach((shelf) => {
+                    seen[shelf] = true;
+                    options.push({
+                        value: shelf,
+                        name: shelf || 'No shelf',
+                        meta: `${counts[shelf]} ${counts[shelf] === 1 ? 'category' : 'categories'}`,
+                        sortKey: shelf
+                    });
+                });
+            } else {
+                this.sections.forEach((section) => {
+                    if (seen[section.label]) {
+                        return;
+                    }
+                    seen[section.label] = true;
+                    options.push({
+                        value: section.label,
+                        name: section.label,
+                        meta: section.group || '',
+                        sortKey: section.label,
+                        icon: true
+                    });
+                });
+            }
+
+            Object.keys(picked).forEach((value) => {
+                if (!seen[value]) {
+                    options.push({
+                        value,
+                        name: value || 'No shelf',
+                        meta: 'Not in this collection',
+                        sortKey: value,
+                        missing: true
+                    });
+                }
+            });
+
+            return options.sort((a, b) => {
+                // Picks missing from this collection come first so they're easy to spot and uncheck
+                if (!a.missing !== !b.missing) {
+                    return a.missing ? -1 : 1;
+                }
+                // "No shelf" sorts last
+                if (!a.sortKey !== !b.sortKey) {
+                    return a.sortKey ? -1 : 1;
+                }
+                return this.compareTopicLabels(a.sortKey, b.sortKey);
+            });
+        }
+
+        setFilterModalTab(tab, focusSearch) {
+            this.filterDraft.tab = tab === 'categories' ? 'categories' : 'shelves';
+            const isShelves = this.filterDraft.tab === 'shelves';
+
+            this.$filterModal.find('[data-filter-tab]').each((_, el) => {
+                const selected = $(el).attr('data-filter-tab') === this.filterDraft.tab;
+                $(el)
+                    .attr('aria-selected', selected ? 'true' : 'false')
+                    .attr('tabindex', selected ? '0' : '-1')
+                    .toggleClass('yt-filter-modal-tab--active', selected);
+            });
+            this.$filterModal.find('.yt-filter-modal-panel')
+                .attr('aria-labelledby', `yt-filter-tab-${this.filterDraft.tab}`);
+            this.$filterSearch
+                .val('')
+                .attr('placeholder', isShelves ? 'Search shelves' : 'Search categories')
+                .attr('aria-label', isShelves ? 'Search shelves' : 'Search categories');
+
+            this.renderFilterModalOptions();
+            if (focusSearch) {
+                this.$filterSearch.trigger('focus');
+            }
+        }
+
+        renderFilterModalOptions() {
+            const kind = this.filterDraft.tab;
+            const picked = this.filterDraft[kind];
+            const options = this.filterModalOptions(kind);
+
+            this.$filterOptions.empty().attr('aria-label', kind === 'shelves' ? 'Shelves' : 'Categories');
+
+            if (!options.length) {
+                this.$filterOptions.append($('<p>')
+                    .addClass('yt-filter-modal-none')
+                    .text(kind === 'shelves' ? 'This collection has no shelves.' : 'No categories loaded yet.'));
+            }
+
+            options.forEach((option) => {
+                const checked = !!picked[option.value];
+                const $name = $('<span>').addClass('yt-filter-modal-option-name');
+                if (option.icon) {
+                    this.fillLabeled($name, option.name);
+                } else {
+                    $name.text(option.name);
+                }
+
+                const $option = $('<label>')
+                    .addClass('yt-filter-modal-option')
+                    .toggleClass('yt-filter-modal-option--checked', checked)
+                    .toggleClass('yt-filter-modal-option--missing', !!option.missing)
+                    .attr('data-search', `${option.name} ${option.meta}`.toLowerCase())
+                    .append(
+                        $('<input>').attr('type', 'checkbox').val(option.value).prop('checked', checked),
+                        $('<span>').addClass('yt-filter-modal-option-text').append(
+                            $name,
+                            option.meta ? $('<span>').addClass('yt-filter-modal-option-meta').text(option.meta) : null
+                        )
+                    );
+                this.$filterOptions.append($option);
+            });
+
+            this.$filterOptions.append($('<p>').addClass('yt-filter-modal-none yt-filter-modal-no-match').attr('hidden', '').text('No matches'));
+            this.$filterOptions.scrollTop(0);
+            this.updateFilterModalSummary();
+        }
+
+        applyFilterModalSearch() {
+            const query = String(this.$filterSearch.val() || '').trim().toLowerCase();
+            let visible = 0;
+            this.$filterOptions.find('.yt-filter-modal-option').each((_, el) => {
+                const match = !query || String($(el).attr('data-search')).indexOf(query) !== -1;
+                $(el).prop('hidden', !match);
+                if (match) visible++;
+            });
+            this.$filterOptions.find('.yt-filter-modal-no-match').prop('hidden', visible > 0 || !query);
+        }
+
+        updateFilterModalSummary() {
+            const shelves = Object.keys(this.filterDraft.shelves);
+            const categories = Object.keys(this.filterDraft.categories);
+            const draftView = { shelves, categories };
+            const matches = this.countViewMatches(draftView);
+
+            this.$filterModal.find('[data-filter-count="shelves"]').text(shelves.length || '');
+            this.$filterModal.find('[data-filter-count="categories"]').text(categories.length || '');
+
+            if (!shelves.length && !categories.length) {
+                this.$filterSummary.text('Nothing picked yet');
+                return;
+            }
+
+            const plural = (count, one, many) => `${count} ${count === 1 ? one : many}`;
+            this.$filterSummary.text(
+                `${plural(shelves.length, 'shelf', 'shelves')} · ${plural(categories.length, 'category', 'categories')} picked → shows ${plural(matches, 'topic', 'topics')} of ${this.sections.length}`
+            );
+        }
+
+        showFilterModalError(message, $focus) {
+            this.$filterError.text(message).removeAttr('hidden');
+            if ($focus) {
+                $focus.trigger('focus');
+            }
+        }
+
+        saveFilterModal() {
+            const name = String(this.$filterName.val() || '').trim().replace(/\s+/g, ' ');
+            const shelves = Object.keys(this.filterDraft.shelves);
+            const categories = Object.keys(this.filterDraft.categories);
+            const editingId = this.filterDraft.id;
+
+            if (!name) {
+                this.showFilterModalError('Give the view a name.', this.$filterName);
+                return;
+            }
+
+            const lower = name.toLowerCase();
+            if (this.filterViews.some((view) => view.id !== editingId && view.name.toLowerCase() === lower)) {
+                this.showFilterModalError(`There's already a view called "${name}".`, this.$filterName);
+                return;
+            }
+
+            if (!shelves.length && !categories.length) {
+                this.showFilterModalError('Pick at least one shelf or category.', this.$filterSearch);
+                return;
+            }
+
+            if (editingId) {
+                const view = this.filterViews.find((item) => item.id === editingId);
+                if (view) {
+                    view.name = name;
+                    view.shelves = shelves;
+                    view.categories = categories;
+                }
+            } else {
+                const id = `fv_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+                this.filterViews.push({ id, name, shelves, categories });
+                // A new view is applied right away so the result is visible
+                this.activeFilterId = id;
+            }
+
+            this.saveFilterViews();
+            this.closeFilterModal();
+            this.renderAllTopicsList();
+            this.$listBody.scrollTop(0);
+            this.measureNavHeight();
+            this.fitListBody();
+            if (!editingId) {
+                this.$filterChips.find('.section-nav-parent-filter-chip--active .section-nav-parent-filter-chip-apply').trigger('focus');
+            }
+        }
+
+        showFilterDeleteConfirm(show) {
+            const $wrap = this.$filterModal.find('.yt-filter-modal-delete-wrap');
+            $wrap.find('.yt-filter-modal-delete').toggle(!show);
+            $wrap.find('.yt-filter-modal-confirm').prop('hidden', !show);
+            if (show) {
+                const view = this.filterViews.find((item) => item.id === this.filterDraft.id);
+                $wrap.find('.yt-filter-modal-confirm-text').text(view ? `Delete "${view.name}"?` : 'Delete this view?');
+                $wrap.find('.yt-filter-modal-confirm-no').trigger('focus');
+            }
+        }
+
+        deleteFilterView(id) {
+            this.filterViews = this.filterViews.filter((view) => view.id !== id);
+            if (this.activeFilterId === id) {
+                this.activeFilterId = null;
+            }
+            this.saveFilterViews();
+            this.filterModalOpener = this.$filterNew ? this.$filterNew[0] : null;
+            this.closeFilterModal();
+            this.renderAllTopicsList();
+            this.measureNavHeight();
+            this.fitListBody();
         }
 
         // On short screens the stuck nav can push the list past the bottom edge; cap it to what's visible
