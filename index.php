@@ -3390,6 +3390,10 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             this.triggerBuffer = 24;
             this.pinnedTolerance = 80;
             this.listView = localStorage.getItem('YT__all-topics-view') === 'alphabetical' ? 'alphabetical' : 'mosaic';
+            // Alphabetical table always opens sorted by Category A–Z
+            this.listSortKey = 'category';
+            this.listSortDir = 'asc';
+            localStorage.removeItem('YT__all-topics-sort');
             this.alphaIndexExpanded = false;
         }
 
@@ -3501,7 +3505,11 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 }
             });
 
+            // Letters follow the active sort column and direction
             letters.sort((a, b) => a.localeCompare(b));
+            if (this.listSortDir === 'desc') {
+                letters.reverse();
+            }
 
             this.$alphaIndex.empty();
             letters.forEach((letter) => {
@@ -3527,10 +3535,12 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             }
 
             const bodyEl = this.$listBody[0];
-            const anchorEl = $anchor[0];
+            const anchorEl = $anchor.closest('tr')[0] || $anchor[0];
+            const $tableHead = this.$listGrid.find('.section-nav-parent-table thead');
+            const headerOffset = $tableHead.length ? $tableHead.outerHeight() : 0;
             const bodyRect = bodyEl.getBoundingClientRect();
             const anchorRect = anchorEl.getBoundingClientRect();
-            const delta = anchorRect.top - bodyRect.top - 4;
+            const delta = anchorRect.top - bodyRect.top - 4 - headerOffset;
             const scrollTop = bodyEl.scrollTop + delta;
 
             this.$listBody.stop().animate({
@@ -3596,12 +3606,16 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 .toggleClass('section-nav-parent-list-grid--grouped', grouped);
 
             let items = this.sections.map((section, index) => ({ section, index }));
-            const seenAlphaAnchors = {};
 
             if (isListView) {
-                items = items.slice().sort((a, b) => {
-                    return a.section.label.localeCompare(b.section.label, undefined, { sensitivity: 'base' });
-                });
+                this.renderAlphabeticalTable(items);
+
+                if (this.alphaIndexExpanded) {
+                    this.renderAlphaIndex();
+                }
+
+                this.updateNav();
+                return;
             }
 
             let currentGroup = null;
@@ -3624,8 +3638,106 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     .attr('data-section-index', index);
                 this.fillLabeled($btn, section.label, grouped ? this.categoryLabelInGroup(section.label, section.group) : '');
 
-                if (isListView) {
-                    const firstLetter = this.getFirstLetter(section.label);
+                $btn.on('click', () => {
+                    this.jumpToSection(index);
+                });
+                this.$listGrid.append($btn);
+            });
+
+            this.updateNav();
+        }
+
+        compareTopicLabels(a, b) {
+            return String(a || '').localeCompare(String(b || ''), undefined, { sensitivity: 'base' });
+        }
+
+        sortAlphabeticalItems(items) {
+            const dir = this.listSortDir === 'desc' ? -1 : 1;
+            const byShelf = this.listSortKey === 'shelf';
+
+            return items.slice().sort((a, b) => {
+                if (byShelf) {
+                    const aShelf = a.section.group || '';
+                    const bShelf = b.section.group || '';
+
+                    // Categories without a shelf always sort last
+                    if (!aShelf !== !bShelf) {
+                        return aShelf ? -1 : 1;
+                    }
+
+                    const shelfCmp = this.compareTopicLabels(aShelf, bShelf) * dir;
+                    if (shelfCmp) {
+                        return shelfCmp;
+                    }
+
+                    return this.compareTopicLabels(a.section.label, b.section.label) || a.index - b.index;
+                }
+
+                return (this.compareTopicLabels(a.section.label, b.section.label) * dir) || a.index - b.index;
+            });
+        }
+
+        renderAlphabeticalTable(items) {
+            const sorted = this.sortAlphabeticalItems(items);
+            const byShelf = this.listSortKey === 'shelf';
+            const isDesc = this.listSortDir === 'desc';
+            const seenAlphaAnchors = {};
+            const $table = $('<table>').addClass('section-nav-parent-table');
+            const $headRow = $('<tr>');
+
+            [
+                { key: 'shelf', label: 'Shelf' },
+                { key: 'category', label: 'Category' }
+            ].forEach(({ key, label }) => {
+                const isActive = this.listSortKey === key;
+                const $th = $('<th>')
+                    .addClass(`section-nav-parent-table-th section-nav-parent-table-th--${key}`)
+                    .attr('scope', 'col')
+                    .attr('aria-sort', isActive ? (isDesc ? 'descending' : 'ascending') : 'none');
+                const $sortBtn = $('<button>')
+                    .addClass('section-nav-parent-table-sort')
+                    .toggleClass('section-nav-parent-table-sort--active', isActive)
+                    .attr('type', 'button')
+                    .attr('title', isActive
+                        ? `Sorted by ${label.toLowerCase()} (${isDesc ? 'Z–A' : 'A–Z'}); click to reverse`
+                        : `Sort by ${label.toLowerCase()}`)
+                    .append($('<span>').text(label))
+                    .append($('<span>')
+                        .addClass('section-nav-parent-table-sort-icon')
+                        .attr('aria-hidden', 'true')
+                        .html(isActive ? (isDesc ? '&#9660;' : '&#9650;') : '&#8597;'));
+
+                $sortBtn.on('click', (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.setListSort(key);
+                });
+
+                $headRow.append($th.append($sortBtn));
+            });
+
+            const $tbody = $('<tbody>');
+
+            sorted.forEach(({ section, index }) => {
+                const shelf = section.group || '';
+                const $row = $('<tr>').addClass('section-nav-parent-table-row');
+                const $shelfCell = $('<td>').addClass('section-nav-parent-table-shelf');
+
+                if (shelf) {
+                    $shelfCell.text(shelf);
+                } else {
+                    $shelfCell.addClass('section-nav-parent-table-shelf--empty').text('—');
+                }
+
+                const $btn = $('<button>')
+                    .addClass('section-nav-parent-item')
+                    .attr('type', 'button')
+                    .attr('data-section-index', index);
+                this.fillLabeled($btn, section.label, '');
+
+                // A–Z jump follows the active sort column
+                if (!byShelf || shelf) {
+                    const firstLetter = this.getFirstLetter(byShelf ? shelf : section.label);
                     $btn.attr('data-first-letter', firstLetter);
 
                     if (!seenAlphaAnchors[firstLetter]) {
@@ -3637,14 +3749,31 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 $btn.on('click', () => {
                     this.jumpToSection(index);
                 });
-                this.$listGrid.append($btn);
+
+                $row.append(
+                    $shelfCell,
+                    $('<td>').addClass('section-nav-parent-table-category').append($btn)
+                );
+                $tbody.append($row);
             });
 
-            if (this.listView === 'alphabetical' && this.alphaIndexExpanded) {
-                this.renderAlphaIndex();
+            $table.append($('<thead>').append($headRow), $tbody);
+            this.$listGrid.append($table);
+        }
+
+        setListSort(key) {
+            if (this.listSortKey === key) {
+                this.listSortDir = this.listSortDir === 'desc' ? 'asc' : 'desc';
+            } else {
+                this.listSortKey = key;
+                this.listSortDir = 'asc';
             }
 
-            this.updateNav();
+            this.renderAllTopicsList();
+            if (this.alphaIndexExpanded) {
+                this.renderAlphaIndex();
+            }
+            this.$listBody.scrollTop(0);
         }
 
         toggleListView() {
@@ -3796,6 +3925,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     $el.removeClass('section-nav-parent-item--active');
                     $el.removeAttr('aria-current');
                 }
+                $el.closest('.section-nav-parent-table-row')
+                    .toggleClass('section-nav-parent-table-row--active', sectionIndex === this.currentIndex);
             });
 
             this.$listGrid.find('.section-nav-parent-group').removeClass('section-nav-parent-group--active');
