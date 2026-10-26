@@ -283,7 +283,9 @@ html[data-yt-theme] .section-nav-parent-item--active {
 }
 
 html[data-yt-theme] .category-browser-toggle,
-html[data-yt-theme] .category-browser-toggle[aria-expanded="true"] {
+html[data-yt-theme] .category-browser-toggle[aria-expanded="true"],
+html[data-yt-theme] .category-browser-scroll,
+html[data-yt-theme] .category-browser-top {
     background: var(--yt-accent);
     color: var(--yt-accent-contrast);
 }

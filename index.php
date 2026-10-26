@@ -24,8 +24,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="assets/js/favs.js?v=2"></script>
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
     <script src="env/playlist-icons.js?v=8"></script>
-    <link rel="stylesheet" href="assets/css/index.css?v=29">
-    <link rel="stylesheet" href="assets/css/collection-themes.css?v=4">
+    <link rel="stylesheet" href="assets/css/index.css?v=30">
+    <link rel="stylesheet" href="assets/css/collection-themes.css?v=5">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
     <style>
@@ -48,21 +48,173 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         return String(new URLSearchParams(window.location.search).get("playlistId"));
     }
 
-    function jumpToActivePlaylist() {
-        let $iframe = $("#favs-wrapper iframe");
-        let $iframeContents = $iframe.contents();
-        let $playlistLink = $iframeContents.find(`[data-playlist-id="${window.playlistId}"]`);
+    // Floating "Scroll to top" button; jumps instantly when the user prefers reduced motion
+    function scrollToPageTop() {
+        let reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+    }
 
-        // Calculate scroll position
-        let scrollPosA = $iframe[0].offsetTop;
-        let scrollPosB = $playlistLink[0].offsetTop;
-        let scrollPos = scrollPosA + scrollPosB - 135;
+    // Space left between the sticky "All topics" nav and a playlist scrolled to just below it
+    const STICKY_NAV_GAP = 13;
+
+    // Page scroll position that puts an element of the favs iframe just below the sticky nav.
+    // The nav's height varies (stuck border, a current-topic label that wraps on phones), so it's measured live.
+    function favsElementScrollTarget(el) {
+        try {
+            let iframe = $("#favs-wrapper iframe")[0];
+            if(!iframe || !el) {
+                return null;
+            }
+            // The iframe is sized to its content, so an element's position in it maps straight onto the page
+            let elPageTop = iframe.getBoundingClientRect().top + el.getBoundingClientRect().top + window.scrollY;
+            let nav = document.getElementById("section-nav-parent");
+            let navHeight = nav ? nav.getBoundingClientRect().height : 0;
+            return Math.max(Math.round(elPageTop - navHeight - STICKY_NAV_GAP), 0);
+        } catch(e) {
+            return null;
+        }
+    }
+
+    // Scroll to an element of the favs list, then correct once after the scroll settles, since the nav
+    // can change height on arrival when its current-topic label updates
+    let favsScrollToken = 0;
+    function scrollPageToFavsElement(el, smooth, onDone) {
+        let target = favsElementScrollTarget(el);
+        if(target === null) {
+            return false;
+        }
+
+        let token = ++favsScrollToken;
+        let reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        window.scrollTo({ top: target, behavior: (smooth && !reduceMotion) ? "smooth" : "auto" });
+
+        // If the user takes over scrolling, leave the page alone
+        let cancelled = false;
+        let cancel = function() { cancelled = true; };
+        let events = ["wheel", "touchstart", "keydown", "mousedown"];
+        events.forEach(function(name) { window.addEventListener(name, cancel, { passive: true }); });
+        let finish = function() {
+            events.forEach(function(name) { window.removeEventListener(name, cancel); });
+            if(onDone) {
+                onDone();
+            }
+        };
+
+        let lastY = -1;
+        let stableFrames = 0;
+        let started = performance.now();
+        let waitForSettle = function() {
+            if(token !== favsScrollToken || cancelled) {
+                return finish();
+            }
+            let y = window.scrollY;
+            stableFrames = Math.abs(y - lastY) < 1 ? stableFrames + 1 : 0;
+            lastY = y;
+            if(stableFrames < 6 && performance.now() - started < 2500) {
+                requestAnimationFrame(waitForSettle);
+                return;
+            }
+            // Give the nav's scroll-spy a moment to update its label, then correct once
+            setTimeout(function() {
+                if(token === favsScrollToken && !cancelled) {
+                    let corrected = favsElementScrollTarget(el);
+                    if(corrected !== null && Math.abs(corrected - window.scrollY) > 2) {
+                        window.scrollTo(0, corrected);
+                    }
+                }
+                finish();
+            }, 150);
+        };
+        requestAnimationFrame(waitForSettle);
+        return true;
+    }
+
+    // Where jumpToActivePlaylist() scrolls to, or null when the active playlist isn't on the page
+    function activePlaylistScrollTarget() {
+        try {
+            let $iframe = $("#favs-wrapper iframe");
+            if(!$iframe.length || !window.playlistId) {
+                return null;
+            }
+            let $playlistLink = $iframe.contents().find(`[data-playlist-id="${window.playlistId}"]`);
+            if(!$playlistLink.length) {
+                return null;
+            }
+
+            let top = favsElementScrollTarget($playlistLink[0]);
+            return top === null ? null : { top: top, $link: $playlistLink };
+        } catch(e) {
+            return null;
+        }
+    }
+
+    function jumpToActivePlaylist() {
+        let target = activePlaylistScrollTarget();
+        if(!target) {
+            updateScrollArrowButtons();
+            return;
+        }
 
         // Jump to active playlist link and flash the link
-        window.scrollTo(0, Math.max(scrollPos, 0));
-        $playlistLink.animate({"font-weight": "900"}, 1000).delay(500).animate({"font-weight":"300"}, 2000)
-        // debugger;
+        scrollPageToFavsElement(target.$link[0], false, updateScrollArrowButtons);
+        target.$link.animate({"font-weight": "900"}, 1000).delay(500).animate({"font-weight":"300"}, 2000)
+        updateScrollArrowButtons();
     }
+
+    // Floating up/down arrows hide when they'd do nothing: already at the top, or already at the playlist
+    const SCROLL_ARROW_THRESHOLD = 24;
+
+    function setScrollArrowHidden(button, hidden) {
+        if(!button) {
+            return;
+        }
+        button.classList.toggle("category-browser-btn--hidden", hidden);
+        if(hidden) {
+            button.setAttribute("aria-hidden", "true");
+            button.setAttribute("tabindex", "-1");
+            if(document.activeElement === button) {
+                button.blur();
+            }
+        } else {
+            button.removeAttribute("aria-hidden");
+            button.removeAttribute("tabindex");
+        }
+    }
+
+    function updateScrollArrowButtons() {
+        let y = window.scrollY || window.pageYOffset || 0;
+        setScrollArrowHidden(document.getElementById("category-browser-top"), y <= SCROLL_ARROW_THRESHOLD);
+
+        let target = activePlaylistScrollTarget();
+        let atPlaylist = true;
+        if(target) {
+            // Near the page bottom the browser can't reach the target, so compare with where it actually lands
+            let maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 0);
+            atPlaylist = Math.abs(y - Math.min(target.top, maxScroll)) <= SCROLL_ARROW_THRESHOLD;
+        }
+        setScrollArrowHidden(document.getElementById("category-browser-scroll"), atPlaylist);
+    }
+
+    let scrollArrowFrame = null;
+    function scheduleScrollArrowUpdate() {
+        if(scrollArrowFrame) {
+            return;
+        }
+        scrollArrowFrame = requestAnimationFrame(function() {
+            scrollArrowFrame = null;
+            updateScrollArrowButtons();
+        });
+    }
+
+    window.addEventListener("scroll", scheduleScrollArrowUpdate, { passive: true });
+    window.addEventListener("resize", scheduleScrollArrowUpdate, { passive: true });
+    $(function() {
+        updateScrollArrowButtons();
+        // Panels opening, the favs iframe resizing, etc. move the playlist; recheck on any page size change
+        if(window.ResizeObserver) {
+            new ResizeObserver(scheduleScrollArrowUpdate).observe(document.body);
+        }
+    });
 
     // (function js_php_Interface() {
         <?php
@@ -181,6 +333,11 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         var iframe = $("#favs-wrapper iframe")[0];
         iframe.style.height = iframe.contentWindow.document.documentElement.scrollHeight + 'px';
         
+        // The active playlist may have moved (collection switch, filtering)
+        if (typeof scheduleScrollArrowUpdate === 'function') {
+            scheduleScrollArrowUpdate();
+        }
+
         // Rebuild section nav after iframe resizes
         if (typeof window.parentSectionNav !== 'undefined') {
             setTimeout(function() {
@@ -2904,6 +3061,13 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     </div> <!-- p-20 custom container -->
 
     <div id="category-browser" class="category-browser d-none">
+        <button id="category-browser-top" class="category-browser-toggle category-browser-top" type="button" onclick="scrollToPageTop();" aria-label="Scroll to top" title="Scroll to top">
+            <i class="fa fa-arrow-up" aria-hidden="true"></i>
+        </button>
+        <!-- Same action as the "Scroll" button in the Playlist panel -->
+        <button id="category-browser-scroll" class="category-browser-toggle category-browser-scroll" type="button" onclick="jumpToActivePlaylist();" aria-label="Scroll to playlist" title="Scroll to playlist">
+            <i class="fa fa-arrow-down" aria-hidden="true"></i>
+        </button>
         <button id="category-browser-toggle" class="category-browser-toggle" type="button" onclick="toggleCategoryBrowser(event);" aria-label="Open playlist categories" aria-expanded="false">
             <i class="fa fa-tags"></i>
         </button>
@@ -2950,10 +3114,40 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         let visibleAreaRatio = (visibleWidth * visibleHeight) / totalArea;
         let shouldHideBrowser = visibleAreaRatio > 0.5;
 
+        // Hides the tag and up buttons only; the down arrow stays so the playlist is one tap away
         $browser.toggleClass("category-browser-hidden", shouldHideBrowser);
+        $("#category-browser-toggle").attr("aria-hidden", shouldHideBrowser ? "true" : null).attr("tabindex", shouldHideBrowser ? "-1" : null);
 
         if(shouldHideBrowser) {
             closeCategoryBrowser();
+        }
+
+        liftCategoryBrowserAbovePlayerControls($browser[0], rect);
+    }
+
+    // If the player's bottom edge is on screen and reaches the corner, raise the buttons above its control bar
+    function liftCategoryBrowserAbovePlayerControls(browserEl, playerRect) {
+        const CONTROL_BAR = 56;
+        const GAP = 8;
+        let currentLift = parseFloat(browserEl.style.getPropertyValue("--category-browser-lift")) || 0;
+        let groupRect = browserEl.getBoundingClientRect();
+        // Where the group sits with no lift
+        let restBottom = groupRect.bottom + currentLift;
+        let restTop = restBottom - groupRect.height;
+        let controlsTop = playerRect.bottom - CONTROL_BAR;
+        let lift = 0;
+
+        let bottomOnScreen = playerRect.bottom > 0 && playerRect.bottom <= window.innerHeight;
+        let overlapsX = groupRect.left < playerRect.right && groupRect.right > playerRect.left;
+        let overlapsY = restTop < playerRect.bottom && restBottom > controlsTop;
+        if(bottomOnScreen && overlapsX && overlapsY) {
+            lift = Math.max(0, restBottom - (controlsTop - GAP));
+            // Never push the buttons off the top of the screen
+            lift = Math.min(lift, Math.max(0, restTop - GAP));
+        }
+
+        if(Math.abs(lift - currentLift) > 0.5) {
+            browserEl.style.setProperty("--category-browser-lift", lift + "px");
         }
     }
 
@@ -3068,12 +3262,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
         closeCategoryBrowser();
 
-        let iframeTop = $(iframe).offset().top;
-        let targetTop = iframeTop + $match.offset().top - 18;
-        window.scrollTo({
-            top: Math.max(targetTop, 0),
-            behavior: "smooth"
-        });
+        // Land just below the sticky nav (it used to land under it), correcting once the scroll settles
+        scrollPageToFavsElement($match[0], true);
 
         $match.addClass("category-jump-hit");
         setTimeout(()=>{
@@ -3122,6 +3312,13 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
     $(function() {
         updateCategoryBrowserVisibility();
+        // "Fit video" and other player size changes move the player without scrolling
+        let player = document.getElementById("player");
+        if(player && window.ResizeObserver) {
+            new ResizeObserver(function() {
+                requestAnimationFrame(updateCategoryBrowserVisibility);
+            }).observe(player);
+        }
     });
 
     function showPlaylistGuide(instructions) {
