@@ -2450,18 +2450,15 @@ body::before {
     flex-shrink: 0;
 }
 
-.section-nav-parent-alpha-toggle-chevron {
-    font-size: 0.7rem;
-    transition: transform 0.2s ease;
+.section-nav-parent-alpha-toggle-icon {
+    font-size: 0.8rem;
 }
 
-.section-nav-parent-alpha-toggle--expanded {
-    background: rgba(188, 35, 46, 0.1);
-    border-color: rgba(188, 35, 46, 0.35);
-}
-
-.section-nav-parent-alpha-toggle--expanded .section-nav-parent-alpha-toggle-chevron {
-    transform: rotate(180deg);
+/* Open state must also win over the collection theme's button colors */
+.section-nav-parent-alpha-toggle--expanded,
+html[data-yt-theme] .section-nav-parent-alpha-toggle--expanded {
+    background: var(--yt-tint-strong, rgba(188, 35, 46, 0.12));
+    border-color: var(--yt-border-strong, rgba(188, 35, 46, 0.35));
 }
 
 .section-nav-parent-alpha-toggle:hover,
@@ -2483,7 +2480,7 @@ body::before {
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: 4px;
     max-width: 100%;
     overflow-x: auto;
@@ -2493,6 +2490,11 @@ body::before {
 
 .section-nav-parent-alpha-item {
     flex: 0 0 auto;
+}
+
+/* Right-align with an auto margin, not flex-end, so overflowing letters stay scrollable */
+.section-nav-parent-alpha-index .section-nav-parent-alpha-item:first-child {
+    margin-left: auto;
 }
 
 .section-nav-parent-alpha-index[hidden] {
@@ -2557,36 +2559,35 @@ body::before {
     padding: 6px 12px;
 }
 
+/* ---------- All Topics alphabetical table ---------- */
+
 .section-nav-parent-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     table-layout: fixed;
-    border: 1px solid rgba(188, 35, 46, 0.14);
+    border: 1px solid var(--yt-border, rgba(188, 35, 46, 0.14));
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--yt-surface, #fff);
+    /* Clip the square sticky header to the rounded corners without breaking sticky */
+    overflow: clip;
 }
 
+/* Opaque header so rows don't show through while sticky */
 .section-nav-parent-table thead th {
     position: sticky;
     top: 0;
     z-index: 2;
     padding: 0;
-    background: #fbeced;
-    border-bottom: 1px solid rgba(188, 35, 46, 0.2);
+    background:
+        linear-gradient(var(--yt-tint-strong, rgba(188, 35, 46, 0.09)), var(--yt-tint-strong, rgba(188, 35, 46, 0.09))),
+        var(--yt-surface, #fff);
+    border-bottom: 1px solid var(--yt-border-strong, rgba(188, 35, 46, 0.2));
     text-align: left;
 }
 
 .section-nav-parent-table-th--shelf {
-    width: 34%;
-}
-
-.section-nav-parent-table thead th:first-child {
-    border-top-left-radius: 10px;
-}
-
-.section-nav-parent-table thead th:last-child {
-    border-top-right-radius: 10px;
+    width: 22%;
 }
 
 .section-nav-parent-table-sort {
@@ -2596,9 +2597,9 @@ body::before {
     width: 100%;
     padding: 8px 12px;
     border: 0;
-    border-radius: inherit;
+    border-radius: 0;
     background: transparent;
-    color: #8e1823;
+    color: var(--yt-accent, #8e1823);
     font-size: 0.78rem;
     font-weight: 800;
     letter-spacing: 0.04em;
@@ -2609,7 +2610,7 @@ body::before {
 }
 
 .section-nav-parent-table-sort:hover {
-    background: rgba(188, 35, 46, 0.08);
+    background: var(--yt-tint, rgba(188, 35, 46, 0.08));
 }
 
 .section-nav-parent-table-sort:focus-visible {
@@ -2618,95 +2619,190 @@ body::before {
 }
 
 .section-nav-parent-table-sort-icon {
-    font-size: 0.65rem;
-    opacity: 0.35;
+    font-size: 0.75rem;
+    opacity: 0.6;
 }
 
 .section-nav-parent-table-sort--active .section-nav-parent-table-sort-icon {
     opacity: 1;
 }
 
-.section-nav-parent-table td {
-    padding: 2px 6px;
-    border-bottom: 1px solid rgba(188, 35, 46, 0.08);
-    vertical-align: middle;
-    transition: background 0.15s ease;
+.section-nav-parent-table td.section-nav-parent-table-cell {
+    padding: 0;
+    border-bottom: 1px solid var(--yt-border, rgba(188, 35, 46, 0.08));
 }
 
 .section-nav-parent-table tbody tr:last-child td {
     border-bottom: 0;
-}
-
-.section-nav-parent-table tbody tr:last-child td:first-child {
     border-bottom-left-radius: 10px;
-}
-
-.section-nav-parent-table tbody tr:last-child td:last-child {
     border-bottom-right-radius: 10px;
 }
 
-.section-nav-parent-table td.section-nav-parent-table-shelf {
-    padding-left: 12px;
-    color: #3d1016;
-    font-size: 0.85rem;
-    font-weight: 700;
-    word-break: break-word;
-}
-
-.section-nav-parent-table td.section-nav-parent-table-shelf--empty {
-    color: rgba(90, 26, 32, 0.35);
-    font-weight: 400;
-}
-
-.section-nav-parent-table-row:hover td {
-    background: rgba(188, 35, 46, 0.05);
-}
-
-.section-nav-parent-table-row--active td {
-    background: rgba(188, 35, 46, 0.08);
-}
-
-.section-nav-parent-table .section-nav-parent-item {
-    width: 100%;
+/* Each row is one plain button; beats the theme's chip styling */
+.section-nav-parent-table .section-nav-parent-item,
+html[data-yt-theme] .section-nav-parent-table .section-nav-parent-item {
+    display: flex;
+    align-items: center;
     justify-content: flex-start;
-    text-align: left;
-    min-height: 30px;
-    padding: 4px 8px;
-    border-color: transparent;
-    border-radius: 6px;
+    width: 100%;
+    max-width: none;
+    min-height: 34px;
+    margin: 0;
+    padding: 5px 12px;
+    border: 0;
+    border-radius: 0;
     background: transparent;
+    box-shadow: none;
+    color: var(--yt-text, #3d1016);
+    font-weight: 600;
+    text-align: left;
+    word-break: normal;
+    overflow-wrap: break-word;
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
 }
 
-.section-nav-parent-table .section-nav-parent-item:hover {
-    background: rgba(188, 35, 46, 0.08);
-    border-color: rgba(188, 35, 46, 0.25);
+.section-nav-parent-table .section-nav-parent-item:hover,
+html[data-yt-theme] .section-nav-parent-table .section-nav-parent-item:hover {
+    background: var(--yt-tint, rgba(188, 35, 46, 0.06));
+    border-color: transparent;
+    color: var(--yt-text, #3d1016);
 }
 
-.section-nav-parent-table .section-nav-parent-item--active {
-    background: rgba(188, 35, 46, 0.12);
-    border-color: rgba(188, 35, 46, 0.35);
+.section-nav-parent-table .section-nav-parent-item:focus-visible {
+    outline: 2px solid var(--yt-accent, rgba(188, 35, 46, 0.6));
+    outline-offset: -2px;
+}
+
+/* Current row: accent bar + bold, clearly stronger than hover */
+.section-nav-parent-table .section-nav-parent-item--active,
+.section-nav-parent-table .section-nav-parent-item--active:hover,
+html[data-yt-theme] .section-nav-parent-table .section-nav-parent-item--active,
+html[data-yt-theme] .section-nav-parent-table .section-nav-parent-item--active:hover {
+    background: var(--yt-tint-strong, rgba(188, 35, 46, 0.12));
+    box-shadow: inset 4px 0 0 var(--yt-accent, var(--red-main));
+    color: var(--yt-accent, var(--red-main));
+    font-weight: 800;
+}
+
+/* Muted shelf column, lined up under the Shelf header */
+.section-nav-parent-table-shelf {
+    flex: 0 0 calc(22% + 5px);
+    min-width: 0;
+    padding-right: 10px;
+    color: var(--yt-text-muted, #7a5a5e);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.section-nav-parent-table-shelf--empty {
+    opacity: 0.6;
+}
+
+.section-nav-parent-table-category {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+/* Sorted by shelf: one sticky sub-header per shelf */
+.section-nav-parent-table-group th {
+    position: sticky;
+    top: var(--section-nav-table-head-h, 33px);
+    z-index: 1;
+    padding: 7px 12px 6px;
+    background:
+        linear-gradient(var(--yt-tint, rgba(188, 35, 46, 0.05)), var(--yt-tint, rgba(188, 35, 46, 0.05))),
+        var(--yt-surface, #fff);
+    border-bottom: 1px solid var(--yt-border, rgba(188, 35, 46, 0.14));
+    color: var(--yt-heading, #3d1016);
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-align: left;
+}
+
+.section-nav-parent-table-group-count {
+    margin-left: 8px;
+    color: var(--yt-text-muted, #7a5a5e);
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.section-nav-parent-table--by-shelf .section-nav-parent-item,
+html[data-yt-theme] .section-nav-parent-table--by-shelf .section-nav-parent-item {
+    padding-left: 26px;
 }
 
 @media screen and (max-width: 768px) {
-    .section-nav-parent-table-th--shelf {
-        width: 36%;
+    /* Room so the floating category button doesn't cover the last rows */
+    .section-nav-parent-list-body {
+        padding-bottom: 88px;
     }
 
     .section-nav-parent-table-sort {
-        padding: 7px 8px;
+        min-height: 44px;
+        padding: 8px;
     }
 
-    .section-nav-parent-table td {
-        padding: 2px 4px;
+    .section-nav-parent-table .section-nav-parent-item,
+    html[data-yt-theme] .section-nav-parent-table .section-nav-parent-item {
+        min-height: 44px;
+        padding: 8px 10px;
     }
 
-    .section-nav-parent-table td.section-nav-parent-table-shelf {
-        padding-left: 8px;
+    .section-nav-parent-table--by-shelf .section-nav-parent-item,
+    html[data-yt-theme] .section-nav-parent-table--by-shelf .section-nav-parent-item {
+        padding-left: 20px;
+    }
+
+    .section-nav-parent-table-shelf {
         font-size: 0.78rem;
     }
 
-    .section-nav-parent-table .section-nav-parent-item {
-        padding: 4px 6px;
+    .section-nav-parent-alpha-toggle,
+    .section-nav-parent-view-toggle {
+        height: 40px;
+    }
+
+    .section-nav-parent-view-toggle {
+        width: 40px;
+    }
+
+    .section-nav-parent-alpha-item {
+        min-width: 36px;
+        height: 40px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Phones: shelf becomes a small caption above the category */
+@media screen and (max-width: 480px) {
+    .section-nav-parent-table-th--shelf {
+        width: 40%;
+    }
+
+    .section-nav-parent-table .section-nav-parent-item,
+    html[data-yt-theme] .section-nav-parent-table .section-nav-parent-item {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 1px;
+    }
+
+    .section-nav-parent-table-shelf {
+        flex: none;
+        padding-right: 0;
+        font-size: 0.68rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .section-nav-parent-table-shelf--empty {
+        display: none;
+    }
+
+    .section-nav-parent-table-category {
+        flex: none;
+        width: 100%;
     }
 }
 
