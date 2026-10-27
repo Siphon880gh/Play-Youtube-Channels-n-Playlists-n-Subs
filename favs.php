@@ -3,7 +3,7 @@
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <link href="<?php echo $prependPath; ?>assets/css/favs.css?v=12" rel="stylesheet"></link>
-<link href="<?php echo $prependPath; ?>assets/css/collection-themes.css?v=5" rel="stylesheet"></link>
+<link href="<?php echo $prependPath; ?>assets/css/collection-themes.css?v=6" rel="stylesheet"></link>
 <script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
 <script src="<?php echo $prependPath; ?>env/playlist-icons.js?v=8"></script>
 <script src="<?php echo $prependPath; ?>env/playlist-actions.js?v=1"></script>
@@ -250,7 +250,7 @@ function fetchPlaylist(calledCollection) {
 
   // Collection themes: a row like { "theme": "matrix-green" } picks a preset from
   // assets/css/collection-themes.css. No row (or an unknown name) = youtube-red.
-  var COLLECTION_THEMES = ["youtube-red", "matrix-green", "monochrome"];
+  var COLLECTION_THEMES = ["youtube-red", "matrix-green", "monochrome", "velvet"];
 
   function getCollectionTheme(collection) {
     if(!Array.isArray(collection)) return "youtube-red";

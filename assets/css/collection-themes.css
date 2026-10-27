@@ -4,7 +4,8 @@
  * favs.php sets data-yt-theme on <html> of both the favs iframe and the parent page,
  * and these rules map the preset to colors. No theme row = "youtube-red".
  *
- * Presets: youtube-red (Default), matrix-green (black/green), monochrome (black/gray/white).
+ * Presets: youtube-red (Default), matrix-green (black/green), monochrome (black/gray/white),
+ * velvet (deep plum/wine with rose-gold accents).
  */
 
 html[data-yt-theme="youtube-red"] {
@@ -55,6 +56,39 @@ html[data-yt-theme="monochrome"] {
     --yt-tint-strong: rgba(255, 255, 255, 0.14);
 }
 
+html[data-yt-theme="velvet"] {
+    --yt-bg: #12080e;
+    --yt-bg-2: #1c0c16;
+    --yt-surface: #26121e;
+    --yt-text: #f4e6ea;
+    --yt-text-muted: #c7a6b1;
+    --yt-heading: #f7d4c8;
+    --yt-accent: #e6a897;
+    --yt-accent-hover: #f8d3c6;
+    --yt-accent-contrast: #24101b;
+    --yt-border: rgba(230, 168, 151, 0.16);
+    --yt-border-strong: rgba(230, 168, 151, 0.42);
+    --yt-tint: rgba(230, 168, 151, 0.08);
+    --yt-tint-strong: rgba(230, 168, 151, 0.16);
+    --yt-glow: rgba(196, 92, 122, 0.22);
+    /* index.css base palette, re-tinted so its var()-based rules follow the theme. */
+    --bg: #12080e;
+    --bg-accent: #2a1020;
+    --surface: rgba(38, 18, 30, 0.92);
+    --surface-strong: #26121e;
+    --text-main: #f4e6ea;
+    --text-muted: #c7a6b1;
+    --red-main: #e6a897;
+    --red-soft: #c9788a;
+    --red-glow: rgba(196, 92, 122, 0.18);
+    --rose-glow: rgba(230, 168, 151, 0.12);
+    --border-soft: rgba(230, 168, 151, 0.16);
+    --shadow-soft: 0 18px 38px rgba(0, 0, 0, 0.4);
+    color-scheme: dark;
+    accent-color: #e6a897;
+    scrollbar-color: rgba(230, 168, 151, 0.38) #1c0c16;
+}
+
 /* ---------- Favs iframe (favs.php) ---------- */
 
 html[data-yt-theme] body {
@@ -96,7 +130,8 @@ html[data-yt-theme] .filter-bar {
 
 /* favs.css gives .quick-filters a white top highlight; on dark themes it reads as a gray line. */
 html[data-yt-theme="matrix-green"] .quick-filters,
-html[data-yt-theme="monochrome"] .quick-filters {
+html[data-yt-theme="monochrome"] .quick-filters,
+html[data-yt-theme="velvet"] .quick-filters {
     box-shadow: none;
 }
 
@@ -364,4 +399,276 @@ html[data-yt-theme] .category-browser-item.category-browser-item--active {
     background: var(--yt-tint-strong, rgba(188, 35, 46, 0.12));
     box-shadow: inset 3px 0 0 var(--yt-accent, #bc232e);
     font-weight: 700;
+}
+
+/* ---------- velvet: dark plum page, rose-gold accents, soft warm glows ---------- */
+
+/* Same halo swap as the other dark themes: no light ring, a dark drop shadow with a faint wine glow. */
+html[data-yt-theme="velvet"] #player {
+    border-color: transparent;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5), 0 0 44px var(--yt-glow);
+}
+
+html[data-yt-theme="velvet"] .player-options,
+html[data-yt-theme="velvet"] #buttons .panel {
+    border-color: var(--yt-border);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), 0 0 28px rgba(196, 92, 122, 0.1);
+}
+
+html[data-yt-theme="velvet"] #buttons .panel-body button {
+    border-color: var(--yt-border);
+    box-shadow: none;
+}
+
+html[data-yt-theme="velvet"] .playlists-target li a:hover,
+html[data-yt-theme="velvet"] .fav-collections-link:hover,
+html[data-yt-theme="velvet"] .fav-collections-link:focus {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35), 0 0 14px var(--yt-glow);
+}
+
+html[data-yt-theme="velvet"] ::selection {
+    background: rgba(230, 168, 151, 0.32);
+    color: #ffffff;
+}
+
+html[data-yt-theme="velvet"] :focus-visible {
+    outline-color: var(--yt-accent);
+}
+
+html[data-yt-theme="velvet"] ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+html[data-yt-theme="velvet"] ::-webkit-scrollbar-track {
+    background: var(--yt-bg-2);
+}
+
+html[data-yt-theme="velvet"] ::-webkit-scrollbar-thumb {
+    background: rgba(230, 168, 151, 0.32);
+    border: 2px solid var(--yt-bg-2);
+    border-radius: 10px;
+}
+
+html[data-yt-theme="velvet"] ::-webkit-scrollbar-thumb:hover {
+    background: rgba(230, 168, 151, 0.5);
+}
+
+/* Player placeholder: deep wine instead of the red gradient. */
+html[data-yt-theme="velvet"] #player {
+    background: linear-gradient(135deg, #2a0f1e, #4a1a2e);
+}
+
+/* Controls card under the player (Mode, Watch time, Brightness, About). */
+html[data-yt-theme="velvet"] .player-options {
+    background: linear-gradient(180deg, #26121e, #1e0e18);
+    color: var(--yt-text);
+}
+
+html[data-yt-theme="velvet"] .player-options-controls {
+    background: linear-gradient(135deg, rgba(230, 168, 151, 0.06), rgba(196, 92, 122, 0.05));
+    border-bottom-color: var(--yt-border);
+}
+
+html[data-yt-theme="velvet"] .player-options-meta .app-disclosure {
+    border-bottom-color: var(--yt-border);
+}
+
+html[data-yt-theme="velvet"] .player-options-meta .app-disclosure[open],
+html[data-yt-theme="velvet"] .player-options-meta .app-disclosure-support[open] {
+    background: var(--yt-tint);
+}
+
+html[data-yt-theme="velvet"] .app-meta-carousel-controls {
+    border-top-color: var(--yt-border);
+}
+
+html[data-yt-theme="velvet"] .playback-mode-select {
+    background-color: var(--yt-bg-2);
+    background-image:
+        linear-gradient(45deg, transparent 50%, var(--yt-accent) 50%),
+        linear-gradient(135deg, var(--yt-accent) 50%, transparent 50%),
+        linear-gradient(180deg, #2a1422, #1c0c16);
+    border-color: var(--yt-border-strong);
+    color: var(--yt-text);
+}
+
+html[data-yt-theme="velvet"] .playback-mode-select option {
+    background: var(--yt-surface);
+    color: var(--yt-text);
+}
+
+html[data-yt-theme="velvet"] .playback-mode-select:focus,
+html[data-yt-theme="velvet"] .playback-mode-info-btn:focus-visible {
+    box-shadow: 0 0 0 3px var(--yt-tint-strong);
+}
+
+html[data-yt-theme="velvet"] .playback-mode-info-btn:hover,
+html[data-yt-theme="velvet"] .playback-mode-info-btn[aria-expanded="true"] {
+    background: var(--yt-tint-strong);
+}
+
+html[data-yt-theme="velvet"] .playback-mode-info {
+    background: linear-gradient(180deg, #2c1524, #22101b);
+    border-color: var(--yt-border-strong);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.5), 0 0 24px rgba(196, 92, 122, 0.12);
+    color: var(--yt-text);
+}
+
+html[data-yt-theme="velvet"] .playback-mode-info code,
+html[data-yt-theme="velvet"] .player-options code {
+    background: var(--yt-tint-strong);
+    color: var(--yt-accent-hover);
+}
+
+html[data-yt-theme="velvet"] .watch-time-display,
+html[data-yt-theme="velvet"] .brightness-preset,
+html[data-yt-theme="velvet"] .player-video-action,
+html[data-yt-theme="velvet"] .app-meta-carousel-button,
+html[data-yt-theme="velvet"] .watch-history-split {
+    background: var(--yt-bg-2);
+    border-color: var(--yt-border);
+    color: var(--yt-text);
+}
+
+html[data-yt-theme="velvet"] .app-meta-carousel-button,
+html[data-yt-theme="velvet"] .watch-history-open,
+html[data-yt-theme="velvet"] .watch-history-menu-toggle,
+html[data-yt-theme="velvet"] .watch-history-menu-item,
+html[data-yt-theme="velvet"] .watch-history-title,
+html[data-yt-theme="velvet"] .watch-history-close,
+html[data-yt-theme="velvet"] .watch-history-delete,
+html[data-yt-theme="velvet"] .watch-history-clear-all:hover {
+    color: var(--yt-accent);
+}
+
+html[data-yt-theme="velvet"] .brightness-preset:hover,
+html[data-yt-theme="velvet"] .player-video-action:hover,
+html[data-yt-theme="velvet"] .app-meta-carousel-button:hover,
+html[data-yt-theme="velvet"] .app-meta-carousel-button:focus-visible,
+html[data-yt-theme="velvet"] .watch-time-stat:hover,
+html[data-yt-theme="velvet"] .watch-time-reset-all:hover,
+html[data-yt-theme="velvet"] .watch-history-open:hover,
+html[data-yt-theme="velvet"] .watch-history-menu-toggle:hover,
+html[data-yt-theme="velvet"] .watch-history-menu-toggle[aria-expanded="true"],
+html[data-yt-theme="velvet"] .watch-history-menu-item:hover,
+html[data-yt-theme="velvet"] .watch-history-menu-item:focus {
+    background: var(--yt-tint-strong);
+    border-color: var(--yt-border-strong);
+    color: var(--yt-accent-hover);
+}
+
+html[data-yt-theme="velvet"] .watch-time-reset-all {
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme="velvet"] .player-video-action.loop-btn.active {
+    background: var(--yt-tint-strong);
+    border-color: var(--yt-border-strong);
+    color: var(--yt-accent-hover);
+}
+
+html[data-yt-theme="velvet"] .brightness-preset--active,
+html[data-yt-theme="velvet"] .brightness-preset--active:hover {
+    background: linear-gradient(135deg, #e6a897, #c9788a);
+    border-color: transparent;
+    color: var(--yt-accent-contrast);
+    box-shadow: 0 4px 14px rgba(196, 92, 122, 0.3);
+}
+
+html[data-yt-theme="velvet"] .player-video-actions-divider,
+html[data-yt-theme="velvet"] .watch-history-split-sep {
+    background: var(--yt-border-strong);
+}
+
+html[data-yt-theme="velvet"] #brightness-slider::-webkit-slider-runnable-track {
+    background: linear-gradient(90deg, rgba(230, 168, 151, 0.22) 0%, rgba(230, 168, 151, 0.22) 20%, rgba(230, 168, 151, 0.1) 20%, rgba(201, 120, 138, 0.32) 100%);
+}
+
+html[data-yt-theme="velvet"] #brightness-slider::-moz-range-track {
+    background: linear-gradient(90deg, rgba(230, 168, 151, 0.22) 0%, rgba(230, 168, 151, 0.22) 20%, rgba(230, 168, 151, 0.1) 20%, rgba(201, 120, 138, 0.32) 100%);
+}
+
+html[data-yt-theme="velvet"] #brightness-slider::-webkit-slider-thumb {
+    border-color: var(--yt-bg-2);
+    box-shadow: 0 0 12px var(--yt-glow);
+}
+
+html[data-yt-theme="velvet"] #brightness-slider::-moz-range-thumb {
+    border-color: var(--yt-bg-2);
+    box-shadow: 0 0 12px var(--yt-glow);
+}
+
+/* Playlist control panel (Random, Next, Scroll...). */
+html[data-yt-theme="velvet"] #buttons .control-card-playlist {
+    background: linear-gradient(135deg, #26121e, #1e0e18);
+}
+
+html[data-yt-theme="velvet"] #buttons .control-card-playlist .panel-heading {
+    background: linear-gradient(135deg, rgba(146, 70, 86, 0.95), rgba(110, 44, 70, 0.95)) !important;
+    color: #fbe9e3 !important;
+}
+
+html[data-yt-theme="velvet"] #buttons .control-card-playlist .panel-body {
+    color: var(--yt-text-muted);
+}
+
+html[data-yt-theme="velvet"] #buttons .panel-body button.btn-default,
+html[data-yt-theme="velvet"] #buttons .panel-body button.btn-default-off,
+html[data-yt-theme="velvet"] #buttons .panel-body button.btn-secondary {
+    background: var(--yt-bg-2);
+    color: var(--yt-text);
+}
+
+html[data-yt-theme="velvet"] #buttons .panel-body button:hover,
+html[data-yt-theme="velvet"] #buttons .panel-body button:focus {
+    border-color: var(--yt-border-strong);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35), 0 0 12px var(--yt-glow);
+}
+
+/* Watch history menu and side panel. */
+html[data-yt-theme="velvet"] .watch-history-menu,
+html[data-yt-theme="velvet"] .watch-history-panel {
+    background: var(--yt-surface);
+    border-color: var(--yt-border);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.5);
+}
+
+html[data-yt-theme="velvet"] .watch-history-header,
+html[data-yt-theme="velvet"] .watch-history-table td {
+    border-color: var(--yt-border);
+    color: var(--yt-text);
+}
+
+html[data-yt-theme="velvet"] .watch-history-table th {
+    background: var(--yt-bg-2);
+    color: var(--yt-accent);
+}
+
+html[data-yt-theme="velvet"] .watch-history-row:hover td,
+html[data-yt-theme="velvet"] .watch-history-row:focus-within td,
+html[data-yt-theme="velvet"] .watch-history-close,
+html[data-yt-theme="velvet"] .watch-history-delete:hover {
+    background-color: var(--yt-tint-strong);
+}
+
+html[data-yt-theme="velvet"] .watch-history-clear-all,
+html[data-yt-theme="velvet"] .watch-history-advanced {
+    color: var(--yt-text-muted);
+}
+
+html[data-yt-theme="velvet"] .watch-history-advanced-track::after {
+    background: var(--yt-text);
+}
+
+/* The down arrow's ring over the video: blush instead of white. */
+html[data-yt-theme="velvet"] .category-browser.category-browser-hidden .category-browser-scroll {
+    box-shadow: 0 0 0 2px rgba(248, 211, 198, 0.85), 0 12px 28px rgba(0, 0, 0, 0.45);
+}
+
+/* Now-playing pill at the top. */
+html[data-yt-theme="velvet"] #playlist-name-flash {
+    background: linear-gradient(135deg, rgba(146, 70, 86, 0.96), rgba(110, 44, 70, 0.96));
+    color: #fbe9e3;
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.45), 0 0 24px var(--yt-glow);
 }
