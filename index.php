@@ -3073,7 +3073,12 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         </button>
         <div id="category-browser-panel" class="category-browser-panel" hidden>
             <div class="category-browser-title">Categories</div>
+            <div class="category-browser-search-wrap">
+                <label class="sr-only" for="category-browser-search">Search categories</label>
+                <input id="category-browser-search" class="category-browser-search" type="search" placeholder="Search categories" autocomplete="off" aria-controls="category-browser-list" oninput="filterCategoryBrowser(); syncCategoryBrowserActive(false)">
+            </div>
             <div id="category-browser-list" class="category-browser-list"></div>
+            <p id="category-browser-empty" class="category-browser-empty" role="status" hidden>No matching categories.</p>
         </div>
     </div>
 
@@ -3097,6 +3102,18 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     function closeCategoryBrowser() {
         $("#category-browser-panel").attr("hidden", true);
         $("#category-browser-toggle").attr("aria-expanded", "false");
+    }
+
+    function filterCategoryBrowser() {
+        var query = String($("#category-browser-search").val() || "").trim().toLowerCase();
+        var $items = $("#category-browser-list .category-browser-item");
+        var visibleCount = 0;
+        $items.each(function() {
+            var matches = !query || String(this.getAttribute("data-category") || "").toLowerCase().indexOf(query) !== -1;
+            this.hidden = !matches;
+            if(matches) visibleCount++;
+        });
+        $("#category-browser-empty").prop("hidden", visibleCount > 0);
     }
 
     function updateCategoryBrowserVisibility() {
@@ -3165,6 +3182,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         } else {
             $panel.removeAttr("hidden");
             $("#category-browser-toggle").attr("aria-expanded", "true");
+            $("#category-browser-search").trigger("focus");
             syncCategoryBrowserActive(true);
         }
     }
@@ -3187,7 +3205,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
     function findCategoryBrowserItem(label) {
         if(!label) return $();
-        var $items = $("#category-browser-list .category-browser-item");
+        var $items = $("#category-browser-list .category-browser-item:visible");
         var $exact = $items.filter(function() {
             return this.getAttribute("data-category") === label;
         });
@@ -3283,6 +3301,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             closeCategoryBrowser();
             $browser.addClass("d-none");
             $list.html("");
+            $("#category-browser-search").val("");
+            $("#category-browser-empty").prop("hidden", true);
             return;
         }
 
@@ -3295,9 +3315,22 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         );
 
         $("#category-browser-toggle").attr("title", categories.length + " categories");
+        filterCategoryBrowser();
         categoryBrowserActiveLabel = null;
         syncCategoryBrowserActive(true);
     };
+
+    $("#category-browser-search").on("search", function() {
+        filterCategoryBrowser();
+        syncCategoryBrowserActive(false);
+    }).on("keydown", function(event) {
+        if(event.key === "Escape" && this.value) {
+            this.value = "";
+            filterCategoryBrowser();
+            syncCategoryBrowserActive(false);
+            event.preventDefault();
+        }
+    });
 
     $(document).on("click", function(event) {
         if($(event.target).closest("#category-browser").length===0) {
