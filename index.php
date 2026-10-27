@@ -24,7 +24,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="assets/js/favs.js?v=2"></script>
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
     <script src="env/playlist-icons.js?v=8"></script>
-    <link rel="stylesheet" href="assets/css/index.css?v=30">
+    <link rel="stylesheet" href="assets/css/index.css?v=31">
     <link rel="stylesheet" href="assets/css/collection-themes.css?v=5">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
@@ -3604,7 +3604,9 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             localStorage.removeItem('YT__all-topics-sort');
             // Letter jump row remembers whether it was left open
             this.alphaIndexExpanded = localStorage.getItem('YT__all-topics-alpha-open') === '1';
-            // Saved filter views for the alphabetical table (loaded per collection)
+            // Saved filter views are loaded per collection and per All Topics layout.
+            // Mosaic views stay shelf-only, while the alphabetical table keeps its
+            // shelf-or-category views.
             this.filterViews = [];
             this.activeFilterId = null;
             this.filterScope = null;
@@ -3843,7 +3845,29 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         renderAllTopicsList() {
             this.$listGrid.empty();
             const isListView = this.listView === 'alphabetical';
-            const grouped = !isListView && this.sections.some((section) => section.group);
+            let items = this.sections.map((section, index) => ({ section, index }));
+            const activeView = this.getActiveFilterView();
+            const total = items.length;
+
+            if (activeView) {
+                items = items.filter(({ section }) => this.sectionMatchesView(section, activeView));
+            }
+
+            // Mosaic views arrange whole shelves. Keep each selected shelf together,
+            // while the topics within a shelf retain their normal collection order.
+            if (!isListView && activeView) {
+                const shelfPosition = {};
+                this.resolveMosaicShelfOrder(activeView).forEach((shelf, position) => {
+                    shelfPosition[shelf] = position;
+                });
+                items.sort((a, b) => {
+                    const aPosition = shelfPosition[a.section.group || ''];
+                    const bPosition = shelfPosition[b.section.group || ''];
+                    return (aPosition - bPosition) || a.index - b.index;
+                });
+            }
+
+            const grouped = !isListView && items.some(({ section }) => section.group);
             this.$listGrid
                 .removeClass('section-nav-parent-list-grid--list section-nav-parent-list-grid--mosaic section-nav-parent-list-grid--grouped')
                 .addClass(isListView
@@ -3851,16 +3875,9 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     : 'section-nav-parent-list-grid--mosaic')
                 .toggleClass('section-nav-parent-list-grid--grouped', grouped);
 
-            let items = this.sections.map((section, index) => ({ section, index }));
-
             if (isListView) {
-                const total = items.length;
                 this.syncSortForActiveView(false);
                 this.$list.toggleClass('section-nav-parent-list--view-order', this.listSortKey === 'view');
-                const activeView = this.getActiveFilterView();
-                if (activeView) {
-                    items = items.filter(({ section }) => this.sectionMatchesView(section, activeView));
-                }
 
                 if (items.length || !activeView) {
                     this.renderAlphabeticalTable(items);
@@ -3874,6 +3891,13 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 return;
             }
 
+            if (!items.length && activeView) {
+                this.renderFilterEmpty(activeView);
+                this.renderFilterBar(total, 0);
+                this.updateNav();
+                return;
+            }
+
             let currentGroup = null;
             items.forEach(({ section, index }) => {
                 if (grouped && section.group !== currentGroup) {
@@ -3881,7 +3905,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                     const $group = $('<button>')
                         .addClass('section-nav-parent-group')
                         .attr('type', 'button')
-                        .text(currentGroup);
+                        .text(currentGroup || 'No shelf');
                     $group.on('click', () => {
                         this.jumpToSection(index);
                     });
@@ -3900,7 +3924,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 this.$listGrid.append($btn);
             });
 
-            this.renderFilterBar(items.length, items.length);
+            this.renderFilterBar(total, items.length);
             this.updateNav();
         }
 
@@ -4108,7 +4132,12 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         }
 
         filterStorageKey(kind) {
-            return `YT__all-topics-filter-${kind}::${this.filterScope}`;
+            // Keep the original alphabetical keys for backwards compatibility.
+            // Mosaic gets an independent set because it only supports shelves.
+            const scopedKind = this.listView === 'mosaic' && (kind === 'views' || kind === 'active')
+                ? `${kind}-mosaic`
+                : kind;
+            return `YT__all-topics-filter-${scopedKind}::${this.filterScope}`;
         }
 
         loadFilterViews() {
@@ -4151,8 +4180,10 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
         // A topic shows if its shelf OR its category is in the view; names no longer in the collection just match nothing
         sectionMatchesView(section, view) {
-            return view.shelves.indexOf(section.group || '') !== -1
-                || view.categories.indexOf(section.label) !== -1;
+            const shelves = Array.isArray(view.shelves) ? view.shelves : [];
+            const categories = Array.isArray(view.categories) ? view.categories : [];
+            return shelves.indexOf(section.group || '') !== -1
+                || categories.indexOf(section.label) !== -1;
         }
 
         countViewMatches(view) {
@@ -4197,6 +4228,37 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             return ordered;
         }
 
+        // A Mosaic view selects and reorders shelves, not individual topics.
+        // Missing shelves are retained in a saved order only until they reappear.
+        resolveMosaicShelfOrder(view) {
+            const available = [];
+            const seen = {};
+            this.sections.forEach((section) => {
+                const shelf = section.group || '';
+                if (this.sectionMatchesView(section, view) && !seen[shelf]) {
+                    seen[shelf] = true;
+                    available.push(shelf);
+                }
+            });
+
+            const ordered = [];
+            const used = {};
+            (view.order || []).forEach((shelf) => {
+                if (seen[shelf] && !used[shelf]) {
+                    used[shelf] = true;
+                    ordered.push(shelf);
+                }
+            });
+            available
+                .filter((shelf) => !used[shelf])
+                .sort((a, b) => {
+                    if (!a !== !b) return a ? -1 : 1;
+                    return this.compareTopicLabels(a, b);
+                })
+                .forEach((shelf) => ordered.push(shelf));
+            return ordered;
+        }
+
         viewHasCustomOrder(view) {
             return !!(view && Array.isArray(view.order) && view.order.length);
         }
@@ -4223,26 +4285,80 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             };
         }
 
-        // Order tab: live preview of the topics the view matches, reorderable by drag, arrows, or Alt+Up/Down
+        filterModalTabs() {
+            return this.filterDraft && this.filterDraft.mosaic ? ['shelves', 'order'] : ['shelves', 'categories', 'order'];
+        }
+
+        // This modal is shared between layouts, but Category is only available
+        // in Alphabetical. Render the control only where it has a real action.
+        renderFilterModalTabs() {
+            const $tabs = this.$filterModal.find('.yt-filter-modal-tabs');
+            $tabs.find('[data-filter-tab="categories"]').remove();
+
+            if (this.filterDraft.mosaic) {
+                return;
+            }
+
+            const $categoryTab = $('<button>')
+                .attr({
+                    type: 'button',
+                    role: 'tab',
+                    id: 'yt-filter-tab-categories',
+                    'data-filter-tab': 'categories',
+                    'aria-controls': 'yt-filter-modal-panel'
+                })
+                .addClass('yt-filter-modal-tab')
+                .append(
+                    $('<span>').addClass('yt-filter-modal-tab-by').text('By '),
+                    'category ',
+                    $('<span>').addClass('yt-filter-modal-tab-count').attr('data-filter-count', 'categories')
+                );
+            $categoryTab.insertBefore($tabs.find('[data-filter-tab="order"]'));
+        }
+
+        filterOrderEntries() {
+            const draft = this.filterDraftView();
+            if (!this.filterDraft.mosaic) {
+                return this.resolveViewOrder(draft).map((section) => ({
+                    label: section.label,
+                    name: section.label,
+                    meta: section.group || '',
+                    icon: true
+                }));
+            }
+
+            return this.resolveMosaicShelfOrder(draft).map((shelf) => ({
+                label: shelf,
+                name: shelf || 'No shelf',
+                meta: `${this.sections.filter((section) => (section.group || '') === shelf).length} categories`
+            }));
+        }
+
+        // Order tab: the table orders topics; Mosaic orders whole shelves.
         renderFilterOrder(focusLabel, focusSelector) {
-            const ordered = this.resolveViewOrder(this.filterDraftView());
+            const ordered = this.filterOrderEntries();
             const custom = this.filterDraft.order.length > 0;
             const $list = this.$filterOrderList.empty();
+            const isMosaic = this.filterDraft.mosaic;
 
             this.$filterOrder.find('.yt-filter-order-reset').prop('disabled', !custom);
-            this.$filterOrder.find('.yt-filter-order-state').text(custom ? 'Custom order' : 'A–Z by category');
+            this.$filterOrder.find('.yt-filter-order-state').text(custom ? 'Custom order' : (isMosaic ? 'A–Z by shelf' : 'A–Z by category'));
 
             if (!ordered.length) {
                 $list.append($('<li>')
                     .addClass('yt-filter-order-empty')
-                    .text('Pick shelves or categories first. The topics they match show up here.'));
+                    .text(isMosaic ? 'Pick shelves first. They show up here for reordering.' : 'Pick shelves or categories first. The topics they match show up here.'));
                 return;
             }
 
-            ordered.forEach((section, i) => {
-                const label = section.label;
+            ordered.forEach((entry, i) => {
+                const label = entry.label;
                 const $name = $('<span>').addClass('yt-filter-order-name');
-                this.fillLabeled($name, label);
+                if (entry.icon) {
+                    this.fillLabeled($name, entry.name);
+                } else {
+                    $name.text(entry.name);
+                }
 
                 $list.append($('<li>')
                     .addClass('yt-filter-order-item')
@@ -4257,7 +4373,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                         $('<span>').addClass('yt-filter-order-pos').attr('aria-hidden', 'true').text(i + 1),
                         $('<span>').addClass('yt-filter-order-text').append(
                             $name,
-                            section.group ? $('<span>').addClass('yt-filter-order-meta').text(section.group) : null
+                            entry.meta ? $('<span>').addClass('yt-filter-order-meta').text(entry.meta) : null
                         ),
                         $('<button>')
                             .addClass('yt-filter-order-move')
@@ -4295,7 +4411,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         }
 
         moveFilterOrderItem(label, delta, focusSelector) {
-            const labels = this.resolveViewOrder(this.filterDraftView()).map((section) => section.label);
+            const labels = this.filterOrderEntries().map((entry) => entry.label);
             const from = labels.indexOf(label);
             const to = from + delta;
             if (from < 0 || to < 0 || to >= labels.length) {
@@ -4312,7 +4428,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         resetFilterOrder() {
             this.filterDraft.order = [];
             this.renderFilterOrder();
-            this.announceFilterOrder('Order reset to A–Z by category');
+            this.announceFilterOrder(`Order reset to A–Z by ${this.filterDraft.mosaic ? 'shelf' : 'category'}`);
             this.updateFilterModalSummary();
             this.$filterOrder.find('.yt-filter-order-list .yt-filter-order-handle').first().trigger('focus');
         }
@@ -4441,9 +4557,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 return;
             }
 
-            const isListView = this.listView === 'alphabetical';
             const active = this.getActiveFilterView();
-            const applied = isListView && !!active;
+            const applied = !!active;
 
             this.$filterChips.empty();
 
@@ -4556,7 +4671,9 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 .addClass('section-nav-parent-filter-empty')
                 .append(
                     $('<p>').addClass('section-nav-parent-filter-empty-title').text(`No topics match "${view.name}"`),
-                    $('<p>').addClass('section-nav-parent-filter-empty-text').text('Its shelves and categories aren\u2019t in this collection right now.'),
+                    $('<p>').addClass('section-nav-parent-filter-empty-text').text(this.listView === 'mosaic'
+                        ? 'Its shelves aren\u2019t in this collection right now.'
+                        : 'Its shelves and categories aren\u2019t in this collection right now.'),
                     $('<div>').addClass('section-nav-parent-filter-empty-actions').append($edit, $clear)
                 ));
         }
@@ -4582,7 +4699,6 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                                 <p id="yt-filter-modal-desc" class="yt-filter-modal-hint">Pick shelves, categories, or both. A topic shows if its shelf or its category is picked.</p>
                                 <div class="yt-filter-modal-tabs" role="tablist" aria-label="Pick by">
                                     <button type="button" role="tab" id="yt-filter-tab-shelves" class="yt-filter-modal-tab" data-filter-tab="shelves" aria-controls="yt-filter-modal-panel"><span class="yt-filter-modal-tab-by">By </span>shelf <span class="yt-filter-modal-tab-count" data-filter-count="shelves"></span></button>
-                                    <button type="button" role="tab" id="yt-filter-tab-categories" class="yt-filter-modal-tab" data-filter-tab="categories" aria-controls="yt-filter-modal-panel"><span class="yt-filter-modal-tab-by">By </span>category <span class="yt-filter-modal-tab-count" data-filter-count="categories"></span></button>
                                     <button type="button" role="tab" id="yt-filter-tab-order" class="yt-filter-modal-tab" data-filter-tab="order" aria-controls="yt-filter-modal-panel"><i class="fas fa-sort-amount-down" aria-hidden="true"></i> Order <span class="yt-filter-modal-tab-count yt-filter-modal-tab-count--text" data-filter-count="order"></span></button>
                                 </div>
                                 <div id="yt-filter-modal-panel" class="yt-filter-modal-panel" role="tabpanel">
@@ -4674,7 +4790,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             $modal.on('keydown', '[role="tab"]', (event) => {
                 if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
                     event.preventDefault();
-                    const tabs = ['shelves', 'categories', 'order'];
+                    const tabs = this.filterModalTabs();
                     const step = event.key === 'ArrowRight' ? 1 : tabs.length - 1;
                     this.setFilterModalTab(tabs[(tabs.indexOf(this.filterDraft.tab) + step) % tabs.length], true);
                     $modal.find(`[data-filter-tab="${this.filterDraft.tab}"]`).trigger('focus');
@@ -4734,19 +4850,29 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             this.buildFilterModal();
             const view = viewId ? this.filterViews.find((item) => item.id === viewId) : null;
             const toMap = (list) => (list || []).reduce((map, key) => { map[key] = true; return map; }, {});
+            const isMosaic = this.listView === 'mosaic';
 
             this.filterModalOpener = opener || document.activeElement;
             this.filterDraft = {
                 id: view ? view.id : null,
                 shelves: toMap(view ? view.shelves : []),
-                categories: toMap(view ? view.categories : []),
+                categories: isMosaic ? {} : toMap(view ? view.categories : []),
                 order: view && Array.isArray(view.order) ? view.order.slice() : [],
-                tab: (view && !view.shelves.length && view.categories.length) ? 'categories' : 'shelves'
+                mosaic: isMosaic,
+                tab: (!isMosaic && view && !view.shelves.length && view.categories.length) ? 'categories' : 'shelves'
             };
 
             this.$filterModal.find('.yt-filter-modal-title').text(view ? 'Edit filter view' : 'New filter view');
             this.$filterModal.find('.yt-filter-modal-save').text(view ? 'Save changes' : 'Save view');
             this.$filterModal.find('.yt-filter-modal-delete-wrap').toggle(!!view);
+            this.renderFilterModalTabs();
+            this.$filterModal.find('#yt-filter-modal-desc').text(isMosaic
+                ? 'Pick shelves to show in this mosaic view, then arrange the shelves in the order you want.'
+                : 'Pick shelves, categories, or both. A topic shows if its shelf or its category is picked.');
+            this.$filterModal.find('.yt-filter-order-reset').html(isMosaic
+                ? '<i class="fas fa-sort-alpha-down" aria-hidden="true"></i> Reset to A–Z'
+                : '<i class="fas fa-sort-alpha-down" aria-hidden="true"></i> Reset to A–Z');
+            this.$filterOrderList.attr('aria-label', isMosaic ? 'Shelf order' : 'Topic order');
             this.showFilterDeleteConfirm(false);
             this.$filterName.val(view ? view.name : '');
             this.$filterError.attr('hidden', '').text('');
@@ -4871,7 +4997,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         }
 
         setFilterModalTab(tab, focusSearch) {
-            const tabs = ['shelves', 'categories', 'order'];
+            const tabs = this.filterModalTabs();
             this.filterDraft.tab = tabs.indexOf(tab) !== -1 ? tab : 'shelves';
             const isShelves = this.filterDraft.tab === 'shelves';
             const isOrder = this.filterDraft.tab === 'order';
@@ -4960,7 +5086,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
         updateFilterModalSummary() {
             const shelves = Object.keys(this.filterDraft.shelves);
-            const categories = Object.keys(this.filterDraft.categories);
+            const categories = this.filterDraft.mosaic ? [] : Object.keys(this.filterDraft.categories);
             const draftView = { shelves, categories };
             const matches = this.countViewMatches(draftView);
 
@@ -4974,6 +5100,12 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             }
 
             const plural = (count, one, many) => `${count} ${count === 1 ? one : many}`;
+            if (this.filterDraft.mosaic) {
+                this.$filterSummary.text(
+                    `${plural(shelves.length, 'shelf', 'shelves')} picked → shows ${plural(matches, 'topic', 'topics')} of ${this.sections.length}`
+                );
+                return;
+            }
             this.$filterSummary.text(
                 `${plural(shelves.length, 'shelf', 'shelves')} · ${plural(categories.length, 'category', 'categories')} picked → shows ${plural(matches, 'topic', 'topics')} of ${this.sections.length}`
             );
@@ -4989,11 +5121,14 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         saveFilterModal() {
             const name = String(this.$filterName.val() || '').trim().replace(/\s+/g, ' ');
             const shelves = Object.keys(this.filterDraft.shelves);
-            const categories = Object.keys(this.filterDraft.categories);
+            const isMosaic = this.filterDraft.mosaic;
+            const categories = isMosaic ? [] : Object.keys(this.filterDraft.categories);
             const editingId = this.filterDraft.id;
-            // Keep a custom order only for topics the view still matches
+            // Keep a custom order only for entries the view still matches.
             const order = this.filterDraft.order.length
-                ? this.resolveViewOrder({ shelves, categories, order: this.filterDraft.order }).map((section) => section.label)
+                ? (isMosaic
+                    ? this.resolveMosaicShelfOrder({ shelves, categories, order: this.filterDraft.order })
+                    : this.resolveViewOrder({ shelves, categories, order: this.filterDraft.order }).map((section) => section.label))
                 : [];
 
             if (!name) {
@@ -5008,7 +5143,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             }
 
             if (!shelves.length && !categories.length) {
-                this.showFilterModalError('Pick at least one shelf or category.', this.$filterSearch);
+                this.showFilterModalError(isMosaic ? 'Pick at least one shelf.' : 'Pick at least one shelf or category.', this.$filterSearch);
                 return;
             }
 
@@ -5119,6 +5254,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         toggleListView() {
             this.listView = this.listView === 'alphabetical' ? 'mosaic' : 'alphabetical';
             localStorage.setItem('YT__all-topics-view', this.listView);
+            this.loadFilterViews();
+            this.syncSortForActiveView(true);
             this.updateViewToggleUi();
             this.renderAllTopicsList();
             this.$listBody.scrollTop(0);
@@ -5134,6 +5271,12 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             const $icon = this.$viewToggle.find('i');
 
             this.$list.toggleClass('section-nav-parent-list--alphabetical', isListView);
+
+            if (this.$filterNew && this.$filterNew.length) {
+                this.$filterNew.attr('title', isListView
+                    ? 'Save a set of shelves or categories as a filter view'
+                    : 'Save a set of shelves and their order as a mosaic view');
+            }
 
             this.syncAlphaToggleUi();
 

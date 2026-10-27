@@ -62,6 +62,7 @@ var playlistIconRules = [
   { pattern: "Loopable Learning|Education|teaching|Videoediting", font: "fas fa-book-reader" },
   { pattern: "\\bNLP\\b", font: "fas fa-brain" },
   { pattern: "Self-Improvement|Productive|Nofap", font: "fas fa-seedling" },
+  { pattern: "(?:^Status$|\\[Status\\])", font: "fas fa-crown" },
   { pattern: "(?:^Stocks$|\\[Stocks\\])", font: "fas fa-chart-line" },
   { pattern: "\\bbusiness\\b", font: "fas fa-briefcase" },
 
