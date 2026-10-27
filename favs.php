@@ -2,8 +2,8 @@
 <?php $prependPath="./"; ?>
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<link href="<?php echo $prependPath; ?>assets/css/favs.css?v=11" rel="stylesheet"></link>
-<link href="<?php echo $prependPath; ?>assets/css/collection-themes.css?v=4" rel="stylesheet"></link>
+<link href="<?php echo $prependPath; ?>assets/css/favs.css?v=12" rel="stylesheet"></link>
+<link href="<?php echo $prependPath; ?>assets/css/collection-themes.css?v=5" rel="stylesheet"></link>
 <script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
 <script src="<?php echo $prependPath; ?>env/playlist-icons.js?v=8"></script>
 <script src="<?php echo $prependPath; ?>env/playlist-actions.js?v=1"></script>
@@ -491,6 +491,11 @@ function fetchPlaylist(calledCollection) {
       }
 
       resizeIframeNow();
+
+      // Let the player re-check "(Shuffled)" / "(Chronological)" in the open playlist's name
+      if(window.parent && typeof window.parent.syncPlaylistModeOverride === "function") {
+        window.parent.syncPlaylistModeOverride();
+      }
   } // renderPlaylists
 
   function resizeIframeNow() {
