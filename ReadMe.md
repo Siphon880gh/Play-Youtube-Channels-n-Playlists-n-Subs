@@ -13,6 +13,17 @@ You can add playlists at /favs. Each .json file is a collection. The Default.jso
 
 You can list the collections of playlists by clicking "Youtube uploads and playlists" three times.
 
+## Mode: Latest first, Shuffle, and playlist-name overrides
+
+The **Mode** dropdown under the player picks how a playlist starts: **Latest first** (newest video down) or **Shuffle**. Click the (i) next to Mode for a short reminder.
+
+A playlist's name can override Mode while that playlist is open (case-insensitive):
+
+- `(Shuffled)` or `(Shuffle)` in the name: always shuffles.
+- `(Chronological)` in the name: always plays latest first.
+
+The override never replaces the Mode you picked. Open a playlist without either tag and your own Mode comes back. "Set by playlist name" shows under Mode while an override is active. If you change Mode by hand on a tagged playlist, your pick becomes your Mode and wins until you leave that playlist.
+
 ## Optional: YouTube API features (upload date + playlist titles)
 
 A YouTube Data API key is optional. Without a key (or with an invalid/restricted key), the shuffler still works as usual:
@@ -22,7 +33,7 @@ A YouTube Data API key is optional. Without a key (or with an invalid/restricted
 
 With a valid key, you get:
 
-- Upload date under the Mode dropdown while a video is playing.
+- An optional **Video details** disclosure beneath the player controls, where you can reveal the current video's title and upload date.
 - Real titles in the playlist list.
 
 To enable these:

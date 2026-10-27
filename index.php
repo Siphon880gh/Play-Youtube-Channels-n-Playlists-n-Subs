@@ -24,8 +24,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="assets/js/favs.js?v=2"></script>
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
     <script src="env/playlist-icons.js?v=8"></script>
-    <link rel="stylesheet" href="assets/css/index.css?v=31">
-    <link rel="stylesheet" href="assets/css/collection-themes.css?v=5">
+    <link rel="stylesheet" href="assets/css/index.css?v=33">
+    <link rel="stylesheet" href="assets/css/collection-themes.css?v=6">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
     <style>
@@ -304,6 +304,14 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             if(matched) matched = matched.replaceAll(".php", "");
 
             params.set("favs", matched);
+
+            // The next playlist's name may override Mode; the user's own Mode stays untouched
+            var nextName = $el && $el.length ? $el.text() : getPlaylistNameById(playlistId);
+            var nameMode = rememberModeOverride(playlistId, nextName);
+            var nextIsLatest = nameMode ? nameMode === "latest" : localStorage.getItem("YT__shuffle_mode") === "0";
+            if(nextIsLatest && !params.has("playlistStart")) {
+                params.set("playlistStart", 1);
+            }
             window.location.search = params.toString();
 
         },
@@ -349,6 +357,12 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     function isShuffleMode() {
         // let isShuffling = window.location.href.indexOf("playlistStart=")===-1;
 
+        // A "(Shuffled)" / "(Chronological)" playlist name wins over the user's Mode preference
+        var playlistNameMode = getActiveModeOverride();
+        if(playlistNameMode) {
+            return playlistNameMode === "shuffle";
+        }
+
         // If first opening app, default is no shuffling
         if(localStorage.getItem("YT__shuffle_mode")===null)
         localStorage.getItem("YT__shuffle_mode")==="0";
@@ -357,6 +371,110 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         console.log("isShuffleMode: ", isShuffling);
         return isShuffling;
     }
+
+    // ---- Mode override from the playlist name ----
+    // YT__shuffle_mode is the user's own Mode (the one they last picked by hand).
+    // YT__mode_override is {playlistId, mode, manual} for the playlist that is open now.
+    // A tagged playlist only writes the override, so leaving it restores the user's Mode.
+    var MODE_OVERRIDE_KEY = "YT__mode_override";
+
+    function getModeFromPlaylistName(name) {
+        var text = String(name || "").toLowerCase();
+        var shuffleAt = Math.max(text.lastIndexOf("(shuffled)"), text.lastIndexOf("(shuffle)"));
+        var chronologicalAt = text.lastIndexOf("(chronological)");
+        if(shuffleAt < 0 && chronologicalAt < 0) {
+            return null;
+        }
+        // Both tags in one name: the last one written wins
+        return chronologicalAt > shuffleAt ? "latest" : "shuffle";
+    }
+
+    function readModeOverride() {
+        var saved = null;
+        try {
+            saved = JSON.parse(localStorage.getItem(MODE_OVERRIDE_KEY) || "null");
+        } catch(e) {
+            return null;
+        }
+        if(!saved || saved.playlistId !== window.playlistId || (saved.mode !== "shuffle" && saved.mode !== "latest")) {
+            return null;
+        }
+        return saved;
+    }
+
+    function getActiveModeOverride() {
+        var saved = readModeOverride();
+        return saved && !saved.manual ? saved.mode : null;
+    }
+
+    function rememberModeOverride(playlistId, playlistName) {
+        var mode = getModeFromPlaylistName(playlistName);
+        if(mode) {
+            localStorage.setItem(MODE_OVERRIDE_KEY, JSON.stringify({ playlistId: playlistId, mode: mode }));
+        } else {
+            localStorage.removeItem(MODE_OVERRIDE_KEY);
+        }
+        return mode;
+    }
+
+    function getPlaylistNameById(playlistId) {
+        try {
+            var $a = $("#favs-wrapper iframe").contents().find("a[data-playlist-id]").filter(function() {
+                return $(this).attr("data-playlist-id") === playlistId;
+            }).first();
+            return $a.length ? $a.text() : null;
+        } catch(e) {
+            return null;
+        }
+    }
+
+    // Called by favs.php after it renders a collection: catches direct links and renamed playlists.
+    function syncPlaylistModeOverride() {
+        var name = getPlaylistNameById(window.playlistId);
+        if(name === null) {
+            return; // playlist is not in this collection; leave things as they are
+        }
+        var mode = getModeFromPlaylistName(name);
+        var saved = readModeOverride();
+        if(mode && !(saved && saved.mode === mode)) {
+            localStorage.setItem(MODE_OVERRIDE_KEY, JSON.stringify({ playlistId: window.playlistId, mode: mode }));
+        } else if(!mode && saved) {
+            localStorage.removeItem(MODE_OVERRIDE_KEY);
+        }
+        updatePlaybackModeSelect();
+    }
+
+    // A "(Chronological)" playlist starts at the newest video even without playlistStart in the URL
+    if(getActiveModeOverride() === "latest" && !String(window.playlistStartIndex || "").length) {
+        window.playlistStartIndex = "1";
+    }
+
+    function togglePlaybackModeInfo(event, forceOpen) {
+        if(event) {
+            event.stopPropagation();
+        }
+        var $btn = $("#playback-mode-info-btn");
+        var $panel = $("#playback-mode-info");
+        var open = typeof forceOpen === "boolean" ? forceOpen : $panel.prop("hidden");
+        $panel.prop("hidden", !open);
+        $btn.attr("aria-expanded", open ? "true" : "false");
+        if(open) {
+            $panel.trigger("focus");
+        }
+    }
+
+    $(document).on("click", function(event) {
+        if(!$(event.target).closest("#playback-mode-info, #playback-mode-info-btn").length && !$("#playback-mode-info").prop("hidden")) {
+            togglePlaybackModeInfo(null, false);
+        }
+    });
+
+    $(document).on("keydown", function(event) {
+        if(event.key === "Escape" && !$("#playback-mode-info").prop("hidden")) {
+            togglePlaybackModeInfo(null, false);
+            $("#playback-mode-info-btn").trigger("focus");
+        }
+    });
 
     $(()=>{
         syncVideoStartModeButtons();
@@ -414,6 +532,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         initWatchTime();
         initWatchHistory();
         initPlayerVideoActionTooltips();
+        initAppMetaCarousel();
 
     }); // on doc ready
 
@@ -1355,9 +1474,16 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
         let isShuffling = isShuffleMode();
         $select.val(isShuffling ? "shuffle" : "latest");
+        let playlistNameMode = getActiveModeOverride();
         $("#playback-mode-control")
             .toggleClass("playback-mode-control--shuffle", isShuffling)
-            .toggleClass("playback-mode-control--chronological", !isShuffling);
+            .toggleClass("playback-mode-control--chronological", !isShuffling)
+            .toggleClass("playback-mode-control--overridden", !!playlistNameMode);
+        $("#playback-mode-override-note")
+            .prop("hidden", !playlistNameMode)
+            .attr("title", playlistNameMode === "shuffle"
+                ? "This playlist's name has (Shuffled), so it plays shuffled. Your own Mode comes back on the next playlist."
+                : "This playlist's name has (Chronological), so it plays latest first. Your own Mode comes back on the next playlist.");
     }
 
     function setShuffleMode(wantChronological) {
@@ -1371,6 +1497,12 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
     function handlePlaybackModeChange() {
         let mode = $("#playback-mode-select").val();
+        // Picking a Mode by hand becomes the user's Mode and beats the playlist name until they leave this playlist
+        let saved = readModeOverride();
+        if(saved) {
+            saved.manual = true;
+            localStorage.setItem(MODE_OVERRIDE_KEY, JSON.stringify(saved));
+        }
         if(mode === "shuffle") {
             setShuffleMode(false);
             urlChange.start("RANDOM");
@@ -1953,10 +2085,15 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
     function clearVideoUploadDate() {
         let $el = $("#video-upload-date");
+        let $title = $("#video-title");
+        let $slide = $("#app-meta-slide-video");
         if(!$el.length) {
             return;
         }
         $el.addClass("d-none").text("").removeAttr("datetime");
+        $title.addClass("d-none").text("");
+        $slide.addClass("d-none");
+        refreshAppMetaCarousel();
     }
 
     function formatVideoUploadDate(publishedAt) {
@@ -1976,8 +2113,10 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         }
     }
 
-    function setVideoUploadDate(publishedAt) {
+    function setVideoUploadDate(publishedAt, title) {
         let $el = $("#video-upload-date");
+        let $title = $("#video-title");
+        let $slide = $("#app-meta-slide-video");
         if(!$el.length) {
             return;
         }
@@ -1992,6 +2131,108 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             .attr("datetime", publishedAt)
             .text("Uploaded " + label)
             .removeClass("d-none");
+        let videoTitle = typeof title === "string" ? title.trim() : "";
+        $title
+            .text(videoTitle)
+            .toggleClass("d-none", !videoTitle);
+        $slide.removeClass("d-none");
+        refreshAppMetaCarousel("app-meta-slide-video");
+    }
+
+    window.appMetaCarousel = null;
+
+    function initAppMetaCarousel() {
+        let root = document.getElementById("app-meta-carousel");
+        if(!root || window.appMetaCarousel) {
+            return;
+        }
+
+        let allSlides = Array.from(root.querySelectorAll("[data-app-meta-slide]"));
+        let dots = Array.from(root.querySelectorAll("[data-app-meta-carousel-dot]"));
+        let previous = root.querySelector("[data-app-meta-carousel-previous]");
+        let next = root.querySelector("[data-app-meta-carousel-next]");
+        let controls = root.querySelector(".app-meta-carousel-controls");
+        let activeId = "";
+
+        function getAvailableSlides() {
+            return allSlides.filter(function(slide) {
+                return !slide.classList.contains("d-none");
+            });
+        }
+
+        function refresh(preferredId) {
+            let availableSlides = getAvailableSlides();
+            let availableIds = availableSlides.map(function(slide) {
+                return slide.id;
+            });
+
+            if(preferredId && availableIds.indexOf(preferredId) !== -1) {
+                activeId = preferredId;
+            } else if(availableIds.indexOf(activeId) === -1) {
+                activeId = availableIds[0] || "";
+            }
+
+            allSlides.forEach(function(slide) {
+                slide.hidden = slide.id !== activeId;
+            });
+
+            dots.forEach(function(dot) {
+                let isAvailable = availableIds.indexOf(dot.getAttribute("aria-controls")) !== -1;
+                let isActive = dot.getAttribute("aria-controls") === activeId;
+                dot.classList.toggle("d-none", !isAvailable);
+                dot.setAttribute("aria-pressed", isActive ? "true" : "false");
+                dot.tabIndex = isActive ? 0 : -1;
+            });
+
+            if(controls) {
+                controls.classList.toggle("d-none", availableSlides.length < 2);
+            }
+        }
+
+        function move(step) {
+            let availableSlides = getAvailableSlides();
+            if(availableSlides.length < 2) {
+                return;
+            }
+
+            let currentIndex = availableSlides.findIndex(function(slide) {
+                return slide.id === activeId;
+            });
+            let nextIndex = (currentIndex + step + availableSlides.length) % availableSlides.length;
+            activeId = availableSlides[nextIndex].id;
+            refresh();
+        }
+
+        if(previous) {
+            previous.addEventListener("click", function() {
+                move(-1);
+            });
+        }
+        if(next) {
+            next.addEventListener("click", function() {
+                move(1);
+            });
+        }
+        dots.forEach(function(dot) {
+            dot.addEventListener("click", function() {
+                let targetId = dot.getAttribute("aria-controls");
+                if(targetId) {
+                    activeId = targetId;
+                    refresh();
+                }
+            });
+        });
+
+        window.appMetaCarousel = {
+            refresh: refresh
+        };
+        refresh();
+    }
+
+    function refreshAppMetaCarousel(preferredId) {
+        if(window.appMetaCarousel && typeof window.appMetaCarousel.refresh === "function") {
+            window.appMetaCarousel.refresh(preferredId);
+        }
     }
 
     function normalizeUploadDateIdentityPart(value) {
@@ -2128,9 +2369,9 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         persistUploadDateStorage();
     }
 
-    function applyCachedUploadDate(publishedAt) {
+    function applyCachedUploadDate(publishedAt, title) {
         if(publishedAt) {
-            setVideoUploadDate(publishedAt);
+            setVideoUploadDate(publishedAt, title);
         } else {
             clearVideoUploadDate();
         }
@@ -2151,7 +2392,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         let sameVideoShowing =
             window.ytUploadDate.lastVideoId === identity.videoId &&
             window.ytUploadDate.lastCacheKey === identity.cacheKey &&
-            !$("#video-upload-date").hasClass("d-none");
+            !$("#video-upload-date").hasClass("d-none") &&
+            !$("#video-title").hasClass("d-none");
 
         if(sameVideoShowing) {
             return;
@@ -2163,7 +2405,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         if(identity.cacheKey) {
             let cached = readCachedUploadDate(identity.cacheKey);
             if(typeof cached !== "undefined") {
-                applyCachedUploadDate(cached);
+                applyCachedUploadDate(cached, identity.title);
                 return;
             }
         }
@@ -2216,7 +2458,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
                 window.ytUploadDate.lastCacheKey = cacheKey;
             }
 
-            applyCachedUploadDate(publishedAt);
+            applyCachedUploadDate(publishedAt, data.title || identity.title);
         }).fail(function() {
             if(window.ytUploadDate.inFlightVideoId === identity.videoId) {
                 window.ytUploadDate.inFlightVideoId = "";
@@ -2848,16 +3090,27 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         <div class="player-options-controls">
             <div class="player-options-row player-options-row-primary">
                 <div id="playback-mode-control" class="playback-mode-control playback-mode-control--chronological">
-                    <label class="playback-mode-label" for="playback-mode-select">
-                        <i class="fa fa-sort-amount-desc playback-mode-icon playback-mode-icon--chronological" aria-hidden="true"></i>
-                        <i class="fa fa-random playback-mode-icon playback-mode-icon--shuffle" aria-hidden="true"></i>
-                        <span class="playback-mode-label-text">Mode</span>
-                    </label>
+                    <div class="playback-mode-head">
+                        <label class="playback-mode-label" for="playback-mode-select">
+                            <i class="fa fa-sort-amount-desc playback-mode-icon playback-mode-icon--chronological" aria-hidden="true"></i>
+                            <i class="fa fa-random playback-mode-icon playback-mode-icon--shuffle" aria-hidden="true"></i>
+                            <span class="playback-mode-label-text">Mode</span>
+                        </label>
+                        <button type="button" id="playback-mode-info-btn" class="playback-mode-info-btn" aria-label="About Mode" aria-expanded="false" aria-controls="playback-mode-info" onclick="togglePlaybackModeInfo(event);">
+                            <i class="fa fa-info-circle" aria-hidden="true"></i>
+                        </button>
+                    </div>
                     <select id="playback-mode-select" class="playback-mode-select" title="How videos start in the current playlist" aria-label="Playback mode" onchange="handlePlaybackModeChange();">
                         <option value="latest">Latest first</option>
                         <option value="shuffle">Shuffle</option>
                     </select>
-                    <time id="video-upload-date" class="video-upload-date d-none" aria-live="polite" title="Video upload date"></time>
+                    <span id="playback-mode-override-note" class="playback-mode-override-note" hidden><i class="fa fa-tag" aria-hidden="true"></i> Set by playlist name</span>
+                    <div id="playback-mode-info" class="playback-mode-info" role="dialog" aria-label="About Mode" tabindex="-1" hidden>
+                        <p><strong>Latest first</strong> plays the playlist from its newest video down.</p>
+                        <p><strong>Shuffle</strong> starts at a random video and keeps shuffling.</p>
+                        <p>A playlist whose name has <code>(Shuffled)</code> or <code>(Shuffle)</code> always shuffles, and one with <code>(Chronological)</code> always plays latest first. Upper or lower case both work.</p>
+                        <p>These only apply while that playlist is open. The next playlist without a tag goes back to the Mode you picked.</p>
+                    </div>
                 </div>
                 <div id="playlist-position-indicator" class="player-options-nav d-none" role="group" aria-label="Playlist navigation">
                     <button type="button" class="playlist-position-arrow playlist-position-arrow-first" onclick="openFirstVideoInPlaylist();" aria-label="First video">
@@ -2925,25 +3178,54 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             </div>
         </div>
         <div id="app-meta" class="player-options-meta">
-            <details id="app-desc" class="app-disclosure">
-                <summary>
-                    <span class="app-disclosure-label">About this app</span>
-                    <span class="app-disclosure-preview">Youtube Viewer and Shuffler</span>
-                </summary>
-                <div class="app-disclosure-body">
-                    <strong>Youtube Viewer and Shuffler</strong><br/>
-                    By Weng. I can track my favorite channels and playlists. Why? Youtube changed how new videos show on my feed. Clicking a video just out of curiosity affects subsequent home views from showing my subscriptions. So something has gotta be done! Play youtube videos from favorited channels and playlists in order or randomly. You can fit the video to the window so you can watch on one part of the screen. As an advance internet user, you can place a playlist ID in the URL param as <code>?playlistId=...</code> or start the playlist at a song position with the URL param like <code>&playlistStart=1</code>. Want the video player fitted to the window when the page loads? Use URL parameter <code>fit-video</code>. As a developer, you can add more favorite channels or playlists at favs.php and /favs.
+            <div id="app-meta-carousel" class="app-meta-carousel" role="region" aria-label="Video and app information">
+                <div class="app-meta-carousel-viewport" aria-live="polite">
+                    <section id="app-meta-slide-video" class="app-meta-carousel-slide d-none" data-app-meta-slide aria-label="Video details">
+                        <details id="video-details" class="app-disclosure video-details">
+                            <summary>
+                                <span class="app-disclosure-label"><i class="fa fa-calendar app-disclosure-label-icon" aria-hidden="true"></i> Video details</span>
+                                <span class="app-disclosure-preview">Title and upload date</span>
+                            </summary>
+                            <div class="app-disclosure-body video-details-body">
+                                <strong id="video-title" class="video-title d-none"></strong>
+                                <time id="video-upload-date" class="video-upload-date d-none" aria-live="polite" title="Video upload date"></time>
+                            </div>
+                        </details>
+                    </section>
+                    <section id="app-meta-slide-about" class="app-meta-carousel-slide" data-app-meta-slide aria-label="About this app">
+                        <details id="app-desc" class="app-disclosure">
+                            <summary>
+                                <span class="app-disclosure-label"><i class="fa fa-info-circle app-disclosure-label-icon" aria-hidden="true"></i> About this app</span>
+                                <span class="app-disclosure-preview">Youtube Viewer and Shuffler</span>
+                            </summary>
+                            <div class="app-disclosure-body">
+                                <strong>Youtube Viewer and Shuffler</strong><br/>
+                                By Weng. I can track my favorite channels and playlists. Why? Youtube changed how new videos show on my feed. Clicking a video just out of curiosity affects subsequent home views from showing my subscriptions. So something has gotta be done! Play youtube videos from favorited channels and playlists in order or randomly. You can fit the video to the window so you can watch on one part of the screen. As an advance internet user, you can place a playlist ID in the URL param as <code>?playlistId=...</code> or start the playlist at a song position with the URL param like <code>&playlistStart=1</code>. Want the video player fitted to the window when the page loads? Use URL parameter <code>fit-video</code>. As a developer, you can add more favorite channels or playlists at favs.php and /favs.
+                            </div>
+                        </details>
+                    </section>
+                    <section id="app-meta-slide-roadmap" class="app-meta-carousel-slide" data-app-meta-slide aria-label="Roadmap and support">
+                        <details id="funding-needed" class="app-disclosure app-disclosure-support">
+                            <summary>
+                                <span class="app-disclosure-label"><i class="fa fa-compass app-disclosure-label-icon" aria-hidden="true"></i> Roadmap / support</span>
+                                <span class="app-disclosure-preview">Funding, playlist editor, OAuth2</span>
+                            </summary>
+                            <div class="app-disclosure-body">
+                                Funding needed. If only I have some time, I'll add an interface to add playlists or channels. Right now it's done through a JSON file on my side. I'd also add OAuth2 for your own profiles. Please <a href="https://www.wengindustry.com/me/contact" target="_blank" rel="noopener noreferrer">let me know</a> if you express interest in scaling up the app. Your name will be added and special requests possible.
+                            </div>
+                        </details>
+                    </section>
                 </div>
-            </details>
-            <details id="funding-needed" class="app-disclosure app-disclosure-support">
-                <summary>
-                    <span class="app-disclosure-label">Roadmap / support</span>
-                    <span class="app-disclosure-preview">Funding, playlist editor, OAuth2</span>
-                </summary>
-                <div class="app-disclosure-body">
-                    Funding needed. If only I have some time, I'll add an interface to add playlists or channels. Right now it's done through a JSON file on my side. I'd also add OAuth2 for your own profiles. Please <a href="https://www.wengindustry.com/me/contact" target="_blank" rel="noopener noreferrer">let me know</a> if you express interest in scaling up the app. Your name will be added and special requests possible.
+                <div class="app-meta-carousel-controls" role="group" aria-label="Information carousel controls">
+                    <button type="button" class="app-meta-carousel-button" data-app-meta-carousel-previous aria-label="Previous information panel"><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
+                    <div class="app-meta-carousel-dots" aria-label="Choose information panel">
+                        <button type="button" class="app-meta-carousel-dot" data-app-meta-carousel-dot aria-label="Show video details" aria-controls="app-meta-slide-video" aria-pressed="false"></button>
+                        <button type="button" class="app-meta-carousel-dot" data-app-meta-carousel-dot aria-label="Show about this app" aria-controls="app-meta-slide-about" aria-pressed="true"></button>
+                        <button type="button" class="app-meta-carousel-dot" data-app-meta-carousel-dot aria-label="Show roadmap and support" aria-controls="app-meta-slide-roadmap" aria-pressed="false"></button>
+                    </div>
+                    <button type="button" class="app-meta-carousel-button" data-app-meta-carousel-next aria-label="Next information panel"><i class="fa fa-chevron-right" aria-hidden="true"></i></button>
                 </div>
-            </details>
+            </div>
         </div>
     </div>
     <div id="player-fallback" class="alert alert-warning d-none" style="margin: 10px auto 0 auto; max-width: 640px;">
