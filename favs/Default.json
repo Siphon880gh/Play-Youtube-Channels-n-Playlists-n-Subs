@@ -154,6 +154,7 @@
     { "id": "UUSw4GdHGBf4usbvuXa9652A", "name": "[Lifestyle/Programmer] Marsela" },
     { "id": "UU4xKdmAXFh4ACyhpiQ_3qBw", "name": "[Lifestyle/Programmer] TechLead" },
     { "id": "UUelp2mfpa0fors7HePAodoA", "name": "[Lifestyle/Programmer] Jean Lee (ex-Meta, AI/CS careers)" },
+    { "id": "UUCIFp-Se_xjfYc94H04oK7Q", "name": "[Lifestyle/Programmer] Brian Ruiz" },
     { "id": "UUCSAXVRpbWa_0dt75XTOerw", "name": "[Lifestyle/Events] The Art Mann Channel" },
     { "id": "UUZetDLJfNLj3IkCASS0pIYA", "name": "[Lifestyle/Japan Walks] JAPAN WALKING" },
     { "id": "UUp6IuTXWRkW2bCR-suMUHCg", "name": "[Animals/Rescue and Pet] Brandon McMillan" },
@@ -541,6 +542,9 @@
     { "id": "UUpkktpjoIt96VuIoq-jUx5Q", "name": "[Reviews/Restaurants/626 & LA] How Kev Eats (Kevin Noparvar)" },
     { "id": "UUBmaguWr8ng3t7uGT_FBFTg", "name": "[Reviews/Products] Is It Worth It?" },
     { "id": "UU2HphG58ZZXHMUp-6IO8Bjw", "name": "[Reviews/Products] Der Druckt Schon Wieder (German, 3D printing)" },
+    { "id": "UUC_NjLEb2Sley94py4vSYTA", "name": "[Reviews/Products] Andres Vidoza" },
+    { "id": "UU5rMneyhrBKrNuzJQkRy0uw", "name": "[Reviews/Products] Tyriel Wood - VR Tech" },
+    { "id": "UU7JnBzUBLdAEGbfu-rlsZtw", "name": "[Reviews/Products] Tech with Spencer" },
     { "group": "Travel" },
     { "id": "UUKr68ZJ4vv6VloNdnS2hjhA", "name": "[Travel] Harald Baldr" },
     { "id": "UUTmeE9XITcEDqpxYLbYQgNQ", "name": "[Travel] Jason Rupp" },
@@ -818,6 +822,7 @@
     { "id": "UUj2zirDn1hkPKSARbARfeQw", "name": "[AI/Tools & Tutorials] Paul James (iampauljames)" },
     { "id": "UUFeFVytEkT8kaqPCJZGFswg", "name": "[AI/Tools & Tutorials] Austin Marchese" },
     { "id": "UU3KK7ENB_ierAXvrxVNnbZQ", "name": "[AI/Tools & Tutorials] Ben AI" },
+    { "id": "UUQM_HxoKmza1simMUchYfVA", "name": "[AI/Tools & Tutorials] Jon Law" },
     { "id": "UUsKYafvITnbkdEdqwSzlW9Q", "name": "[AI/Coding & Agents] Samnang Aing" },
     { "id": "UUNZEktrsM5oJZ-MK4jKPMOQ", "name": "[AI/Coding & Agents] The Next New Thing" },
     { "id": "UUOXRjenlq9PmlTqd_JhAbMQ", "name": "[AI/Coding & Agents] Eric Tech" },
@@ -852,5 +857,6 @@
     { "id": "UUDz2eRrUEml5wgMdAFH775w", "name": "[AI/Business] Marchal Mboumba" },
     { "id": "UUiGWNa6QK6CiKPvv5-YPv8g", "name": "[AI/Business] Sabrina Ramonov" },
     { "id": "UUA-mWX9CvCTVFWRMb9bKc9w", "name": "[AI/Business] Dan Martell" },
-    { "id": "UU878Wt_K2I_xSWBt10ViekA", "name": "[AI/Business] Simon Beard" }
+    { "id": "UU878Wt_K2I_xSWBt10ViekA", "name": "[AI/Business] Simon Beard" },
+    { "id": "UUHvRo9vBRlg66j5_bQLHw8w", "name": "[AI/Business] Jensen Tung" }
 ]
