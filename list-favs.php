@@ -48,9 +48,10 @@ foreach($a as $link) {
     }
 }
 
-echo '</div>';
-
+// The lock action sits in the grid as the last tile (styled as an action, not a collection).
 if ($hasPrivate && $privateUnlocked) {
-    echo '<div class="fav-collections-private-actions"><button type="button" class="fav-collections-lock-btn" onclick="lockPrivateCollections();"><i class="fa fa-lock" aria-hidden="true"></i> Lock private collections</button></div>';
+    echo '<button type="button" class="fav-collections-lock-btn" onclick="lockPrivateCollections();"><i class="fa fa-lock" aria-hidden="true"></i> Lock private collections</button>';
 }
+
+echo '</div>';
 ?>

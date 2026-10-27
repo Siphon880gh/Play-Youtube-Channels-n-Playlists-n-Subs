@@ -213,8 +213,7 @@ html[data-yt-theme] .private-unlock-title {
 html[data-yt-theme] .fav-collections-panel-close,
 html[data-yt-theme] .fav-collections-link,
 html[data-yt-theme] .fav-collections-link:visited,
-html[data-yt-theme] .private-unlock-btn,
-html[data-yt-theme] .fav-collections-lock-btn {
+html[data-yt-theme] .private-unlock-btn {
     background: var(--yt-surface);
     color: var(--yt-accent);
     border-color: var(--yt-border);
@@ -223,11 +222,28 @@ html[data-yt-theme] .fav-collections-lock-btn {
 html[data-yt-theme] .fav-collections-panel-close:hover,
 html[data-yt-theme] .fav-collections-link:hover,
 html[data-yt-theme] .fav-collections-link:focus,
-html[data-yt-theme] .private-unlock-btn:hover,
-html[data-yt-theme] .fav-collections-lock-btn:hover {
+html[data-yt-theme] .private-unlock-btn:hover {
     background: var(--yt-tint);
     color: var(--yt-accent-hover);
     border-color: var(--yt-border-strong);
+}
+
+/* Lock action tile: muted text on a dashed edge, so it reads as an action. */
+html[data-yt-theme] .fav-collections-lock-btn {
+    background: transparent;
+    color: var(--yt-text-muted);
+    border-color: var(--yt-border-strong);
+}
+
+html[data-yt-theme] .fav-collections-lock-btn:hover,
+html[data-yt-theme] .fav-collections-lock-btn:focus-visible {
+    background: var(--yt-tint);
+    color: var(--yt-accent-hover);
+    border-color: var(--yt-accent);
+}
+
+html[data-yt-theme] .fav-collections-lock-btn:focus-visible {
+    outline-color: var(--yt-accent);
 }
 
 html[data-yt-theme] .private-unlock-error {
