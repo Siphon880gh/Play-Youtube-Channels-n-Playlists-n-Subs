@@ -3,7 +3,7 @@
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <link href="<?php echo $prependPath; ?>assets/css/favs.css?v=12" rel="stylesheet"></link>
-<link href="<?php echo $prependPath; ?>assets/css/collection-themes.css?v=6" rel="stylesheet"></link>
+<link href="<?php echo $prependPath; ?>assets/css/collection-themes.css?v=7" rel="stylesheet"></link>
 <script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
 <script src="<?php echo $prependPath; ?>env/playlist-icons.js?v=8"></script>
 <script src="<?php echo $prependPath; ?>env/playlist-actions.js?v=1"></script>
@@ -542,8 +542,7 @@ $(document).ready(function(){
     border-radius: 8px;
     min-width: 180px;
   }
-  .private-unlock-btn,
-  .fav-collections-lock-btn {
+  .private-unlock-btn {
     padding: 6px 12px;
     border: 1px solid rgba(188, 35, 46, 0.3);
     border-radius: 8px;
@@ -558,8 +557,36 @@ $(document).ready(function(){
     min-height: 1em;
     color: #bc232e;
   }
-  .fav-collections-private-actions {
-    margin-top: 12px;
-    text-align: right;
+  /* Lock action: the last tile of the collections grid, in a lighter "action" style. */
+  .fav-collections-lock-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45em;
+    width: 100%;
+    /* As tall as a one-line collection tile, despite the smaller font. */
+    min-height: calc(var(--type-action, 0.944rem) * 1.35 + 20px);
+    padding: 9px 12px;
+    border: 1px dashed rgba(188, 35, 46, 0.34);
+    border-radius: 10px;
+    background: transparent;
+    color: #6d6170;
+    font-family: inherit;
+    font-size: var(--type-label, 0.833rem);
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.35;
+    text-align: center;
+    cursor: pointer;
+  }
+  .fav-collections-lock-btn:hover {
+    border-color: rgba(188, 35, 46, 0.55);
+    background: rgba(188, 35, 46, 0.05);
+    color: #8e1823;
+  }
+  .fav-collections-lock-btn:focus-visible {
+    outline: 2px solid rgba(188, 35, 46, 0.45);
+    outline-offset: 2px;
   }
 </style>
