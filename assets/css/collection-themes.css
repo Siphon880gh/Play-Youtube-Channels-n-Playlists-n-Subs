@@ -300,6 +300,25 @@ html[data-yt-theme] .category-browser-title {
     border-color: var(--yt-border);
 }
 
+html[data-yt-theme] .category-browser-search-wrap {
+    border-color: var(--yt-border);
+}
+
+html[data-yt-theme] .category-browser-search {
+    border-color: var(--yt-border-strong);
+    background: var(--yt-surface);
+    color: var(--yt-text);
+}
+
+html[data-yt-theme] .category-browser-search:focus {
+    border-color: var(--yt-accent);
+    outline-color: var(--yt-tint-strong);
+}
+
+html[data-yt-theme] .category-browser-empty {
+    color: var(--yt-text-muted, var(--yt-text));
+}
+
 html[data-yt-theme] .category-browser-item {
     color: var(--yt-text);
     border-color: var(--yt-border);
