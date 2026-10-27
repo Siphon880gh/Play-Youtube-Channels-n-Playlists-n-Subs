@@ -114,7 +114,7 @@ A shelf row has `group` and no playlist id. The categories after it belong to th
 { "group": "Mood" }
 ```
 
-A theme row sets the colors of a collection. Put it first. The presets are `youtube-red` (the default when there is no theme row), `matrix-green` (black and green) and `monochrome` (black, gray and white). They are defined in `assets/css/collection-themes.css`. Private collections show `monochrome` while locked, because their theme is only read after unlocking.
+A theme row sets the colors of a collection. Put it first. The presets are `youtube-red` (the default when there is no theme row), `matrix-green` (black and green), `monochrome` (black, gray and white) and `velvet` (deep plum with rose-gold accents). They are defined in `assets/css/collection-themes.css`. Private collections show `monochrome` while locked, because their theme is only read after unlocking.
 
 ```json
 { "theme": "matrix-green" }
