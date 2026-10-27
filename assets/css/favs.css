@@ -138,6 +138,11 @@ body {
     -webkit-user-select: none;
 }
 
+/* Space between the lock icon and the name (flex drops the plain space). */
+.fav-collections-link--private {
+    gap: 0.45em;
+}
+
 .fav-collections-scramble {
     filter: blur(4px);
     user-select: none;

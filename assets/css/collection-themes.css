@@ -94,6 +94,12 @@ html[data-yt-theme] .filter-bar {
     border-color: var(--yt-border);
 }
 
+/* favs.css gives .quick-filters a white top highlight; on dark themes it reads as a gray line. */
+html[data-yt-theme="matrix-green"] .quick-filters,
+html[data-yt-theme="monochrome"] .quick-filters {
+    box-shadow: none;
+}
+
 html[data-yt-theme] .filter-reset {
     background: var(--yt-tint);
     color: var(--yt-accent);
@@ -209,6 +215,27 @@ html[data-yt-theme="matrix-green"] #buttons .panel {
 html[data-yt-theme="matrix-green"] #buttons .panel-body button {
     border-color: rgba(255, 255, 255, 0.08);
     box-shadow: none;
+}
+
+/*
+ * index.css frames #player and .player-options with a wide white halo
+ * (0 0 0 8px / 6px rgba(255,255,255,.4x)). It is invisible on youtube-red's
+ * light page, but on a dark collection page it shows as a thick gray ring.
+ * Dark themes swap it for a soft dark drop shadow (matrix-green does the same above).
+ */
+html[data-yt-theme="monochrome"] #player {
+    border-color: transparent;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+}
+
+html[data-yt-theme="monochrome"] .player-options {
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+}
+
+/* Control buttons in the Playlist panel: Bootstrap-ish neutral edge -> theme edge. */
+html[data-yt-theme="youtube-red"] #buttons .panel-body button,
+html[data-yt-theme="monochrome"] #buttons .panel-body button {
+    border-color: rgba(188, 35, 46, 0.14);
 }
 
 html[data-yt-theme] #favs-section {
