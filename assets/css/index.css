@@ -2972,13 +2972,24 @@ html[data-yt-theme] .section-nav-parent-table--by-shelf .section-nav-parent-item
     }
     
     .section-nav-parent-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        column-gap: 10px;
+        row-gap: 8px;
+    }
+
+    /* Title on its own line; Collections and History sit together on the left. */
+    .section-nav-parent-title-wrap {
+        display: contents;
+    }
+
+    .section-nav-parent-title {
+        flex: 1 0 100%;
     }
 
     .watch-history-split {
-        align-self: flex-end;
+        align-self: center;
     }
     
     .section-nav-parent-controls {
@@ -3000,15 +3011,10 @@ html[data-yt-theme] .section-nav-parent-table--by-shelf .section-nav-parent-item
         justify-content: center;
     }
 }
-/* ---- Filter views (alphabetical table only) ---- */
+/* ---- Filter views ---- */
 .section-nav-parent-list-toolbar {
     flex-wrap: wrap;
     row-gap: 6px;
-}
-
-.section-nav-parent-list:not(.section-nav-parent-list--alphabetical) .section-nav-parent-filter-bar,
-.section-nav-parent-list:not(.section-nav-parent-list--alphabetical) .section-nav-parent-filter-status {
-    display: none !important;
 }
 
 .section-nav-parent-filter-bar {
