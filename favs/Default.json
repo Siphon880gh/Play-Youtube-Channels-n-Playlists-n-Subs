@@ -1,5 +1,13 @@
 [
     { "theme": "youtube-red" },
+    { "shortcuts": [
+        { "label": "Mood OR NLP", "row": 1 },
+        { "label": "NLP", "row": 1 },
+        { "label": "Travel", "row": 1 },
+        { "label": "Comedy/Wake", "filter": "Comedy", "row": 1 },
+        { "label": "Marvel", "row": 2 },
+        { "label": "Zelda", "row": 2 }
+    ] },
     { "group": "Mood" },
     { "id": "PLzg85AHZsA6YMUlYeIxM80Qm_wM1UbZda", "name": "[Mood/Concentration] Environment Busy (Shuffle)" },
     { "id": "PLzg85AHZsA6ZI6491YhRAMIniGZvY_yxW", "name": "[Mood/Concentration] Studying music (Shuffle)" },

@@ -120,6 +120,18 @@ A theme row sets the colors of a collection. Put it first. The presets are `yout
 { "theme": "matrix-green" }
 ```
 
+A shortcuts row adds quick links above the playlists while that collection is open. Put it right after the theme row. Each shortcut has a `label`, shown in [brackets]. Clicking it puts `filter` in the Filter box (the label when there is no `filter`), and clicking again clears it. A shortcut with `open` opens that URL in a new tab instead. `row` picks the line it sits on (1 when left out); lines show in number order, and shortcuts on the same line are split by `|`. A collection with no shortcuts row shows none.
+
+```json
+{ "shortcuts": [
+    { "label": "Travel", "row": 1 },
+    { "label": "Comedy/Wake", "filter": "Comedy", "row": 1 },
+    { "label": "Marvel", "row": 2 }
+] }
+```
+
+Every collection also shows the same global links below them: [[Rand]], [[Motiv]], [EMDR] and [White Noise Background]. Those live in `favs.php`, not in the JSON files.
+
 A section row has `section` and no playlist id. It starts a category for entries that have no `[brackets]`.
 
 ```json
