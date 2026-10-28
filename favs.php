@@ -125,7 +125,23 @@ function filterListItems(userFilterText, listItems) {
   }
 
   syncCategoryBrowser();
+  // All Topics is built from the sections still visible. Refresh it when the
+  // filter changes, including when the box is cleared.
+  scheduleParentSectionRefresh();
 } // filterListItems
+
+var parentSectionRefreshTimer = null;
+function scheduleParentSectionRefresh() {
+  if(parentSectionRefreshTimer) {
+    clearTimeout(parentSectionRefreshTimer);
+  }
+  parentSectionRefreshTimer = setTimeout(function() {
+    parentSectionRefreshTimer = null;
+    if(window.parent && typeof window.parent.resizeIframeFavs === "function") {
+      window.parent.resizeIframeFavs();
+    }
+  }, 50);
+}
 
 function saveFilteredForRefresh(userFilterText) {
   localStorage.setItem("YT__last-filtered", userFilterText);
