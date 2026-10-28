@@ -4,7 +4,7 @@
         { "label": "Mood OR NLP", "row": 1 },
         { "label": "NLP", "row": 1 },
         { "label": "Travel", "row": 1 },
-        { "label": "Comedy/Wake", "filter": "Comedy", "row": 1 },
+        { "label": "Comedy/Wake", "filter": "Comedy", "row": 2 },
         { "label": "Marvel", "row": 2 },
         { "label": "Zelda", "row": 2 }
     ] },
