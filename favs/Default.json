@@ -260,6 +260,7 @@
     { "id": "UU53wkzZ3aXyeH9-eIgi17WA", "name": "[Animated History] Stickly" },
     { "id": "UUe75Q_5beGo_ge64I2zXiYg", "name": "[Animated History] Nolanzo" },
     { "id": "UUYLrj-qIepJaPKCKeI9XVKg", "name": "[Animated History] Ancestral" },
+    { "id": "UU35fL9KdO0OSC9CoQk5MLfg", "name": "[Animated History] Professor Historian" },
     { "group": "Fictional Animations" },
     { "id": "UUsCAWoG-SagS7aFuWT1IZPw", "name": "[Fictional Animations] Horror Shorts Party" },
     { "id": "UUWgqgrauhCXBBvsOIomZo-w", "name": "[Fictional Animations] WHY YOU" },
@@ -517,7 +518,8 @@
     { "id": "UUlG1AcuVOU5Cn-ivHm3JRoA", "name": "[Opinion/Films/Marvel] The Cosmic Wonder" },
     { "id": "UUBS7ypf4ccm6e_bu35EiAAA", "name": "[Opinion/Films/Marvel] Everything Always" },
     { "id": "UUWWAgP_xPeTHJm5BS1eqkeg", "name": "[Opinion/Films/Marvel] A bit of Everything" },
-    { "id": "UUgMJGv4cQl8-q71AyFeFmtg", "name": "[Marvel Fans] ScreenCrush" },
+    { "id": "UUDiFRMQWpcp8_KD4vwIVicw", "name": "[Opinion/Films/Marvel] Emergency Awesome" },
+    { "id": "UUgMJGv4cQl8-q71AyFeFmtg", "name": "[Opinion/Films/Marvel] ScreenCrush" },
     { "id": "UUKtiMrNZq0gGbPTnsMu7Bsw", "name": "[Opinion/Personality] Ruri Ohama" },
     { "id": "UUdYBVZV5eDmQjJmNcGdQJuQ", "name": "[Opinion/DBZ] BlackScape" },
     { "id": "UUKaOcwliIgmzP87XMT0Arpw", "name": "[Opinion/DBZ] ExperGamez" },
@@ -773,6 +775,7 @@
     { "id": "UUUgZq9PkDp1xaEivtcfJPSg", "name": "[Education/medical] Neuroscientifically Challenged" },
     { "id": "UUjMCFF9O02YXlJ1MYll3k0Q", "name": "[Education/medical] Pharmacy" },
     { "id": "UUiamy6DLsjIeCgfz8TLXg9Q", "name": "[Education/medical] Violin MD" },
+    { "id": "UUU7QPxZjoJDx8Fes04GbpzA", "name": "[Education/medical] Mehlmanmedical" },
     { "id": "UUeTTmfuH2CbbBHWLiyrNsuQ", "name": "[Education/nursing] AllNursingNotes" },
     { "id": "UUgNlsWTmBV7s3yBqHjuqwXg", "name": "[Education/nursing] Nursing Fundamentals (HawkNurse)" },
     { "id": "UUOKni4MYHRT45UgyMM2f0QQ", "name": "[Education/nursing] MaiMaryRN" },
@@ -804,6 +807,7 @@
     { "id": "UUY1kMZp36IQSyNx_9h4mpCg", "name": "[Curiosity/science] Mark Rober" },
     { "id": "UU513PdAP2-jWkJunTh5kXRw", "name": "[Curiosity/science] CrunchLabs" },
     { "id": "UUZYTClx2T1of7BRZ86-8fow", "name": "[Curiosity/science] 👀 SciShow" },
+    { "id": "UUsXVk37bltHxD1rDPwtNM8Q", "name": "[Curiosity/science] Kurzgesagt – In a Nutshell" },
     { "group": "Stocks" },
     { "id": "UUEhlaz7bPPR0v3HwK6p2HXQ", "name": "[Stocks] Predicting Alpha" },
     { "id": "UU0ep2A36j7gTFdqW2Yvngbg", "name": "[Stocks] Tori Trades" },
@@ -866,5 +870,6 @@
     { "id": "UUiGWNa6QK6CiKPvv5-YPv8g", "name": "[AI/Business] Sabrina Ramonov" },
     { "id": "UUA-mWX9CvCTVFWRMb9bKc9w", "name": "[AI/Business] Dan Martell" },
     { "id": "UU878Wt_K2I_xSWBt10ViekA", "name": "[AI/Business] Simon Beard" },
-    { "id": "UUHvRo9vBRlg66j5_bQLHw8w", "name": "[AI/Business] Jensen Tung" }
+    { "id": "UUHvRo9vBRlg66j5_bQLHw8w", "name": "[AI/Business] Jensen Tung" },
+    { "id": "UUuvjQYKukKjVyhSVxQibgOw", "name": "[AI/Business] The Calum Johnson Show" }
 ]
