@@ -13,16 +13,10 @@
 
   <div class="favs-controls">
     <div class="quick-filters">
+      <!-- Collection shortcuts: rendered from the open collection's { "shortcuts": [...] } row. See renderCollectionShortcuts(). -->
+      <div class="collection-shortcuts"></div>
 
-      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Mood OR NLP") { $("#playlist-filter").val("Mood OR NLP") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Mood OR NLP]</a>
-      <span>|</span>
-      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="NLP") { $("#playlist-filter").val("NLP") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[NLP]</a>
-      <span>|</span>
-      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Travel") { $("#playlist-filter").val("Travel") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Travel]</a>
-      <span>|</span>
-      <a href="javascript:void(0)" onclick='if($("#playlist-filter").val()!=="Comedy") { $("#playlist-filter").val("Comedy") } else { $("#playlist-filter").val("") }  $("#playlist-filter").trigger("input");'>[Comedy/Wake]</a>
-
-      <div style="width:1px; height:5px;"></div>
+      <!-- Global shortcuts: shown for every collection. -->
       <a href="javascript:void(0)" onclick='RandomPlaylist.select();'>[[Rand]]</a>
       <span>|</span>
       <a target="_blank" href="https://docs.google.com/spreadsheets/d/12kDsyiiyeEgl7t87sRy1TkOd4XH4cRa-/edit?gid=409693151#gid=409693151">[[Motiv]]</a>
@@ -264,6 +258,58 @@ function fetchPlaylist(calledCollection) {
     return "youtube-red";
   }
 
+  // Collection shortcuts: a row like
+  //   { "shortcuts": [ { "label": "Travel" }, { "label": "Comedy/Wake", "filter": "Comedy" }, { "label": "Marvel", "row": 2 } ] }
+  // adds links above the global ones (Rand, Motiv, EMDR, White Noise Background) while that collection is open.
+  // label shows in [brackets]. filter is the text put in the Filter box (default: label); clicking again clears it.
+  // open, instead of a filter, opens that URL in a new tab. row picks the line (default 1); lines show in number order.
+  function getCollectionShortcuts(collection) {
+    if(!Array.isArray(collection)) return [];
+    for(var i = 0; i < collection.length; i++) {
+      var row = collection[i];
+      if(row && Array.isArray(row.shortcuts)) return row.shortcuts;
+    }
+    return [];
+  }
+
+  function toggleShortcutFilter(value) {
+    var $filterInput = $("#playlist-filter");
+    $filterInput.val($filterInput.val() !== value ? value : "");
+    $filterInput.trigger("input");
+  }
+
+  function renderCollectionShortcuts(collection) {
+    var $target = $(".collection-shortcuts");
+    $target.empty();
+
+    var rows = {};
+    getCollectionShortcuts(collection).forEach(function(shortcut) {
+      if(!shortcut || typeof shortcut.label !== "string" || !shortcut.label.trim()) return;
+      var rowNumber = parseInt(shortcut.row, 10);
+      if(!(rowNumber >= 1)) rowNumber = 1;
+      (rows[rowNumber] = rows[rowNumber] || []).push(shortcut);
+    });
+
+    Object.keys(rows).map(Number).sort(function(a, b) { return a - b; }).forEach(function(rowNumber) {
+      rows[rowNumber].forEach(function(shortcut, index) {
+        if(index > 0) {
+          $target.append(document.createTextNode(" "), $("<span>|</span>"), document.createTextNode(" "));
+        }
+        var label = shortcut.label.trim();
+        var $a = $("<a></a>").text("[" + label + "]");
+        var openUrl = (typeof shortcut.open === "string") ? shortcut.open.trim() : "";
+        if(openUrl && isGuideHttpUrl(openUrl)) {
+          $a.attr({ href: openUrl, target: "_blank", rel: "noopener" });
+        } else {
+          var filter = (typeof shortcut.filter === "string" && shortcut.filter.trim()) ? shortcut.filter.trim() : label;
+          $a.attr("href", "javascript:void(0)").on("click", function() { toggleShortcutFilter(filter); });
+        }
+        $target.append($a);
+      });
+      $target.append('<div style="width:1px; height:5px;"></div>');
+    });
+  }
+
   // Applies the theme to this iframe and to the parent page around it.
   function applyCollectionTheme(theme) {
     document.documentElement.setAttribute("data-yt-theme", theme);
@@ -306,6 +352,7 @@ function fetchPlaylist(calledCollection) {
 
   function renderPrivateMessage(message) {
     applyCollectionTheme("monochrome");
+    renderCollectionShortcuts([]);
     var $target = $(".playlists-target");
     $target.html("");
     $target.append($('<li class="not-link private-unlock-message"></li>').text(message));
@@ -356,6 +403,7 @@ function fetchPlaylist(calledCollection) {
 
   function renderPrivateUnlockForm(name, message) {
     applyCollectionTheme("monochrome");
+    renderCollectionShortcuts([]);
     var $target = $(".playlists-target");
     $target.html("");
     var $li = $('<li class="not-link private-unlock"></li>');
@@ -419,6 +467,7 @@ function fetchPlaylist(calledCollection) {
   function renderPlaylists(collection) {
     var $playlistContainer = $(".playlists-target");
     $playlistContainer.html("");
+    renderCollectionShortcuts(collection);
 
     var seenCategories = {};
     var currentGroup = "";
@@ -427,6 +476,9 @@ function fetchPlaylist(calledCollection) {
         var playlistObject = collection[i];
         if(!playlistObject || (typeof playlistObject.theme==="string" && typeof playlistObject.name==="undefined" && typeof playlistObject.id==="undefined")) {
           continue; // theme row: styling only, not a list entry
+        }
+        if(Array.isArray(playlistObject.shortcuts) && typeof playlistObject.name==="undefined" && typeof playlistObject.id==="undefined") {
+          continue; // shortcuts row: links above the list, not a list entry
         }
         var groupName = (typeof playlistObject.group==="string") ? playlistObject.group.trim() : "";
         if(groupName) {
