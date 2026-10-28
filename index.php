@@ -23,7 +23,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="assets/js/favs.js?v=2"></script>
     <?php include __DIR__ . "/env/icon-fonts.php"; ?>
-    <script src="env/playlist-icons.js?v=8"></script>
+    <script src="env/playlist-icons.js?v=9"></script>
     <link rel="stylesheet" href="assets/css/index.css?v=34">
     <link rel="stylesheet" href="assets/css/collection-themes.css?v=8">
     <!-- <script src="https://www.youtube.com/iframe_api"></script> -->
@@ -48,10 +48,46 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         return String(new URLSearchParams(window.location.search).get("playlistId"));
     }
 
-    // Floating "Scroll to top" button; jumps instantly when the user prefers reduced motion
+    // Floating up arrow: jump to the top of the page immediately
     function scrollToPageTop() {
-        let reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+        window.scrollTo(0, 0);
+    }
+
+    function prefersReducedMotion() {
+        return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+
+    // Faster than the browser's default smooth scroll. Used by the floating down arrow.
+    function scrollPageFastTo(top, shouldCancel) {
+        if(prefersReducedMotion()) {
+            window.scrollTo(0, top);
+            return;
+        }
+
+        let startY = window.scrollY;
+        let distance = top - startY;
+        if(Math.abs(distance) < 2) {
+            return;
+        }
+
+        // ~12px per ms, capped so long playlist jumps still finish quickly
+        let duration = Math.max(100, Math.min(280, Math.abs(distance) / 12));
+        let started = performance.now();
+        let token = favsScrollToken;
+        let easeOutCubic = function(t) {
+            return 1 - Math.pow(1 - t, 3);
+        };
+        let step = function(now) {
+            if(token !== favsScrollToken || (shouldCancel && shouldCancel())) {
+                return;
+            }
+            let t = Math.min(1, (now - started) / duration);
+            window.scrollTo(0, Math.round(startY + distance * easeOutCubic(t)));
+            if(t < 1) {
+                requestAnimationFrame(step);
+            }
+        };
+        requestAnimationFrame(step);
     }
 
     // Space left between the sticky "All topics" nav and a playlist scrolled to just below it
@@ -85,11 +121,17 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
         }
 
         let token = ++favsScrollToken;
-        let reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        window.scrollTo({ top: target, behavior: (smooth && !reduceMotion) ? "smooth" : "auto" });
+        let reduceMotion = prefersReducedMotion();
+        let cancelled = false;
+        let isCancelled = function() { return cancelled || token !== favsScrollToken; };
+
+        if(smooth === "fast" && !reduceMotion) {
+            scrollPageFastTo(target, isCancelled);
+        } else {
+            window.scrollTo({ top: target, behavior: (smooth && !reduceMotion) ? "smooth" : "auto" });
+        }
 
         // If the user takes over scrolling, leave the page alone
-        let cancelled = false;
         let cancel = function() { cancelled = true; };
         let events = ["wheel", "touchstart", "keydown", "mousedown"];
         events.forEach(function(name) { window.addEventListener(name, cancel, { passive: true }); });
@@ -155,8 +197,8 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
             return;
         }
 
-        // Jump to active playlist link and flash the link
-        scrollPageToFavsElement(target.$link[0], false, updateScrollArrowButtons);
+        // Fast scroll to the active playlist link and flash the link
+        scrollPageToFavsElement(target.$link[0], "fast", updateScrollArrowButtons);
         target.$link.animate({"font-weight": "900"}, 1000).delay(500).animate({"font-weight":"300"}, 2000)
         updateScrollArrowButtons();
     }
