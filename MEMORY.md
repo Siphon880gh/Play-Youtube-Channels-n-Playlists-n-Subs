@@ -6,9 +6,9 @@ These notes apply only to this playlist app. Do not copy them into a skill.
 
 Paranormal YouTube videos and channels go in `favs/Private - Spiritual.json`, in the existing `[Paranormal]` category. Do not put them in `Default.json`.
 
-## News and Conspiracy Theories
+## News and Biases
 
-Left- or right-leaning conspiracy theories, and mainstream news, go in `favs/News and Conspiracy Theories.json`, not `Default.json`.
+Left- or right-leaning conspiracy theories, and mainstream news, go in `favs/News and Biases.json`, not `Default.json`.
 
 - Mainstream news is `[News]` with a lean label such as `(Left)`, `(Right)`, `(Left-Centered)`, `(Center)`, `(Unbiased)` or `(Independent)`, and all of `[News/Commentary]`.
 - Left- or right-leaning conspiracy channels are `[Conspiracy/Left]`, `[Conspiracy/Left-Speculative]`, `[Conspiracy/Right]`, and `[Conspiracy/Right-Journalism]`. Religious ones are `[Conspiracy/Christian]` and `[Conspiracy/Spirituality]`.
