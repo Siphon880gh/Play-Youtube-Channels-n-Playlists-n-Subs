@@ -5,7 +5,7 @@
 <link href="<?php echo $prependPath; ?>assets/css/favs.css?v=12" rel="stylesheet"></link>
 <link href="<?php echo $prependPath; ?>assets/css/collection-themes.css?v=7" rel="stylesheet"></link>
 <script src="<?php echo $prependPath; ?>assets/js/favs.js"></script>
-<script src="<?php echo $prependPath; ?>env/playlist-icons.js?v=8"></script>
+<script src="<?php echo $prependPath; ?>env/playlist-icons.js?v=9"></script>
 <script src="<?php echo $prependPath; ?>env/playlist-actions.js?v=1"></script>
 <?php include __DIR__ . "/env/icon-fonts.php"; ?>
 <div id="favs">

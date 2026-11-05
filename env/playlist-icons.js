@@ -58,7 +58,7 @@ var playlistIconRules = [
   { pattern: "Cybersecurity|\\bSecurity\\b", font: "fas fa-user-shield" },
   { pattern: "\\biOS\\b", font: "fab fa-apple" },
   { pattern: "Programming/JS|\\bJS\\b", font: "fab fa-js" },
-  { pattern: "Programming|Programmer|\\bUML\\b|Script Automation", font: "fas fa-code" },
+  { pattern: "Programming|Programmer|\\bUML\\b|Script Automation|Leetcode", font: "fas fa-code" },
   { pattern: "Loopable Learning|Education|teaching|Videoediting", font: "fas fa-book-reader" },
   { pattern: "\\bNLP\\b", font: "fas fa-brain" },
   { pattern: "Self-Improvement|Productive|Nofap", font: "fas fa-seedling" },
