@@ -125,3 +125,14 @@ Keep the file's comma style. Escape quotes in the name. Match the single quotes 
 ## Example
 
 `/playlist?list=PLxxxx` stays `PLxxxx`. `/watch?v=VIDEO&list=PLxxxx` is a video link, so it becomes the `UU` uploads playlist of that video's channel, not `PLxxxx`. `/@SomeChannel` becomes that channel's `UU` uploads playlist. `instagram.com/reel/ID` and `tiktok.com/@name/video/ID` become that account's profile, and the name ends with `(Instagram)` or `(Tiktok)`.
+
+## Health influencer credential tags
+
+Every health or medical-advice row (`[Health/...]`, `[Holistic and Nutrition]`, `[Education/medical]`, doctor or clinician channels under `[Fitness/...]`, and the same in the Private collections) gets a credential check, both when it is added and when an existing row is reviewed.
+
+- Verify the person behind the channel with a web search: an official bio, practice or hospital page, licensing or NPI record, or another credible profile. Watch for same-name people; match the profile to the channel.
+- Licensed physician (MD, DO, or an equivalent foreign medical degree such as MBChB with a licence): append ` (Actual MD)`. DO counts as MD.
+- Doctor of Chiropractic: append ` (Is DC)`.
+- Anything else, such as a PhD, ND, PharmD, DDS, PT/DPT, RD or nutrition certificate, an MD degree with no licence or residency, or an unverified or unknown credential: leave the name unchanged. Tag only when the credential is verified.
+- Placement: the tag goes at the very end of the name, after any existing suffix such as `(Shuffle)`, `(Maybe)` or `(ER procedures)`. Example: `[Health/Medical] Dr. Mitch Rice (Actual MD)`, `[Mood/X] Name (Shuffle) (Actual MD)`.
+- After tagging, re-run `--icon-check` on the old and new names of every touched row and confirm the icon is the same. If the tag changes which rule matches, make the smallest fix to the rule order or regex in `env/playlist-icons.js`, then run the JSON parse and `node --check env/playlist-icons.js`.

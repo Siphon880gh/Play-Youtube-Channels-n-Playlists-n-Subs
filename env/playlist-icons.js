@@ -14,7 +14,7 @@
 var playlistIconRules = [
   // Specific titles before the broader theme they belong to.
   { pattern: "Zelda", svg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='currentColor' d='M12 2.2 14.6 8H9.4L12 2.2zM6.2 21.5 8.8 15.2H3.6L6.2 21.5zM17.8 21.5 20.4 15.2h-5.2L17.8 21.5z'/></svg>" },
-  { pattern: "\\bMario\\b", emoji: "🍄" },
+  { pattern: "\\bMario\\b(?! Esparza)", emoji: "🍄" },
   { pattern: "\\bDBZ\\b|Dragon Ball", font: "fas fa-dragon" },
   { pattern: "Videogame Playthroughs|Videogames|Nintendo|Playstation|God of War|Final Fantasy|Kingdom Hearts|Resident Evil|Cyberpunk|Call of Duty|Half[- ]Life|Chrono Trigger|EarthBound|Duck Tales|Demon.?s Souls|Xenoblade|Torchlight|inFamous|Fenyx|Kid Icarus|\\bHalo\\b|Marvel's Avengers", font: "fas fa-gamepad" },
   { pattern: "Marvel", font: "fas fa-mask" },
