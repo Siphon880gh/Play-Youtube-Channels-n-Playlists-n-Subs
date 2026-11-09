@@ -5826,6 +5826,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
     </div>
 
     <script src="assets/js/app.js?v=5"></script>
+    <script src="assets/js/harness-ai.js" defer data-folder="<?= htmlspecialchars(basename(__DIR__), ENT_QUOTES) ?>" data-app="YouTube shuffler" data-parent="app" data-offset-bottom="64px" data-accent="#c62828" data-ask="<?= htmlspecialchars('Give it YouTube channel, video, or playlist links and ask it to add them with the `adding-youtube-playlists` skill (`.agents/skills/`). Collections live in `favs/*.json`; reload to see them.', ENT_QUOTES) ?>"></script>
     <div id="playlist-guide-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="playlist-guide-title">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
