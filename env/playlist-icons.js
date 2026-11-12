@@ -25,7 +25,7 @@ var playlistIconRules = [
   { pattern: "Car-repair", font: "fas fa-wrench" },
   { pattern: "Police", font: "fas fa-video" },
   { pattern: "\\bDriving\\b|Car-buying|Car-shows", font: "fas fa-car" },
-  { pattern: "Cooking|Restaurants|\\bFood\\b|\\bMeals\\b|Nutrition|Holistic", font: "fas fa-utensils" },
+  { pattern: "Cooking|Restaurants|\\bFood\\b|\\bMeals\\b|Fitness/Nutrition|\\[Holistic", font: "fas fa-utensils" },
 
   { pattern: "Sleepy Cat", emoji: "😴" },
   { pattern: "(?:^Deliverance/Spiritual Warfare \\(Spirits and Healing\\)$|\\[Deliverance/Spiritual Warfare \\(Spirits and Healing\\)\\])", font: "fas fa-praying-hands" },
@@ -86,6 +86,7 @@ var playlistIconRules = [
   { pattern: "Curiosity|\\bscience\\b", font: "fas fa-lightbulb" },
   { pattern: "Entertaining", font: "fas fa-star" },
   { pattern: "Lifestyle/Events|\\bEvents\\b", font: "fas fa-ticket-alt" },
+  { pattern: "Lifestyle/Beauty", font: "fas fa-paint-brush" },
   { pattern: "Lifestyle", font: "fas fa-home" },
   { pattern: "Env:", font: "fas fa-spa" },
   { pattern: "\\bRelease\\b", font: "fas fa-feather-alt" },
